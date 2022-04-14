@@ -1,4 +1,3 @@
-variable "key_file_name" {}
 variable "environment" {}
 variable "infra_repository" {}
 variable "deploying_repository" {}
