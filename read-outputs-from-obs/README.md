@@ -8,7 +8,7 @@ Example usage:
 
 ```hcl
 module "read_outputs" {
-  source         = "github.com/digitalservice4germany/terraform-modules//read-outputs-from-obs?ref=fd7ec8e566448210b7e970d6640a5f436598af66"
+  source         = "github.com/digitalservicebund/terraform-modules//read-outputs-from-obs?ref=fd7ec8e566448210b7e970d6640a5f436598af66"
   resource_group = "my-resource-group"
 }
 

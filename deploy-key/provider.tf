@@ -12,5 +12,5 @@ terraform {
 }
 
 provider "github" {
-  owner = "digitalservice4germany"
+  owner = "digitalservicebund"
 }
