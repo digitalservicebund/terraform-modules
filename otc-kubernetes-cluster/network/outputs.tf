@@ -20,5 +20,5 @@ output "loadbalancer_id" {
 
 output "loadbalancer_address" {
   description = "The public IP adress of the created loadbalancer."
-  value       = opentelekomcloud_vpc_eip_v1.loadbalancer.publicip[0].ip_address
+  value       = opentelekomcloud_lb_loadbalancer_v3.this.public_ip[0].address
 }

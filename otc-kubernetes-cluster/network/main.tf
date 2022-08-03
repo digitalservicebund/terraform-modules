@@ -32,21 +32,6 @@ resource "opentelekomcloud_nat_snat_rule_v2" "this" {
   network_id     = opentelekomcloud_vpc_subnet_v1.this.id
 }
 
-resource "opentelekomcloud_vpc_eip_v1" "loadbalancer" {
-  publicip {
-    type = "5_bgp"
-  }
-  bandwidth {
-    name       = "${var.resource_group}-load-balancer"
-    size       = 100
-    share_type = "PER"
-  }
-
-  tags = {
-    resource_group = var.resource_group
-  }
-}
-
 data "opentelekomcloud_lb_flavor_v3" "this" {
   name = var.high_availability ? "L4_flavor.elb.s2.small" : "L4_flavor.elb.s1.small"
 }
@@ -73,9 +58,4 @@ resource "opentelekomcloud_lb_loadbalancer_v3" "this" {
   tags = {
     resource_group = var.resource_group
   }
-}
-
-resource "opentelekomcloud_networking_floatingip_associate_v2" "loadbalancer" {
-  floating_ip = opentelekomcloud_vpc_eip_v1.loadbalancer.publicip[0].ip_address
-  port_id     = opentelekomcloud_lb_loadbalancer_v3.this.vip_port_id
 }
