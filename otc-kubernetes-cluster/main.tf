@@ -1,7 +1,8 @@
 module "network" {
-  source         = "./network"
-  resource_group = var.resource_group
-  vpc_cidr       = var.vpc_cidr
+  source            = "./network"
+  resource_group    = var.resource_group
+  vpc_cidr          = var.vpc_cidr
+  high_availability = var.high_availability
 }
 
 module "cluster" {

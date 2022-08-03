@@ -15,7 +15,7 @@ output "openstack_subnet_id" {
 
 output "loadbalancer_id" {
   description = "The ID of the created load balancer."
-  value       = opentelekomcloud_lb_loadbalancer_v2.this.id
+  value       = opentelekomcloud_lb_loadbalancer_v3.this.id
 }
 
 output "loadbalancer_address" {

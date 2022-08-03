@@ -11,3 +11,8 @@ variable "vpc_cidr" {
   description = "Private network range for the VPC."
   type        = string
 }
+
+variable "high_availability" {
+  description = "Influences AZ selection and loadbalancer flavor."
+  type        = bool
+}
