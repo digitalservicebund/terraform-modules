@@ -1,8 +1,6 @@
 # Encrypted Remote State Bucket
 
-Creates an encrypted OBS Bucket for your terraform remote state in the Open Telekom Cloud.
-
-After the creation it prints out the right backend s3 terraform settings which you can copy and paste into your main.tf.
+Creates an encrypted OBS Bucket for your terraform remote state in the Open Telekom Cloud. Produces a `backend.tf` with the expected backend configuration along with resource creation.
 
 ## Attribution
 
