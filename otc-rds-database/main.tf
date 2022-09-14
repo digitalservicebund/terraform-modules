@@ -68,8 +68,8 @@ resource "opentelekomcloud_networking_secgroup_rule_v2" "this" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = 8635
-  port_range_max    = 8635
+  port_range_min    = var.port
+  port_range_max    = var.port
   remote_group_id   = each.key
   security_group_id = opentelekomcloud_networking_secgroup_v2.this.id
 }
