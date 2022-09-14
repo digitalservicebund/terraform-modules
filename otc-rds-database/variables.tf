@@ -8,11 +8,6 @@ variable "availability_zones" {
   type        = list(string)
 }
 
-variable "flavor" {
-  description = "Specifies the CPU/RAM specs of the instance."
-  type        = string
-}
-
 variable "subnet_id" {
   description = "Subnet for the instance."
   type        = string
@@ -21,6 +16,23 @@ variable "subnet_id" {
 variable "vpc_id" {
   description = "VPC for the instance."
   type        = string
+}
+
+variable "flavor" {
+  description = "Specifies the CPU/RAM specs of the instance."
+  type        = string
+}
+
+variable "version" {
+  description = "Specifies the database version. PostgreSQL supports 12, 11, 10. The default value is 12."
+  type        = string
+  default     = "12"
+}
+
+variable "port" {
+  description = "Specifies the database port. The PostgreSQL database port ranges from 2100 to 9500, the default value is 5432."
+  type        = string
+  default     = "5432"
 }
 
 variable "disk_size" {
