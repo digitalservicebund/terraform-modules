@@ -27,7 +27,7 @@ resource "opentelekomcloud_rds_instance_v3" "this" {
   db {
     password = random_password.this.result
     type     = "PostgreSQL"
-    version  = var.version
+    version  = var.engine_version
     port     = var.port
   }
 

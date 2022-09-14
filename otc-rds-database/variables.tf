@@ -23,7 +23,7 @@ variable "flavor" {
   type        = string
 }
 
-variable "version" {
+variable "engine_version" {
   description = "Specifies the database version. PostgreSQL supports 12, 11, 10. The default value is 12."
   type        = string
   default     = "12"
