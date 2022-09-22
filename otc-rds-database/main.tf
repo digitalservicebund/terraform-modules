@@ -31,6 +31,8 @@ resource "opentelekomcloud_rds_instance_v3" "this" {
     port     = var.port
   }
 
+  parameters = var.parameters
+
   security_group_id = opentelekomcloud_networking_secgroup_v2.this.id
   subnet_id         = var.subnet_id
   vpc_id            = var.vpc_id

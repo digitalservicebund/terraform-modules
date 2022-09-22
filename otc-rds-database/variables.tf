@@ -55,3 +55,8 @@ variable "db_access_from_security_group_ids" {
   description = "IDs of the security groups from which to allow access to the instance."
   type        = list(any)
 }
+
+variable "parameters" {
+  description = "Map of additional configuration parameters. Values should be strings. Parameters set here overrides values from configuration template (parameter group)."
+  type        = map(any)
+}
