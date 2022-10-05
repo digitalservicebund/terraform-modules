@@ -53,10 +53,10 @@ resource "opentelekomcloud_rds_instance_v3" "this" {
     resource_group = var.resource_group
   }
 
+  // See https://registry.terraform.io/providers/opentelekomcloud/opentelekomcloud/latest/docs/resources/rds_instance_v3#notes
   lifecycle {
     ignore_changes = [
       db,
-      backup_strategy["start_time"],
     ]
   }
 }
