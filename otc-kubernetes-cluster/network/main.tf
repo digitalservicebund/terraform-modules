@@ -51,7 +51,7 @@ resource "opentelekomcloud_lb_loadbalancer_v3" "this" {
   public_ip {
     bandwidth_name       = var.resource_group
     ip_type              = "5_gray"
-    bandwidth_size       = 100
+    bandwidth_size       = 1000
     bandwidth_share_type = "PER"
   }
 
