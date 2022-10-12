@@ -123,7 +123,7 @@ resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
       "logLevel" : 4,
       "maxEmptyBulkDeleteFlag" : 10,
       "maxNodeProvisionTime" : 15,
-      "maxNodesTotal" : var.max_node_count,
+      "maxNodesTotal" : 1000,
       "memoryTotal" : 128000,
       "scaleDownDelayAfterAdd" : 10,
       "scaleDownDelayAfterDelete" : 10,
