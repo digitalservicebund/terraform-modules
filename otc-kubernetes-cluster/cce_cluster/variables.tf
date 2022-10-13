@@ -41,7 +41,6 @@ variable "max_node_count" {
 variable "node_flavor" {
   description = "Instance type for nodes in the node pool."
   type        = string
-  default     = "s2.large.2"
 }
 
 variable "kubernetes_version" {

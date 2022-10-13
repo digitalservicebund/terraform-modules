@@ -28,6 +28,12 @@ variable "max_node_count" {
   type        = number
 }
 
+variable "node_flavor" {
+  description = "Instance type for nodes in the node pool."
+  type        = string
+  default     = "s2.large.2"
+}
+
 variable "ingress_dns_names" {
   description = "DNS zone and hostnames to map to the loadbalancer's IP."
   type = list(object({
