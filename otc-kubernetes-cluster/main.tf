@@ -12,11 +12,12 @@ module "cluster" {
   vpc_id    = module.network.vpc_id
   subnet_id = module.network.subnet_id
 
-  kubernetes_version = var.kubernetes_version
-  high_availability  = var.high_availability
-  min_node_count     = var.min_node_count
-  max_node_count     = var.max_node_count
-  node_flavor        = var.node_flavor
+  kubernetes_version       = var.kubernetes_version
+  autoscaler_addon_version = var.autoscaler_addon_version
+  high_availability        = var.high_availability
+  min_node_count           = var.min_node_count
+  max_node_count           = var.max_node_count
+  node_flavor              = var.node_flavor
 }
 
 module "dns" {
