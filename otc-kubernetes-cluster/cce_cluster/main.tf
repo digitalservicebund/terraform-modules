@@ -101,7 +101,7 @@ resource "opentelekomcloud_compute_keypair_v2" "this" {
 
 resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
   template_name    = "autoscaler"
-  template_version = "1.19.7"
+  template_version = var.autoscaler_addon_version
   cluster_id       = opentelekomcloud_cce_cluster_v3.this.id
 
   values {

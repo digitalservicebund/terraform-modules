@@ -43,6 +43,11 @@ variable "ingress_dns_names" {
 }
 
 variable "kubernetes_version" {
-  description = "Kubernetes Version"
+  description = "Kubernetes version"
+  type        = string
+}
+
+variable "autoscaler_addon_version" {
+  description = "Autoscaler add-on version"
   type        = string
 }
