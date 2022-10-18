@@ -108,11 +108,10 @@ resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
     basic = {
       "cceEndpoint" : "https://cce.eu-de.otc.t-systems.com",
       "ecsEndpoint" : "https://ecs.eu-de.otc.t-systems.com",
-      "image_version" : "1.19.7",
-      "platform" : "linux-amd64",
+      "image_version" : var.autoscaler_addon_version,
       "region" : "eu-de",
       "swr_addr" : "100.125.7.25:20202",
-      "swr_user" : "hwofficial"
+      "swr_user" : "cce-addons"
     }
 
     custom = {
