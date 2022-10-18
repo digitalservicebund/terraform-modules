@@ -47,3 +47,8 @@ variable "kubernetes_version" {
   description = "Kubernetes Version"
   type        = string
 }
+
+variable "autoscaler_addon_version" {
+  description = "Autoscaler add-on version"
+  type        = string
+}
