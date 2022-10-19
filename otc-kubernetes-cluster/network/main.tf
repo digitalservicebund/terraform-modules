@@ -31,31 +31,3 @@ resource "opentelekomcloud_nat_snat_rule_v2" "this" {
   source_type    = 0
   network_id     = opentelekomcloud_vpc_subnet_v1.this.id
 }
-
-data "opentelekomcloud_lb_flavor_v3" "this" {
-  name = var.high_availability ? "L4_flavor.elb.s2.small" : "L4_flavor.elb.s1.small"
-}
-
-resource "opentelekomcloud_lb_loadbalancer_v3" "this" {
-  name               = var.resource_group
-  availability_zones = var.high_availability ? ["eu-de-01", "eu-de-02"] : ["eu-de-01"]
-  network_ids = [
-    opentelekomcloud_vpc_subnet_v1.this.id
-  ]
-  router_id = opentelekomcloud_vpc_subnet_v1.this.vpc_id
-  subnet_id = opentelekomcloud_vpc_subnet_v1.this.subnet_id
-
-  l4_flavor = data.opentelekomcloud_lb_flavor_v3.this.id
-  l7_flavor = null
-
-  public_ip {
-    bandwidth_name       = var.resource_group
-    ip_type              = "5_gray"
-    bandwidth_size       = 1000
-    bandwidth_share_type = "PER"
-  }
-
-  tags = {
-    resource_group = var.resource_group
-  }
-}

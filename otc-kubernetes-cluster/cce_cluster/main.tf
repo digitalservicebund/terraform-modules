@@ -1,3 +1,28 @@
+locals {
+  # The required values for add-ons change with each version. You can query the OTC API for
+  # the correct value for a running cluster at:
+  # https://<cluster-id>.cce.eu-de.otc.t-systems.com/api/v3/addontemplates.
+  autoscaler_basic_blocks = {
+    "1.19.7" : {
+      "cceEndpoint" : "https://cce.eu-de.otc.t-systems.com",
+      "ecsEndpoint" : "https://ecs.eu-de.otc.t-systems.com",
+      "image_version" : "1.19.7",
+      "region" : "eu-de",
+      "swr_addr" : "100.125.7.25:20202",
+      "platform" : "linux-amd64",
+      "swr_user" : "hwofficial"
+    }
+    "1.23.6" : {
+      "cceEndpoint" : "https://cce.eu-de.otc.t-systems.com",
+      "ecsEndpoint" : "https://ecs.eu-de.otc.t-systems.com",
+      "image_version" : "1.23.6",
+      "region" : "eu-de",
+      "swr_addr" : "100.125.7.25:20202",
+      "swr_user" : "cce-addons"
+    }
+  }
+}
+
 data "opentelekomcloud_identity_project_v3" "eu_de" {
   name = "eu-de"
 }
@@ -105,14 +130,7 @@ resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
   cluster_id       = opentelekomcloud_cce_cluster_v3.this.id
 
   values {
-    basic = {
-      "cceEndpoint" : "https://cce.eu-de.otc.t-systems.com",
-      "ecsEndpoint" : "https://ecs.eu-de.otc.t-systems.com",
-      "image_version" : var.autoscaler_addon_version,
-      "region" : "eu-de",
-      "swr_addr" : "100.125.7.25:20202",
-      "swr_user" : "cce-addons"
-    }
+    basic = local.autoscaler_basic_blocks[var.autoscaler_addon_version]
 
     custom = {
       "cluster_id" : opentelekomcloud_cce_cluster_v3.this.id,

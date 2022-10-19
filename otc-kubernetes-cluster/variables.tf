@@ -31,7 +31,11 @@ variable "max_node_count" {
 variable "node_flavor" {
   description = "Instance type for nodes in the node pool."
   type        = string
-  default     = "s2.large.2"
+}
+
+variable "ingress_loadbalancer_address" {
+  description = "IP address of the ingress load balancer."
+  type        = string
 }
 
 variable "ingress_dns_names" {

@@ -3,16 +3,6 @@ output "kubeconfig" {
   value       = module.cluster.kubeconfig
 }
 
-output "loadbalancer_id" {
-  description = "The ID of the created load balancer."
-  value       = module.network.loadbalancer_id
-}
-
-output "loadbalancer_ip_address" {
-  description = "The IP address of the created load balancer."
-  value       = module.network.loadbalancer_address
-}
-
 output "node_security_group_id" {
   description = "Security group in which nodes get placed."
   value       = module.cluster.node_security_group_id

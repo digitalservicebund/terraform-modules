@@ -1,8 +1,7 @@
 module "network" {
-  source            = "./network"
-  resource_group    = var.resource_group
-  vpc_cidr          = var.vpc_cidr
-  high_availability = var.high_availability
+  source         = "./network"
+  resource_group = var.resource_group
+  vpc_cidr       = var.vpc_cidr
 }
 
 module "cluster" {
@@ -23,5 +22,5 @@ module "cluster" {
 module "dns" {
   source               = "./cluster_dns"
   ingress_dns_names    = var.ingress_dns_names
-  loadbalancer_address = module.network.loadbalancer_address
+  loadbalancer_address = var.ingress_loadbalancer_address
 }
