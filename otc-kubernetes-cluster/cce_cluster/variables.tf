@@ -53,6 +53,6 @@ variable "autoscaler_addon_version" {
   type        = string
   validation {
     condition     = contains(["1.19.7", "1.23.6"], var.autoscaler_addon_version)
-    error_message = "Unsupported addon version. (To support it, add the required autoscaler_basic_blocks config to the terraform configuration and update the validation condition for this variable.)"
+    error_message = "Unsupported addon version. To support it, add the required autoscaler_basic_blocks config to the terraform configuration and update the validation condition for this variable."
   }
 }
