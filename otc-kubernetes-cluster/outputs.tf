@@ -1,8 +1,3 @@
-output "kubeconfig" {
-  description = "kubeconfig yaml for connecting to the cluster."
-  value       = module.cluster.kubeconfig
-}
-
 output "node_security_group_id" {
   description = "Security group in which nodes get placed."
   value       = module.cluster.node_security_group_id

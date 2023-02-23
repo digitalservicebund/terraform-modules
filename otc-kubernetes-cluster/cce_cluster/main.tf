@@ -156,7 +156,3 @@ resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
     }
   }
 }
-
-data "opentelekomcloud_cce_cluster_kubeconfig_v3" "this" {
-  cluster_id = opentelekomcloud_cce_cluster_v3.this.id
-}
