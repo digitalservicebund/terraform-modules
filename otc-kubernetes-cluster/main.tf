@@ -1,7 +1,9 @@
 module "network" {
-  source         = "./network"
-  resource_group = var.resource_group
-  vpc_cidr       = var.vpc_cidr
+  source              = "./network"
+  resource_group      = var.resource_group
+  vpc_cidr            = var.vpc_cidr
+  vpc_id              = var.vpc_id
+  openstack_subnet_id = var.openstack_subnet_id
 }
 
 module "cluster" {

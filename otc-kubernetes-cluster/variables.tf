@@ -55,3 +55,15 @@ variable "autoscaler_addon_version" {
   description = "Autoscaler add-on version"
   type        = string
 }
+
+variable "vpc_id" {
+  description = "Id of the vpc that should be used"
+  default     = null
+  type        = string
+}
+
+variable "openstack_subnet_id" {
+  description = "The OpenStack subnet ID of the subnet that should be used"
+  default     = null
+  type        = string
+}
