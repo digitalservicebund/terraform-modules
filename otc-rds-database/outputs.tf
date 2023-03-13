@@ -5,6 +5,6 @@ output "address" {
 
 output "password" {
   description = "Database password"
-  value       = opentelekomcloud_rds_instance_v3.this.db.password
+  value       = opentelekomcloud_rds_instance_v3.this.db[0].password
   sensitive   = true
 }
