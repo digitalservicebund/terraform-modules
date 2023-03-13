@@ -5,6 +5,6 @@ output "address" {
 
 output "password" {
   description = "Database password"
-  value       = random_password.this.result
+  value       = opentelekomcloud_rds_instance_v3.this.db.password
   sensitive   = true
 }
