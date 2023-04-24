@@ -24,3 +24,9 @@ variable "ttl" {
   description = "The TTL of the record."
   default = 300
 }
+
+variable "dependencies" {
+  type = list(string)
+  description = "List of dependencies to wait for before creating the record."
+  default = []
+}
