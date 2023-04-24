@@ -1,9 +1,4 @@
 // Terraform Cloudflare Record
-variable "cloudflare_api_token" {
-  type = string
-  description = "The API token for the Cloudflare account."
-}
-
 variable "zone_id" {
   type = string
   description = "The zone ID of the domain to add the record to."
