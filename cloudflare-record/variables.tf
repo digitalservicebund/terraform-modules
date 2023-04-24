@@ -26,7 +26,7 @@ variable "ttl" {
 }
 
 variable "dependencies" {
-  type = list(string)
+  type = any
   description = "List of dependencies to wait for before creating the record."
   default = []
 }
