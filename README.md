@@ -2,6 +2,7 @@
 
 - cloudflare-record
 - deploy-key
+- hetzner-instance
 - otc-kubernetes-cluster
 - otc-loadbalancer-dedicated
 - otc-loadbalancer-shared
