@@ -36,3 +36,8 @@ variable "ssh_key_path" {
   type = string
   description = "value of the path to the SSH key"
 }
+
+variable "userdata_path" {
+  type = string
+  description = "value of the path to the userdata file"
+}
