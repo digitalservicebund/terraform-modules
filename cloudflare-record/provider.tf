@@ -4,7 +4,6 @@ terraform {
       source  = "cloudflare/cloudflare"
     }
   }
-  required_version = ">= 1.3.9"
 }
 
 # Configure the Cloudflare Provider
