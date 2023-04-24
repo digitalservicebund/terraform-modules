@@ -1,3 +1,3 @@
-output "instance_ipv4_addr" {
+output "ipv4_address" {
   value = hcloud_server.server.ipv4_address
 }
