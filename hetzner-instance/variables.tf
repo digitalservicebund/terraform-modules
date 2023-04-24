@@ -1,8 +1,3 @@
-variable "hcloud_token" {
-  type = string
-  description = "value of the Hetzner Cloud API token"
-}
-
 variable "stack_name" {
   type = string
   description = "Label for the name of the server, used for the instance and the domains"
