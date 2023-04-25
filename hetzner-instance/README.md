@@ -1,24 +1,19 @@
-# KPI Dashboard Stack on Hetzner
+# Hetzner Instance
 
-This stack builds up a stack consisting of the following services:
-
-- Metabase (Visualization)
-- NocoDB (Data Management)
-- N8N (Automation)
-
-## Tooling
-
-- Terraform is used to provision the instance on Hetzner
-- Docker will be installed on the instance
-- stack credentials come from 1password
-- The KPI Stack is deployed with docker compose, the following things are part of the compose file
-  - PostegreSQL
-  - Autoheal (monitors and restarts containers)
-  - Traefik (proxy to the public services)
-  - Metabase
-  - NocoDB
-  - n8n
+This module creates an Hetzner instance.
 
 ## Access
 
 In order to use the module, you need to create an API Access token for Hetzner
+
+## Usage
+
+```ruby
+module "server" {
+  source        = "github.com/digitalservicebund/terraform-modules//hetzner-instance?ref=88f0df1804fcb2b94556acdaecb2b4df4fe1469e"
+  stack_name    = var.stack_name
+  ssh_key_ids   = var.ssh_key_ids
+  ssh_key_path  = var.ssh_key_path
+  userdata_path = "userdata.sh"
+}
+```
