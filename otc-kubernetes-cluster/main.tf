@@ -16,9 +16,7 @@ module "cluster" {
   kubernetes_version       = var.kubernetes_version
   autoscaler_addon_version = var.autoscaler_addon_version
   high_availability        = var.high_availability
-  min_node_count           = var.min_node_count
-  max_node_count           = var.max_node_count
-  node_flavor              = var.node_flavor
+  node_pools               = var.node_pools
 }
 
 module "dns" {

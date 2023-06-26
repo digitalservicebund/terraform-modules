@@ -76,18 +76,20 @@ resource "opentelekomcloud_cce_cluster_v3" "this" {
 }
 
 resource "opentelekomcloud_cce_node_pool_v3" "this" {
-  name = var.resource_group
+  for_each = var.node_pools
+
+  name = "${var.resource_group}-${each.key}"
 
   cluster_id         = opentelekomcloud_cce_cluster_v3.this.id
-  flavor             = var.node_flavor
+  flavor             = each.value.node_flavor
   os                 = "CentOS 7.7"
   availability_zone  = var.high_availability ? "random" : "eu-de-01"
   key_pair           = opentelekomcloud_compute_keypair_v2.this.name
-  initial_node_count = var.min_node_count
+  initial_node_count = each.value.initial_node_count
 
   scale_enable             = true
-  min_node_count           = var.min_node_count
-  max_node_count           = var.max_node_count
+  min_node_count           = each.value.min_node_count
+  max_node_count           = each.value.max_node_count
   scale_down_cooldown_time = 100
   priority                 = 1
 
