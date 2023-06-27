@@ -78,7 +78,7 @@ resource "opentelekomcloud_cce_cluster_v3" "this" {
 resource "opentelekomcloud_cce_node_pool_v3" "this" {
   for_each = var.node_pools
 
-  name = "${var.resource_group}-${replace("each.key", "[^-a-z0-9]", "-")}"
+  name = "${var.resource_group}-${replace(each.key, "[^-a-z0-9]", "-")}"
 
   cluster_id         = opentelekomcloud_cce_cluster_v3.this.id
   flavor             = each.value.node_flavor
