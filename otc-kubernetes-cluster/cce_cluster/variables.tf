@@ -36,6 +36,12 @@ variable "node_pools" {
     min_node_count = number
     max_node_count = number
   }))
+  validation {
+    condition     = alltrue([
+      for k in var.node_pools : can(regex("^[-a-z0-9]*[a-z0-9]$", k))
+    ])
+    error_message = "Node pool names may only contain lowercase letters, digits, and hypens, and must end with a letter or digit."
+  }
 }
 
 variable "kubernetes_version" {
