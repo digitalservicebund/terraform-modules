@@ -19,12 +19,12 @@ variable "high_availability" {
 }
 
 variable "node_pools" {
-  description = "Map of node pools to create, with \"node_flavor\" (instance type for nodes in the node pool), \"initial_node_count\" (number of nodes when the node pool gets created or updated), \"min_node_count\" (minimum number of nodes in the node pool), and \"max_node_count\" (maximum number of nodes in the node pool)."
+  description = "Map of node pools to create, with \"node_flavor\" (instance type for nodes in the node pool), \"node_count\" (expected number of nodes in the node pool, must be <= max_node_count), \"min_node_count\" (minimum number of nodes in the node pool), and \"max_node_count\" (maximum number of nodes in the node pool)."
   type = map(object({
-    node_flavor        = string
-    initial_node_count = number
-    min_node_count     = number
-    max_node_count     = number
+    node_flavor    = string
+    node_count     = number
+    min_node_count = number
+    max_node_count = number
   }))
 }
 

@@ -85,7 +85,7 @@ resource "opentelekomcloud_cce_node_pool_v3" "this" {
   os                 = "CentOS 7.7"
   availability_zone  = var.high_availability ? "random" : "eu-de-01"
   key_pair           = opentelekomcloud_compute_keypair_v2.this.name
-  initial_node_count = each.value.initial_node_count
+  initial_node_count = each.value.node_count
 
   scale_enable             = true
   min_node_count           = each.value.min_node_count

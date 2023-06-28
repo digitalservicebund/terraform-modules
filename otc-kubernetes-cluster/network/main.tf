@@ -4,8 +4,8 @@ data "opentelekomcloud_vpc_subnet_v1" "subnet" {
 
 locals {
   openstack_subnet_id = data.opentelekomcloud_vpc_subnet_v1.subnet.subnet_id
-  vpc_id    = var.vpc_id == null ? opentelekomcloud_vpc_v1.this[0].id : var.vpc_id
-  subnet_id = var.openstack_subnet_id == null ? opentelekomcloud_vpc_subnet_v1.this[0].id : var.openstack_subnet_id
+  vpc_id              = var.vpc_id == null ? opentelekomcloud_vpc_v1.this[0].id : var.vpc_id
+  subnet_id           = var.openstack_subnet_id == null ? opentelekomcloud_vpc_subnet_v1.this[0].id : var.openstack_subnet_id
 }
 
 resource "opentelekomcloud_vpc_v1" "this" {
