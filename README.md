@@ -6,6 +6,7 @@
 - otc-kubernetes-cluster
 - otc-loadbalancer-dedicated
 - otc-loadbalancer-shared
+- otc-obs-bucket
 - otc-rds-database
 - read-outputs-from-obs
 - remote-state-obs
