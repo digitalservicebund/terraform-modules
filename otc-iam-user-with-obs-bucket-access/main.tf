@@ -33,7 +33,7 @@ resource "opentelekomcloud_identity_role_v3" "this" {
         "obs:object:GetObject"
       ] : [],
       contains(var.permissions, "write") ? [
-        "obs:bucket:PutObjectAcl",
+        "obs:object:PutObjectAcl",
         "obs:object:PutObject",
         "obs:object:DeleteObject",
       ] : [],
