@@ -8,8 +8,8 @@ resource "github_repository_environment" "environment" {
   }
 }
 
-resource "github_repository_deployment_branch_policy" "foo" {
-  reposistory      = var.repository
+resource "github_repository_deployment_branch_policy" "this" {
+  repository       = var.repository
   environment_name = var.environment
 
   name = var.branch_name_pattern
