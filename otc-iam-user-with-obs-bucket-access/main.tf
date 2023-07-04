@@ -1,5 +1,5 @@
 locals {
-  user_name = "access-obs-bucket-${replace(var.bucket_name, "/[^a-zA-Z0-9]+/", "_")}"
+  user_name = var.user_name != null ? var.user_name : "access-obs-bucket-${replace(var.bucket_name, "/[^a-zA-Z0-9]+/", "_")}"
 }
 
 resource "opentelekomcloud_identity_user_v3" "this" {

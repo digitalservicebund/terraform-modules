@@ -22,3 +22,13 @@ variable "permissions" {
     error_message = "Invalid permissions value."
   }
 }
+
+variable "user_name" {
+  description = "Name of the user to access the OBS Bucket"
+  type        = string
+  default     = null
+  validation {
+    condition     = try((length(var.user_name) <= 32), true)
+    error_message = "The user name can contain at most 32 characters"
+  }
+}
