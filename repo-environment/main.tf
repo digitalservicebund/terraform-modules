@@ -7,10 +7,3 @@ resource "github_repository_environment" "environment" {
     custom_branch_policies = true
   }
 }
-
-resource "github_repository_deployment_branch_policy" "this" {
-  repository       = var.repository
-  environment_name = var.environment
-
-  name = var.branch_name_pattern
-}
