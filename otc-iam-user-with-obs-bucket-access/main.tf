@@ -82,8 +82,8 @@ resource "opentelekomcloud_identity_role_assignment_v3" "global" {
 }
 
 resource "opentelekomcloud_identity_role_assignment_v3" "project" {
-  count         = var.kms_key_id == null ? 0 : 1
+  count      = var.kms_key_id == null ? 0 : 1
   group_id   = opentelekomcloud_identity_group_v3.this.id
-  role_id    = opentelekomcloud_identity_role_v3.project.id
+  role_id    = opentelekomcloud_identity_role_v3.project[0].id
   project_id = data.opentelekomcloud_identity_project_v3.MOS.id
 }
