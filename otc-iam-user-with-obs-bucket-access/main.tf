@@ -21,9 +21,9 @@ resource "opentelekomcloud_identity_user_group_membership_v3" "this" {
   ]
 }
 
-resource "opentelekomcloud_identity_role_v3" "this" {
+resource "opentelekomcloud_identity_role_v3" "global" {
   description   = "Access to OBS bucket ${var.bucket_name}"
-  display_name  = local.user_name
+  display_name  = "${local.user_name}-global"
   display_layer = "domain"
   statement {
     effect = "Allow"
@@ -52,6 +52,20 @@ resource "opentelekomcloud_identity_role_v3" "this" {
         "obs:bucket:ListAllMyBuckets"
       ]
     }
+  }
+}
+
+resource "opentelekomcloud_identity_role_v3" "project" {
+  count         = var.kms_key_id == null ? 0 : 1
+  description   = "Access to OBS bucket ${var.bucket_name}"
+  display_name  = "${local.user_name}-project"
+  display_layer = "project"
+  statement {
+    effect = "Allow"
+    action = ["kms:dek:create", "kms:dek:crypto", "kms:cmk:get"]
+    resource = [
+      "kms:::KeyId:${var.kms_key_id}"
+    ]
   }
 }
 

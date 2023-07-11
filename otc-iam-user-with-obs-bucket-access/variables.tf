@@ -32,3 +32,9 @@ variable "user_name" {
     error_message = "The user name can contain at most 32 characters."
   }
 }
+
+variable "kms_key_id" {
+  description = "The ID of the KMS key."
+  type        = string
+  default     = null
+}
