@@ -29,6 +29,6 @@ variable "user_name" {
   default     = null
   validation {
     condition     = try((length(var.user_name) <= 32), true)
-    error_message = "The user name can contain at most 32 characters"
+    error_message = "The user name can contain at most 32 characters."
   }
 }
