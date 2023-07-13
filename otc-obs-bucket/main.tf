@@ -16,7 +16,7 @@ resource "opentelekomcloud_kms_key_v1" "this" {
 resource "opentelekomcloud_obs_bucket" "this" {
   bucket     = var.bucket_name
   acl        = "private"
-  versioning = true
+  versioning = var.versioning_enabled
 
   server_side_encryption {
     algorithm  = "kms"

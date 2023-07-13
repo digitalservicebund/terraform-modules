@@ -6,3 +6,9 @@ variable "resource_group" {
 variable "bucket_name" {
   type = string
 }
+
+variable "versioning_enabled" {
+  description = "Toggle object versioning"
+  type        = bool
+  default     = true
+}
