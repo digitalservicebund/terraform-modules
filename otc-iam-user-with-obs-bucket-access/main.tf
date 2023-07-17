@@ -85,7 +85,7 @@ data "opentelekomcloud_identity_project_v3" "default_project" {
   name = "eu-de"
 }
 resource "opentelekomcloud_identity_role_assignment_v3" "project" {
-  count      = var.kms_key_id == null ? 0 : 1
+  count      = var.encrypted_bucket ? 1 : 0
   group_id   = opentelekomcloud_identity_group_v3.this.id
   role_id    = opentelekomcloud_identity_role_v3.project[0].id
   project_id = data.opentelekomcloud_identity_project_v3.default_project.id
