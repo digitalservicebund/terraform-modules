@@ -45,12 +45,16 @@ variable "kms_key_id" {
   default     = null
 }
 
-output "validate_encryption_vars" {
+output "validate_kms_key_present" {
   value = null
   precondition {
     condition     = !var.encrypted_bucket || var.kms_key_id != null
     error_message = "The kms_key_id is required if encrypted_bucket is true."
   }
+}
+
+output "validate_encrypted_bucket_set" {
+  value = null
   precondition {
     condition     = !(var.kms_key_id != null && !var.encrypted_bucket)
     error_message = "If you want to provide kms_key_id, set encrypted_bucket to true."
