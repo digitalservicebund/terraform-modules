@@ -56,7 +56,7 @@ resource "opentelekomcloud_identity_role_v3" "global" {
 }
 
 resource "opentelekomcloud_identity_role_v3" "project" {
-  count         = var.kms_key_id == null ? 0 : 1
+  count         = var.encrypted_bucket ? 1 : 0
   description   = "Access to OBS bucket ${var.bucket_name}"
   display_name  = "${local.user_name}-project"
   display_layer = "project"

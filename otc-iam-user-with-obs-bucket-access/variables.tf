@@ -12,6 +12,12 @@ variable "bucket_name" {
   type        = string
 }
 
+variable "encrypted_bucket" {
+  description = "Whether the OBS bucket should be encrypted."
+  type        = bool
+  default     = false
+}
+
 variable "permissions" {
   type        = list(string)
   description = "The scope of the access. Allowed values: read, write, list_buckets."
@@ -37,4 +43,12 @@ variable "kms_key_id" {
   description = "The ID of the KMS key."
   type        = string
   default     = null
+  validation {
+    condition     = !encrypted_bucket || kms_key_id != null
+    error_message = "The kms_key_id is required if encrypted_bucket is true."
+  }
+  validation {
+    condition     = !(kms_key_id != null && !encrypted_bucket)
+    error_message = "If you want to provide kms_key_id, set encrypted_bucket to true."
+  }
 }
