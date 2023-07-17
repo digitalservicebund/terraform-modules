@@ -44,11 +44,11 @@ variable "kms_key_id" {
   type        = string
   default     = null
   validation {
-    condition     = !encrypted_bucket || kms_key_id != null
+    condition     = !var.encrypted_bucket || var.kms_key_id != null
     error_message = "The kms_key_id is required if encrypted_bucket is true."
   }
   validation {
-    condition     = !(kms_key_id != null && !encrypted_bucket)
+    condition     = !(var.kms_key_id != null && !var.encrypted_bucket)
     error_message = "If you want to provide kms_key_id, set encrypted_bucket to true."
   }
 }
