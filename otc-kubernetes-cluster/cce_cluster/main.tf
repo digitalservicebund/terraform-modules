@@ -3,15 +3,6 @@ locals {
   # the correct value for a running cluster at:
   # https://<cluster-id>.cce.eu-de.otc.t-systems.com/api/v3/addontemplates.
   autoscaler_basic_blocks = {
-    "1.19.7" : {
-      "cceEndpoint" : "https://cce.eu-de.otc.t-systems.com",
-      "ecsEndpoint" : "https://ecs.eu-de.otc.t-systems.com",
-      "image_version" : "1.19.7",
-      "region" : "eu-de",
-      "swr_addr" : "100.125.7.25:20202",
-      "platform" : "linux-amd64",
-      "swr_user" : "hwofficial"
-    }
     "1.23.6" : {
       "cceEndpoint" : "https://cce.eu-de.otc.t-systems.com",
       "ecsEndpoint" : "https://ecs.eu-de.otc.t-systems.com",
@@ -19,6 +10,14 @@ locals {
       "region" : "eu-de",
       "swr_addr" : "100.125.7.25:20202",
       "swr_user" : "cce-addons"
+    }
+    "1.25.21" : {
+      "cceEndpoint": "https://cce.eu-de.otc.t-systems.com",
+      "ecsEndpoint": "https://ecs.eu-de.otc.t-systems.com",
+      "euleros_version": "2.2.5",
+      "region": "eu-de",
+      "swr_addr": "100.125.7.25:20202",
+      "swr_user": "hwofficial"
     }
   }
 }
