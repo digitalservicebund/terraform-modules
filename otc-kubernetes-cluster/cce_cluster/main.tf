@@ -15,10 +15,10 @@ locals {
     "1.25.21" : {
       "cceEndpoint": "https://cce.eu-de.otc.t-systems.com",
       "ecsEndpoint": "https://ecs.eu-de.otc.t-systems.com",
-      "euleros_version": "2.2.5",
+      "image_version": "1.25.21",
       "region": "eu-de",
       "swr_addr": "100.125.7.25:20202",
-      "swr_user": "hwofficial"
+      "swr_user": "cce-addons"
     }
   }
 }
