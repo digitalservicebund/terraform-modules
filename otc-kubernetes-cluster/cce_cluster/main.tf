@@ -2,6 +2,7 @@ locals {
   # The required values for add-ons change with each version. You can query the OTC API for
   # the correct value for a running cluster at:
   # https://<cluster-id>.cce.eu-de.otc.t-systems.com/api/v3/addontemplates.
+  # NB: remember to update the validation in variables.tf when adding a new version.
   autoscaler_basic_blocks = {
     "1.23.6" : {
       "cceEndpoint" : "https://cce.eu-de.otc.t-systems.com",
