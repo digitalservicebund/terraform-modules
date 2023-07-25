@@ -117,9 +117,9 @@ resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
 
   values {
     basic = {
-      "cceEndpoint" = "https://cce.${opentelekomcloud_cce_cluster_v3.cluster.region}.otc.t-systems.com"
-      "ecsEndpoint" = "https://ecs.${opentelekomcloud_cce_cluster_v3.cluster.region}.otc.t-systems.com"
-      "region"      = opentelekomcloud_cce_cluster_v3.cluster.region
+      "cceEndpoint" = "https://cce.${opentelekomcloud_cce_cluster_v3.this.region}.otc.t-systems.com"
+      "ecsEndpoint" = "https://ecs.${opentelekomcloud_cce_cluster_v3.this.region}.otc.t-systems.com"
+      "region"      = opentelekomcloud_cce_cluster_v3.this.region
       "swr_addr"    = data.opentelekomcloud_cce_addon_template_v3.autoscaler.swr_addr
       "swr_user"    = data.opentelekomcloud_cce_addon_template_v3.autoscaler.swr_user
     }
