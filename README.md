@@ -1,15 +1,5 @@
 # terraform-modules
 
-- cloudflare-record
-- deploy-key
-- hetzner-instance
-- otc-iam-user-with-obs-bucket-access
-- otc-kubernetes-cluster
-- otc-loadbalancer-dedicated
-- otc-loadbalancer-shared
-- otc-obs-bucket
-- otc-rds-database
-- read-outputs-from-obs
-- remote-state-obs
-- repo-environment
-- write-outputs-to-obs
+This repository contains a collection of Terraform modules we use in our infrastructure.
+
+When developing modules for the OpenTelekomCloud, this repository can serve as useful inspiration: https://github.com/iits-consulting/terraform-opentelekomcloud-project-factory/tree/master/modules
