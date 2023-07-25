@@ -111,8 +111,8 @@ resource "opentelekomcloud_compute_keypair_v2" "this" {
 }
 
 resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
-  template_name    = data.opentelekomcloud_cce_addon_template_v3.autoscaler[0].addon_name
-  template_version = data.opentelekomcloud_cce_addon_template_v3.autoscaler[0].addon_version
+  template_name    = data.opentelekomcloud_cce_addon_template_v3.autoscaler.addon_name
+  template_version = data.opentelekomcloud_cce_addon_template_v3.autoscaler.addon_version
   cluster_id       = opentelekomcloud_cce_cluster_v3.this.id
 
   values {
@@ -120,8 +120,8 @@ resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
       "cceEndpoint" = "https://cce.${opentelekomcloud_cce_cluster_v3.cluster.region}.otc.t-systems.com"
       "ecsEndpoint" = "https://ecs.${opentelekomcloud_cce_cluster_v3.cluster.region}.otc.t-systems.com"
       "region"      = opentelekomcloud_cce_cluster_v3.cluster.region
-      "swr_addr"    = data.opentelekomcloud_cce_addon_template_v3.autoscaler[0].swr_addr
-      "swr_user"    = data.opentelekomcloud_cce_addon_template_v3.autoscaler[0].swr_user
+      "swr_addr"    = data.opentelekomcloud_cce_addon_template_v3.autoscaler.swr_addr
+      "swr_user"    = data.opentelekomcloud_cce_addon_template_v3.autoscaler.swr_user
     }
 
     custom = {
