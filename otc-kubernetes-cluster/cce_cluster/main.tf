@@ -1,7 +1,11 @@
 locals {
   # The required values for add-ons change with each version. You can query the OTC API for
-  # the correct value for a running cluster at:
+  # values from running cluster at:
   # https://<cluster-id>.cce.eu-de.otc.t-systems.com/api/v3/addontemplates.
+  # However, they can occasionally be wrong. A more reliable way is to glean some of the values
+  # from the image used by an installed add-on in a (test) cluster:
+  # `kubectl -n kube-system get deploy/cluster-autoscaler -o json | jq '.spec.template.spec.containers[0].image`
+  # The returned value has the form "${swr_addr}/${swr_user}/autoscaler:${image_version}".
   # NB: remember to update the validation in variables.tf when adding a new version.
   autoscaler_basic_blocks = {
     "1.23.6" : {
