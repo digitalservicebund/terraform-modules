@@ -52,6 +52,11 @@ variable "autoscaler_addon_version" {
   type        = string
 }
 
+variable "npd_addon_version" {
+  description = "NPD add-on version"
+  type        = string
+}
+
 variable "vpc_id" {
   description = "Id of the vpc that should be used"
   default     = null

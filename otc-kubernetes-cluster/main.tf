@@ -17,6 +17,7 @@ module "cluster" {
   autoscaler_addon_version = var.autoscaler_addon_version
   high_availability        = var.high_availability
   node_pools               = var.node_pools
+  npd_addon_version        = var.npd_addon_version
 }
 
 module "dns" {
