@@ -11,6 +11,11 @@ data "opentelekomcloud_cce_addon_template_v3" "autoscaler" {
   addon_name    = "autoscaler"
 }
 
+data "opentelekomcloud_cce_addon_template_v3" "npd" {
+  addon_version = var.npd_addon_version
+  addon_name    = "npd"
+}
+
 resource "opentelekomcloud_vpc_eip_v1" "this" {
   publicip {
     type = "5_bgp"
@@ -138,6 +143,27 @@ resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
       "scaleUpUnscheduledPodEnabled" : true,
       "scaleUpUtilizationEnabled" : true,
       "unremovableNodeRecheckTimeout" : 5
+    }
+  }
+}
+
+resource "opentelekomcloud_cce_addon_v3" "npd" {
+  template_name    = data.opentelekomcloud_cce_addon_template_v3.npd.addon_name
+  template_version = data.opentelekomcloud_cce_addon_template_v3.npd.addon_version
+  cluster_id       = opentelekomcloud_cce_cluster_v3.this.id
+
+  values {
+    basic = {
+      "image_version" : data.opentelekomcloud_cce_addon_template_v3.npd.addon_version,
+      "swr_addr" : data.opentelekomcloud_cce_addon_template_v3.npd.swr_addr,
+      "swr_user" : data.opentelekomcloud_cce_addon_template_v3.npd.swr_user
+    }
+
+    custom = {
+      "feature_gates" : "",
+      "npc" : {
+        "enable" : true
+      }
     }
   }
 }
