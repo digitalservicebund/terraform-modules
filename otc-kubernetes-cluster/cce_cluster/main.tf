@@ -51,12 +51,6 @@ resource "opentelekomcloud_cce_cluster_v3" "this" {
     create = "60m"
     delete = "60m"
   }
-
-  lifecycle {
-    ignore_changes = [
-      installed_addons,
-    ]
-  }
 }
 
 resource "opentelekomcloud_cce_node_pool_v3" "this" {
@@ -94,20 +88,12 @@ resource "opentelekomcloud_cce_node_pool_v3" "this" {
   lifecycle {
     ignore_changes = [
       k8s_tags,
-      status,
     ]
   }
 }
 
 resource "opentelekomcloud_compute_keypair_v2" "this" {
   name = "${var.resource_group}-nodes"
-
-  lifecycle {
-    ignore_changes = [
-      private_key,
-      public_key,
-    ]
-  }
 }
 
 resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
