@@ -53,6 +53,17 @@ resource "opentelekomcloud_cce_cluster_v3" "this" {
   }
 }
 
+resource "random_id" "keypair_id" {
+  for_each    = var.node_pools
+  byte_length = 4
+}
+
+resource "opentelekomcloud_compute_keypair_v2" "this" {
+  for_each   = var.node_pools
+  name       = "${var.resource_group}-nodes-${each.key}-${random_id.keypair_id[each.key].hex}"
+  public_key = each.value.ssh_public_key
+}
+
 resource "opentelekomcloud_cce_node_pool_v3" "this" {
   for_each = var.node_pools
 
@@ -62,7 +73,7 @@ resource "opentelekomcloud_cce_node_pool_v3" "this" {
   flavor             = each.value.node_flavor
   os                 = "CentOS 7.7"
   availability_zone  = var.high_availability ? "random" : "eu-de-01"
-  key_pair           = opentelekomcloud_compute_keypair_v2.this.name
+  key_pair           = opentelekomcloud_compute_keypair_v2.this[each.key].name
   initial_node_count = each.value.node_count
 
   scale_enable             = true
@@ -90,10 +101,6 @@ resource "opentelekomcloud_cce_node_pool_v3" "this" {
       k8s_tags,
     ]
   }
-}
-
-resource "opentelekomcloud_compute_keypair_v2" "this" {
-  name = "${var.resource_group}-nodes"
 }
 
 resource "opentelekomcloud_cce_addon_v3" "autoscaler" {
