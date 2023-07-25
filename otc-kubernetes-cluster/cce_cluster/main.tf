@@ -159,11 +159,6 @@ resource "opentelekomcloud_cce_addon_v3" "npd" {
       "swr_user" : data.opentelekomcloud_cce_addon_template_v3.npd.swr_user
     }
 
-    custom = {
-      "feature_gates" : "",
-      "npc" : {
-        "enable" : true
-      }
-    }
+    custom = {}
   }
 }
