@@ -97,6 +97,15 @@ resource "opentelekomcloud_cce_node_pool_v3" "this" {
     volumetype = "SATA"
   }
 
+  dynamic "taints" {
+    for_each = lookup(each.value, "taints", [])
+    content {
+      key    = taints.value.key
+      value  = taints.value.value
+      effect = taints.value.effect
+    }
+  }
+
   user_tags = {
     resource_group = var.resource_group
   }

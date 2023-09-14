@@ -35,7 +35,8 @@ variable "node_pools" {
   - "node_count" (expected number of nodes in the node pool, must be <= max_node_count),
   - "min_node_count" (minimum number of nodes in the node pool),
   - "max_node_count" (maximum number of nodes in the node pool),
-  - "ssh_public_key" (SSH public key to inject into nodes).
+  - "ssh_public_key" (SSH public key to inject into nodes),
+  - "taints" (list of taints to apply to the nodes in the node pool, each with a key, value, and effect).
   EOF
   type = map(object({
     node_flavor    = string
@@ -43,6 +44,11 @@ variable "node_pools" {
     min_node_count = number
     max_node_count = number
     ssh_public_key = string
+    taints         = optional(list(object({
+      key    = string
+      value  = string
+      effect = string
+    })))
   }))
   validation {
     condition = alltrue([
