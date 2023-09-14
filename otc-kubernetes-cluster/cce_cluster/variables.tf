@@ -48,7 +48,7 @@ variable "node_pools" {
       key    = string
       value  = string
       effect = string
-    })))
+    })), [])
   }))
   validation {
     condition = alltrue([
