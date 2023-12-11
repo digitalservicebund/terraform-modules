@@ -3,7 +3,8 @@ locals {
 }
 
 resource "opentelekomcloud_identity_user_v3" "this" {
-  name = local.user_name
+  name      = local.user_name
+  pwd_reset = false
 }
 
 resource "opentelekomcloud_identity_credential_v3" "this" {
