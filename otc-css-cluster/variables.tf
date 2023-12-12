@@ -23,10 +23,16 @@ variable "flavor" {
   type        = string
 }
 
-variable "es_version" {
-  description = "Specifies the elasticsearch version. "
+variable "css_version" {
+  description = "Specifies the css version."
   type        = string
   default     = "7.10.2"
+}
+
+variable "css_number_of_nodes" {
+  description = "Specifies the number of nodes."
+  type        = number
+  default     = 1
 }
 
 variable "volume_type" {
@@ -35,7 +41,12 @@ variable "volume_type" {
   type        = string
 }
 
-variable "es_access_from_security_group_ids" {
+variable "css_access_from_security_group_ids" {
   description = "IDs of the security groups from which to allow access to the instance."
   type        = list(any)
+}
+
+variable "css_clustername" {
+  description = "Name of the Cluster"
+  type        = string
 }

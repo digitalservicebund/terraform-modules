@@ -3,10 +3,10 @@ resource "random_id" "this" {
 }
 
 resource "opentelekomcloud_css_cluster_v1" "this" {
-  name            = var.resource_group
-  expect_node_num = 1
+  name            = var.css_clustername
+  expect_node_num = var.css_number_of_nodes
   datastore {
-    version = var.es_version
+    version = var.css_version
   }
   node_config {
     flavor = var.flavor
@@ -25,11 +25,11 @@ resource "opentelekomcloud_css_cluster_v1" "this" {
 
 
 resource "opentelekomcloud_networking_secgroup_v2" "this" {
-  name = "${var.resource_group}-elasticsearch"
+  name = "${var.css_clustername}-css"
 }
 
 resource "opentelekomcloud_networking_secgroup_rule_v2" "this" {
-  for_each          = toset(var.es_access_from_security_group_ids)
+  for_each          = toset(var.css_access_from_security_group_ids)
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
