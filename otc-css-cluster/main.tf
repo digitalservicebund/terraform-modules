@@ -21,6 +21,10 @@ resource "opentelekomcloud_css_cluster_v1" "this" {
     }
     availability_zone = var.availability_zone
   }
+
+  tags = {
+    resource_group = var.resource_group
+  }
 }
 
 
