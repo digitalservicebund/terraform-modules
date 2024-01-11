@@ -46,6 +46,10 @@ resource "opentelekomcloud_cce_cluster_v3" "this" {
   container_network_type = "overlay_l2"
   multi_az               = var.high_availability
 
+  # Prevent cluster certificates to be stored in the state file!
+  ignore_certificate_users_data    = true
+  ignore_certificate_clusters_data = true
+
   vpc_id    = var.vpc_id
   subnet_id = var.subnet_id
 
