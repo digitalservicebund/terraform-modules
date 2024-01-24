@@ -8,6 +8,9 @@ resource "opentelekomcloud_css_cluster_v1" "this" {
   datastore {
     version = var.css_version
   }
+  enable_https = var.enable_https
+  enable_authority = var.enable_authority
+  admin_pass = var.admin_pass
   node_config {
     flavor = var.flavor
     network_info {

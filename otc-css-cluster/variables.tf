@@ -50,3 +50,20 @@ variable "css_clustername" {
   description = "Name of the Cluster"
   type        = string
 }
+
+variable "enable_https" {
+  description = "Whether communication encryption is performed on the cluster. "
+  type = bool
+  default = false
+}
+
+variable "enable_authority" {
+  description = "Whether to enable authentication."
+  type = bool
+  default = false
+}
+
+variable "admin_pass" {
+  description = "Password of the cluster user admin"
+  type = string
+}
