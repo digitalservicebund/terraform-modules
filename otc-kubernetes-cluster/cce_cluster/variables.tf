@@ -39,12 +39,13 @@ variable "node_pools" {
   - "taints" (list of taints to apply to the nodes in the node pool, each with a key, value, and effect).
   EOF
   type = map(object({
-    node_flavor    = string
-    node_count     = number
-    min_node_count = number
-    max_node_count = number
-    ssh_public_key = string
-    taints         = optional(list(object({
+    node_flavor     = string
+    node_count      = number
+    min_node_count  = number
+    max_node_count  = number
+    ssh_public_key  = string
+    encrypt_volumes = optional(bool, false)
+    taints = optional(list(object({
       key    = string
       value  = string
       effect = string

@@ -73,6 +73,13 @@ resource "opentelekomcloud_compute_keypair_v2" "this" {
   public_key = each.value.ssh_public_key
 }
 
+resource "random_id" "kms_key_suffix" {
+  byte_length = 4
+}
+resource "opentelekomcloud_kms_key_v1" "this" {
+  key_alias = "${var.resource_group}-nodepool-encryption-at-rest-${random_id.kms_key_suffix.hex}"
+}
+
 resource "opentelekomcloud_cce_node_pool_v3" "this" {
   for_each = var.node_pools
 
@@ -94,11 +101,13 @@ resource "opentelekomcloud_cce_node_pool_v3" "this" {
   root_volume {
     size       = 40
     volumetype = "SATA"
+    kms_id     = each.value.encrypt_volumes ? opentelekomcloud_kms_key_v1.this.id : null
   }
 
   data_volumes {
     size       = 100
     volumetype = "SATA"
+    kms_id     = each.value.encrypt_volumes ? opentelekomcloud_kms_key_v1.this.id : null
   }
 
   dynamic "taints" {
