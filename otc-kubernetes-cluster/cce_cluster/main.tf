@@ -101,13 +101,13 @@ resource "opentelekomcloud_cce_node_pool_v3" "this" {
   root_volume {
     size       = 40
     volumetype = "SATA"
-    kms_id     = each.value.encrypt_volumes ? opentelekomcloud_kms_key_v1.this.id : null
+    kms_id     = opentelekomcloud_kms_key_v1.this.id
   }
 
   data_volumes {
     size       = 100
     volumetype = "SATA"
-    kms_id     = each.value.encrypt_volumes ? opentelekomcloud_kms_key_v1.this.id : null
+    kms_id     = opentelekomcloud_kms_key_v1.this.id
   }
 
   dynamic "taints" {
