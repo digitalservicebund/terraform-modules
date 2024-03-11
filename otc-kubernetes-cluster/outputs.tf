@@ -1,3 +1,8 @@
+output "cluster_id" {
+  description = "The ID of the cluster."
+  value       = module.cluster.cluster_id
+}
+
 output "node_security_group_id" {
   description = "Security group in which nodes get placed."
   value       = module.cluster.node_security_group_id
