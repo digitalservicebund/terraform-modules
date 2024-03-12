@@ -45,6 +45,7 @@ resource "opentelekomcloud_cce_cluster_v3" "this" {
   flavor_id              = "cce.%{if var.high_availability}s2%{else}s1%{endif}.${var.cluster_size}"
   container_network_type = "overlay_l2"
   multi_az               = var.high_availability
+  delete_net             = var.delete_net
 
   # Prevent cluster certificates to be stored in the state file!
   ignore_certificate_users_data    = true

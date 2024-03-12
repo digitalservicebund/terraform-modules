@@ -72,3 +72,9 @@ variable "npd_addon_version" {
   description = "NPD add-on version"
   type        = string
 }
+
+variable "delete_net" {
+  description = "Whether to delete cluster Service/ingress-related resources, such as ELB when deleting the CCE cluster."
+  type        = bool
+  default     = false
+}
