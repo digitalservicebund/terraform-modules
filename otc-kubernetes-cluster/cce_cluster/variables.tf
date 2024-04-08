@@ -32,7 +32,8 @@ variable "node_pools" {
   description = <<EOF
   Map of node pools to create, with:
   - "node_flavor" (instance type for nodes in the node pool),
-  - "node_count" (expected number of nodes in the node pool, must be <= max_node_count),
+  - "node_os" (operating system for the nodes),
+  - "node_runtime" (container runtime, 'docker' or 'containerd'),
   - "min_node_count" (minimum number of nodes in the node pool),
   - "max_node_count" (maximum number of nodes in the node pool),
   - "ssh_public_key" (SSH public key to inject into nodes),
@@ -40,6 +41,8 @@ variable "node_pools" {
   EOF
   type = map(object({
     node_flavor    = string
+    node_os        = optional(string)
+    node_runtime   = optional(string)
     node_count     = number
     min_node_count = number
     max_node_count = number

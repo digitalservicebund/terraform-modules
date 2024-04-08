@@ -22,6 +22,8 @@ variable "node_pools" {
   description = <<EOF
   Map of node pools to create, with:
   - "node_flavor" (instance type for nodes in the node pool),
+  - "node_os" (operating system for the nodes),
+  - "node_runtime" (container runtime, 'docker' or 'containerd'),
   - "node_count" (expected number of nodes in the node pool, must be <= max_node_count),
   - "min_node_count" (minimum number of nodes in the node pool),
   - "max_node_count" (maximum number of nodes in the node pool),

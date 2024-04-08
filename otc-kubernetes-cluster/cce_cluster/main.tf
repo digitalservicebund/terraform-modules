@@ -91,7 +91,8 @@ resource "opentelekomcloud_cce_node_pool_v3" "this" {
 
   cluster_id         = opentelekomcloud_cce_cluster_v3.this.id
   flavor             = each.value.node_flavor
-  os                 = "CentOS 7.7"
+  os                 = each.value.node_os != "" ? each.value.node_os : "CentOS 7.7"
+  runtime            = each.value.node_runtime != "" ? each.value.node_runtime : "docker"
   availability_zone  = var.high_availability ? "random" : "eu-de-01"
   key_pair           = opentelekomcloud_compute_keypair_v2.this[each.key].name
   initial_node_count = each.value.node_count
