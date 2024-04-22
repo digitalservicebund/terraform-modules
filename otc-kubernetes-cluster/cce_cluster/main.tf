@@ -58,7 +58,7 @@ resource "opentelekomcloud_cce_cluster_v3" "this" {
   eip = opentelekomcloud_vpc_eip_v1.this.publicip[0].ip_address
 
   # Enable AOM by installing ICAgent on cluster creation.
-  annotations = { "cluster.install.addons.external/install" = "[{\"addonTemplateName\":\"icagent\"}]" }
+  annotations = var.install_ic_agent ? { "cluster.install.addons.external/install" = "[{\"addonTemplateName\":\"icagent\"}]" } : null
 
   timeouts {
     create = "60m"

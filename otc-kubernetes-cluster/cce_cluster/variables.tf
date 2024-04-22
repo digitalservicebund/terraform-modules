@@ -81,3 +81,9 @@ variable "delete_net" {
   type        = bool
   default     = false
 }
+
+variable "install_ic_agent" {
+  description = "Whether to install IC agent for AOM data collection."
+  type        = bool
+  default     = true
+}

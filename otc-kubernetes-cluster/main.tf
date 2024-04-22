@@ -17,6 +17,7 @@ module "cluster" {
   autoscaler_addon_version = var.autoscaler_addon_version
   high_availability        = var.high_availability
   delete_net               = var.delete_net
+  install_ic_agent         = var.install_ic_agent
   node_pools               = var.node_pools
   npd_addon_version        = var.npd_addon_version
 }
