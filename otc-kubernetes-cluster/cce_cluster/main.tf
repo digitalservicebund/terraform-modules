@@ -100,7 +100,7 @@ resource "opentelekomcloud_cce_node_pool_v3" "this" {
   scale_enable             = true
   min_node_count           = each.value.min_node_count
   max_node_count           = each.value.max_node_count
-  scale_down_cooldown_time = 100
+  scale_down_cooldown_time = 30
   priority                 = 1
 
   root_volume {
