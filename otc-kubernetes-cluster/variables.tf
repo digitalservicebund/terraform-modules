@@ -21,6 +21,7 @@ variable "high_availability" {
 variable "node_pools" {
   description = <<EOF
   Map of node pools to create, with:
+  - "availability_zone" (optional, if not set either "random" or "eu-de-01" depending on high_availability),
   - "node_flavor" (instance type for nodes in the node pool),
   - "node_os" (operating system for the nodes),
   - "node_runtime" (container runtime, 'docker' or 'containerd'),

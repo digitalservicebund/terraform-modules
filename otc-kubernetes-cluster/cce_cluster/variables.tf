@@ -31,6 +31,8 @@ variable "high_availability" {
 variable "node_pools" {
   description = <<EOF
   Map of node pools to create, with:
+  - "availability_zone" (optional, if not set either "random" or "eu-de-01" depending on high_availability),
+  - "node_flavor" (instance type for nodes in the node pool),
   - "node_flavor" (instance type for nodes in the node pool),
   - "node_os" (operating system for the nodes),
   - "node_runtime" (container runtime, 'docker' or 'containerd'),
@@ -40,13 +42,14 @@ variable "node_pools" {
   - "taints" (list of taints to apply to the nodes in the node pool, each with a key, value, and effect).
   EOF
   type = map(object({
-    node_flavor    = string
-    node_os        = optional(string)
-    node_runtime   = optional(string)
-    node_count     = number
-    min_node_count = number
-    max_node_count = number
-    ssh_public_key = string
+    availability_zone = optional(string)
+    node_flavor       = string
+    node_os           = optional(string)
+    node_runtime      = optional(string)
+    node_count        = number
+    min_node_count    = number
+    max_node_count    = number
+    ssh_public_key    = string
     taints = optional(list(object({
       key    = string
       value  = string
