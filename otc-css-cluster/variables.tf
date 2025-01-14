@@ -67,3 +67,9 @@ variable "admin_pass" {
   description = "Password of the cluster user admin"
   type = string
 }
+
+variable "volume_size" {
+  description = "Specifies the volume size."
+  default     = 40
+  type = number
+}
