@@ -20,7 +20,7 @@ resource "opentelekomcloud_css_cluster_v1" "this" {
     }
     volume {
       volume_type = var.volume_type
-      size        = 40
+      size        = var.volume_size
     }
     availability_zone = var.availability_zone
   }
