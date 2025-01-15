@@ -70,6 +70,6 @@ variable "admin_pass" {
 
 variable "volume_size" {
   description = "Specifies the volume size."
-  default     = 40
+  default = 40
   type = number
 }
