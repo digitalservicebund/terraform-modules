@@ -12,3 +12,9 @@ variable "versioning_enabled" {
   type        = bool
   default     = false
 }
+
+variable "user_domain_names" {
+  description = "Specifies the user domain names"
+  type        = set(string)
+  default     = []
+}
