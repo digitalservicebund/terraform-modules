@@ -11,7 +11,7 @@ resource "github_actions_environment_secret" "private_deploy_key" {
 
 resource "github_repository_deploy_key" "public_deploy_key" {
   repository = var.infra_repository
-  title      = var.environment
+  title      = "${var.deploying_repository}: ${var.environment}"
   key        = tls_private_key.deploy_key.public_key_openssh
   read_only  = "false"
 }
