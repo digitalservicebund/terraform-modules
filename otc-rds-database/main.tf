@@ -47,6 +47,7 @@ resource "opentelekomcloud_rds_instance_v3" "this" {
   backup_strategy {
     start_time = "03:00-04:00"
     keep_days  = var.backup_keep_days
+    period     = "1,2,3,4,5,6,7"
   }
 
   tags = {
