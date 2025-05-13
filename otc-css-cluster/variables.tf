@@ -53,23 +53,23 @@ variable "css_clustername" {
 
 variable "enable_https" {
   description = "Whether communication encryption is performed on the cluster. "
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "enable_authority" {
   description = "Whether to enable authentication."
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "admin_pass" {
   description = "Password of the cluster user admin"
-  type = string
+  type        = string
 }
 
 variable "volume_size" {
   description = "Specifies the volume size."
-  default = 40
-  type = number
+  default     = 40
+  type        = number
 }

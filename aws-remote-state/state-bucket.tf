@@ -10,10 +10,6 @@ resource "aws_s3_bucket" "terraform_state_bucket" {
   bucket_prefix = "terraform-remote-state-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
 
   tags = var.tags
-
-  lifecycle {
-    prevent_destroy = false
-  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "bootstrap_s3_bucket_encryption" {
@@ -22,7 +18,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bootstrap_s3_buck
   rule {
     apply_server_side_encryption_by_default {
       kms_master_key_id = aws_kms_key.terraform_s3_bucket_kms_key.arn
-      sse_algorithm = "aws:kms"
+      sse_algorithm     = "aws:kms"
     }
     bucket_key_enabled = true
   }

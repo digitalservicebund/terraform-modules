@@ -10,8 +10,4 @@ resource "aws_dynamodb_table" "terraform_lock_table" {
   }
 
   tags = var.tags
-
-  lifecycle {
-    prevent_destroy = false
-  }
 }
