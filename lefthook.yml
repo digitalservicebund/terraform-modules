@@ -1,0 +1,5 @@
+pre-commit:
+  commands:
+    terraform-format-check:
+      run: terraform fmt -check {staged_files}
+      glob: "*.tf"
