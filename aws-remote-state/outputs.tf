@@ -1,6 +1,5 @@
 output "backend_tfile" {
   value       = <<-EOT
-cat <<EOF > backend.tf
 terraform {
   backend "s3" {
     bucket         = "${aws_s3_bucket.terraform_state_bucket.bucket}"
@@ -11,7 +10,6 @@ terraform {
     encrypt        = true
   }
 }
-EOF
     EOT
   description = "The content of the backend.tf file that should be created to use this remote state"
 }
