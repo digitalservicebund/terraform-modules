@@ -7,7 +7,7 @@ resource "aws_kms_key" "terraform_s3_bucket_kms_key" {
 }
 
 resource "aws_s3_bucket" "terraform_state_bucket" {
-  bucket_prefix = "terraform-remote-state-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
+  bucket_prefix = "tf-state-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
 
   tags = var.tags
 }
