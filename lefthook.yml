@@ -1,0 +1,8 @@
+pre-commit:
+  commands:
+    terraform-format-check:
+      run: terraform fmt -check {staged_files}
+      glob: "*.tf"
+    prettier-format-check:
+      run: npx --yes prettier --check .
+      glob: "*.{js,jsx,ts,tsx,json,css,scss,html,yaml,yml}"

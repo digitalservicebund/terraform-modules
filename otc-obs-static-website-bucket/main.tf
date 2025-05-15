@@ -1,7 +1,7 @@
 resource "opentelekomcloud_obs_bucket" "this" {
-  bucket = var.bucket_name
-  acl    = "public-read"
-  versioning = var.versioning_enabled
+  bucket            = var.bucket_name
+  acl               = "public-read"
+  versioning        = var.versioning_enabled
   user_domain_names = var.user_domain_names
 
   website {
