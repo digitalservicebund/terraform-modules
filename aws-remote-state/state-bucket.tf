@@ -7,7 +7,8 @@ resource "aws_kms_key" "terraform_s3_bucket_kms_key" {
 }
 
 resource "aws_s3_bucket" "terraform_state_bucket" {
-  bucket_prefix = "tf-state-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
+  bucket_prefix = var.state_bucket_name == null ? "tf-state-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}" : null
+  bucket        = var.state_bucket_name
 
   tags = var.tags
 }
