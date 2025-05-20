@@ -6,9 +6,18 @@ resource "aws_iam_role" "terraform_execution" {
 data "aws_iam_policy_document" "self_control" {
   # Deny updating itself
   statement {
-    sid     = "SelfControl"
-    effect  = "Deny"
-    actions = ["*"]
+    sid    = "SelfControl"
+    effect = "Deny"
+    actions = [
+      "iam:Create*",
+      "iam:Delete*",
+      "iam:Update*",
+      "iam:Put*",
+      "iam:Add*",
+      "iam:Remove*",
+      "iam:Attach*",
+      "iam:Detach*"
+    ]
     resources = [
       aws_iam_role.terraform_execution.arn,
       "${aws_iam_role.terraform_execution.arn}:*",
