@@ -106,13 +106,13 @@ resource "opentelekomcloud_cce_node_pool_v3" "this" {
 
   root_volume {
     size       = 40
-    volumetype = "SATA"
+    volumetype = each.value.disk_type != "" && each.value.disk_type != null ? each.value.disk_type : "SATA"
     kms_id     = opentelekomcloud_kms_key_v1.this.id
   }
 
   data_volumes {
     size       = 100
-    volumetype = "SATA"
+    volumetype = each.value.disk_type != "" && each.value.disk_type != null ? each.value.disk_type : "SATA"
     kms_id     = opentelekomcloud_kms_key_v1.this.id
   }
 
