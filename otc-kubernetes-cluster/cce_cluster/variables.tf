@@ -39,6 +39,7 @@ variable "node_pools" {
   - "min_node_count" (minimum number of nodes in the node pool),
   - "max_node_count" (maximum number of nodes in the node pool),
   - "ssh_public_key" (SSH public key to inject into nodes),
+  - "disk_type" (Disk type for the nodes, e.g., "SAS", "SSD", "GPSSD", "ESSD"),
   - "taints" (list of taints to apply to the nodes in the node pool, each with a key, value, and effect).
   EOF
   type = map(object({
@@ -50,6 +51,7 @@ variable "node_pools" {
     min_node_count    = number
     max_node_count    = number
     ssh_public_key    = string
+    disk_type         = optional(string)
     taints = optional(list(object({
       key    = string
       value  = string
