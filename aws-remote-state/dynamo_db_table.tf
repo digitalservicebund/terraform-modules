@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "terraform_lock_table" {
-  name     = "terraform-state-lock"
+  name     = var.dynamo_db_table_name
   hash_key = "LockID"
 
   billing_mode = "PAY_PER_REQUEST"
