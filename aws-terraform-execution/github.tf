@@ -8,7 +8,7 @@ resource "aws_iam_openid_connect_provider" "github_oidc_provider" {
   thumbprint_list = ["ffffffffffffffffffffffffffffffffffffffff"]
 }
 
-data "aws_iam_policy_document" "github_trust_policy" {
+data "aws_iam_policy_document" "trust_policy" {
   # Trust policy to allow the role terraform-execution to be assumed by the GitHub Actions OIDC provider
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -29,5 +29,17 @@ data "aws_iam_policy_document" "github_trust_policy" {
       values   = ["repo:${var.github_repository_name}:*"]
       variable = "token.actions.githubusercontent.com:sub"
     }
+  }
+  statement {
+    effect = "Allow"
+
+    principals {
+      type = "AWS"
+      identifiers = [
+        aws_iam_role.terraform_execution.arn,
+        var.sso_role_arn
+      ]
+    }
+    actions = ["sts:AssumeRole"]
   }
 }

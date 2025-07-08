@@ -1,6 +1,6 @@
 resource "aws_iam_role" "terraform_execution" {
   name               = "terraform-execution"
-  assume_role_policy = data.aws_iam_policy_document.github_trust_policy.json
+  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
 }
 
 data "aws_iam_policy_document" "self_control" {
