@@ -1,7 +1,30 @@
 resource "aws_iam_role" "terraform_execution" {
   name               = "terraform-execution"
-  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
+  assume_role_policy = data.aws_iam_policy_document.combined_trust_policy.json
 }
+
+data "aws_iam_policy_document" "trust_policy" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/terraform-execution",
+        var.sso_role_arn
+      ]
+    }
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+data "aws_iam_policy_document" "combined_trust_policy" {
+  source_policy_documents = [
+    data.aws_iam_policy_document.github_trust_policy.json,
+    data.aws_iam_policy_document.trust_policy.json,
+  ]
+}
+
 
 data "aws_iam_policy_document" "self_control" {
   # Deny updating itself
