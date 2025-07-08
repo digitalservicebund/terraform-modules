@@ -8,6 +8,8 @@ resource "aws_iam_openid_connect_provider" "github_oidc_provider" {
   thumbprint_list = ["ffffffffffffffffffffffffffffffffffffffff"]
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "trust_policy" {
   # Trust policy to allow the role terraform-execution to be assumed by the GitHub Actions OIDC provider
   statement {
@@ -36,7 +38,7 @@ data "aws_iam_policy_document" "trust_policy" {
     principals {
       type = "AWS"
       identifiers = [
-        aws_iam_role.terraform_execution.arn,
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/terraform-execution",
         var.sso_role_arn
       ]
     }
