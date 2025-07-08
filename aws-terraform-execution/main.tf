@@ -5,17 +5,34 @@ resource "aws_iam_role" "terraform_execution" {
 
 data "aws_iam_policy_document" "trust_policy" {
   statement {
+    sid    = "SelfRoleAssumption"
     effect = "Allow"
 
     principals {
       type = "AWS"
       identifiers = [
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/terraform-execution",
-        var.sso_role_arn
       ]
     }
     actions = ["sts:AssumeRole"]
   }
+
+  dynamic "statement" {
+    for_each = var.sso_role_arn != null ? [1] : []
+    content {
+      effect = "Allow"
+
+      principals {
+        type = "AWS"
+        identifiers = [
+          var.sso_role_arn
+        ]
+      }
+      actions = ["sts:AssumeRole"]
+    }
+  }
+
+
 }
 
 data "aws_iam_policy_document" "combined_trust_policy" {
