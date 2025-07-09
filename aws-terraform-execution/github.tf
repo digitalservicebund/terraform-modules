@@ -8,6 +8,8 @@ resource "aws_iam_openid_connect_provider" "github_oidc_provider" {
   thumbprint_list = ["ffffffffffffffffffffffffffffffffffffffff"]
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "github_trust_policy" {
   # Trust policy to allow the role terraform-execution to be assumed by the GitHub Actions OIDC provider
   statement {

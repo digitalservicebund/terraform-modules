@@ -7,3 +7,9 @@ variable "terraform_execution_policy" {
   type        = string
   description = "IAM policy to execute terraform in json format"
 }
+
+variable "sso_role_arn" {
+  type        = string
+  default     = null
+  description = "The ARN of the AWS SSO role that should be allowed to assume this role."
+}
