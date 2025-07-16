@@ -6,7 +6,7 @@ Creates an encrypted S3 Bucket and a DynamoDB Table to store your terraform remo
 
 ```hcl
 module "terraform_backend" {
-  source            = "github.com/digitalservicebund/terraform-modules//aws-remote-state?ref=2b28a10d66261ca8f6b6663bc2356aea49ed5040"
+  source = "github.com/digitalservicebund/terraform-modules//aws-remote-state?ref=2b28a10d66261ca8f6b6663bc2356aea49ed5040"
 }
 
 
