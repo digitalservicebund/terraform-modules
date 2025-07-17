@@ -1,13 +1,17 @@
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
+locals {
+  state_bucket_name = var.state_bucket_name == null ? "tf-state-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.region}" : var.state_bucket_name
+}
+
 resource "aws_kms_key" "terraform_s3_bucket_kms_key" {
   description             = "This key is used to encrypt bucket objects in ${local.state_bucket_name}."
   deletion_window_in_days = 10
 }
 
 resource "aws_s3_bucket" "terraform_state_bucket" {
-  bucket_prefix = var.state_bucket_name == null ? "tf-state-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}" : null
+  bucket_prefix = var.state_bucket_name == null ? local.state_bucket_name : null
   bucket        = var.state_bucket_name
 
   tags = var.tags
