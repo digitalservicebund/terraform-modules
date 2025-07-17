@@ -13,3 +13,9 @@ variable "sso_role_arn" {
   default     = null
   description = "The ARN of the AWS SSO role that should be allowed to assume this role."
 }
+
+variable "role_name" {
+  type        = string
+  default     = "terraform-execution"
+  description = "Name of the IAM role that is used to execute terraform in Github Actions."
+}

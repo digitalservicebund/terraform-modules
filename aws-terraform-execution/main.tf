@@ -1,5 +1,5 @@
 resource "aws_iam_role" "terraform_execution" {
-  name               = "terraform-execution"
+  name               = var.role_name
   assume_role_policy = data.aws_iam_policy_document.combined_trust_policy.json
 }
 

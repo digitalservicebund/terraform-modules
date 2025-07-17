@@ -2,7 +2,7 @@ data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
 resource "aws_kms_key" "terraform_s3_bucket_kms_key" {
-  description             = "This key is used to encrypt bucket objects"
+  description             = "This key is used to encrypt bucket objects in ${local.state_bucket_name}."
   deletion_window_in_days = 10
 }
 
