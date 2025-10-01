@@ -29,6 +29,12 @@ variable "css_version" {
   default     = "7.10.2"
 }
 
+variable "css_type" {
+  description = "Specifies the css type."
+  type        = string
+  default     = "elasticsearch"
+}
+
 variable "css_number_of_nodes" {
   description = "Specifies the number of nodes."
   type        = number
