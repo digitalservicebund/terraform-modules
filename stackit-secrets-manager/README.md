@@ -8,6 +8,16 @@ module "secrets_manager" {
   project_id = module.env.project_id
   name       = "digitalcheck-secrets"
 }
+
+provider "vault" {
+  address          = "https://prod.sm.eu01.stackit.cloud"
+  skip_child_token = true
+
+  auth_login_userpass {
+    username = module.secrets_manager.terraform_username
+    password = module.secrets_manager.terraform_password
+  }
+}
 ```
 
 <!-- BEGIN_TF_DOCS -->
