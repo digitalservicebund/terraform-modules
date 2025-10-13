@@ -7,7 +7,7 @@ resource "opentelekomcloud_css_cluster_v1" "this" {
   expect_node_num = var.css_number_of_nodes
   datastore {
     version = var.css_version
-    type = var.css_type
+    type    = var.css_type
   }
   enable_https     = var.enable_https
   enable_authority = var.enable_authority
