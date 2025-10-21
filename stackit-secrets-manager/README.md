@@ -1,6 +1,10 @@
 # StackIT Secrets Manager Module
 
-This module creates a STACKIT Secrets Manager in your project with credentials for terraform and external secrets operator.
+This module creates a STACKIT Secrets Manager in your project with credentials for terraform and external secrets
+operator.
+
+The module also outputs a Secret Store kubernetes manifest and a Secret manifest that can be used to set up External
+Secrets Operator to fetch secrets from the created Secrets Manager.
 
 ## Example
 
@@ -18,6 +22,18 @@ provider "vault" {
   auth_login_userpass {
     username = module.secrets_manager.terraform_username
     password = module.secrets_manager.terraform_password
+  }
+}
+
+
+# [OPTIONAL] Write the Secret Store manifest to a file
+resource "null_resource" "secret_store_manifest" {
+  provisioner "local-exec" {
+    command = <<-EOT
+cat <<EOF > ../path/to/external-secret-secret-store-manifest.yaml
+${module.secrets_manager.external_secrets_secret_store_manifest}
+EOF
+    EOT
   }
 }
 ```
