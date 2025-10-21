@@ -13,3 +13,9 @@ variable "max_versions" {
   default     = 3
   description = "Specifies how many previous secret versions are retained."
 }
+
+variable "kubernetes_namespace" {
+  description = "The Kubernetes namespace where you want to create the SecretStore manifest for External Secrets Operator."
+  type        = string
+  default     = "[replace with your namespace]"
+}

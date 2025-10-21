@@ -22,3 +22,41 @@ output "terraform_password" {
   sensitive   = true
   description = "Password to be used by terraform."
 }
+
+output "external_secrets_secret_store_manifest" {
+  value = <<EOF
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: secret-store
+  namespace: ${var.kubernetes_namespace}
+spec:
+  provider:
+    vault:
+      server: https://prod.sm.eu01.stackit.cloud
+      path: ${stackit_secretsmanager_instance.this.instance_id}
+      version: "v2"
+      auth:
+        userPass:
+          path: "userpass"
+          username: ${stackit_secretsmanager_user.external_secrets.username}
+          secretRef:
+            name: secrets-manager-password
+            key: password
+EOF
+}
+
+output "external_secrets_secret_manifest" {
+  sensitive = true
+  value     = <<EOF
+# DO NOT COMMIT THIS! USE KUBESEAL TO CREATE A SEALED SECRET INSTEAD
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secrets-manager-password
+  namespace: ${var.kubernetes_namespace}
+type: Opaque
+stringData:
+  password: ${stackit_secretsmanager_user.external_secrets.password}
+EOF
+}
