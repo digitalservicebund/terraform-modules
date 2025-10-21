@@ -25,12 +25,14 @@ module "database" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >1.10.0 |
 | <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.65.0 |
+| <a name="requirement_vault"></a> [vault](#requirement\_vault) | >=5.3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_stackit"></a> [stackit](#provider\_stackit) | 0.68.0 |
+| <a name="provider_vault"></a> [vault](#provider\_vault) | 5.3.0 |
 
 ## Resources
 
@@ -39,6 +41,7 @@ module "database" {
 | [stackit_postgresflex_database.database](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_database) | resource |
 | [stackit_postgresflex_instance.this](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_instance) | resource |
 | [stackit_postgresflex_user.user](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_user) | resource |
+| [vault_kv_secret_v2.postgres_credentials](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/kv_secret_v2) | resource |
 
 ## Inputs
 
@@ -50,16 +53,21 @@ module "database" {
 | <a name="input_disk_size"></a> [disk\_size](#input\_disk\_size) | Size of the instance disk volume. Its value range is from 5 GB to 4000 GB. | `number` | n/a | yes |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | Specifies the storage performance class. e.g. premium-perf6-stackit | `string` | `"premium-perf6-stackit"` | no |
 | <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | Specifies the postgres version. | `string` | `"17"` | no |
+| <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `"[your-namespace]"` | no |
+| <a name="input_manage_user_password"></a> [manage\_user\_password](#input\_manage\_user\_password) | Set true to add the user password into the STACKIT Secrets Manager. | `bool` | `true` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Specifies the memory (RAM) specs of the instance in GB. Available Options: 4, 8, 16, 32 & 128 | `number` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | Specifies the name of the Postgres instance. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the STACKIT project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_replicas"></a> [replicas](#input\_replicas) | Number of read replicas for the instance. | `number` | `1` | no |
+| <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_user\_password is true. | `string` | `""` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | <a name="output_address"></a> [address](#output\_address) | Database host address |
-| <a name="output_password"></a> [password](#output\_password) | Database password |
+| <a name="output_external_secret_manifest"></a> [external\_secret\_manifest](#output\_external\_secret\_manifest) | Kubernetes External Secret manifest to fetch the database credentials from STACKIT Secrets Manager |
+| <a name="output_password"></a> [password](#output\_password) | Database password. This will be emtpy if the password is managed in STACKIT Secrets Manager. |
+| <a name="output_secret_manager_secret_name"></a> [secret\_manager\_secret\_name](#output\_secret\_manager\_secret\_name) | Name of the secret in STACKIT Secrets Manager where the database credentials are stored |
 | <a name="output_username"></a> [username](#output\_username) | Database username |
 <!-- END_TF_DOCS -->

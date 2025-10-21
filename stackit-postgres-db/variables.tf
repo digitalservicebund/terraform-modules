@@ -55,3 +55,21 @@ variable "acls" {
   description = "List of ACL IDs to associate with the database instance. This should be the cluster Egress IP Range only!"
   type        = list(string)
 }
+
+variable "manage_user_password" {
+  description = "Set true to add the user password into the STACKIT Secrets Manager."
+  type        = bool
+  default     = true
+}
+
+variable "secret_manager_instance_id" {
+  description = "Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage_user_password is true."
+  type        = string
+  default     = ""
+}
+
+variable "kubernetes_namespace" {
+  description = "Kubernetes namespace where the External Secret manifest will be applied."
+  type        = string
+  default     = "[your-namespace]"
+}
