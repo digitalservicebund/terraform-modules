@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        terraform_module: ["stackit-s3-bucket", "stackit-state-bucket"]
+        terraform_module: ["stackit-object-storage", "stackit-state-bucket"]
     steps:
       - uses: actions/checkout@v5
       - name: "Install Terraform CLI"
@@ -41,3 +41,20 @@ jobs:
       - name: Terraform Test
         run: terraform test
         working-directory: ${{ matrix.terraform_module }}
+
+  terraform-docs:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        terraform_module: ["stackit-object-storage", "stackit-state-bucket"]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check and update terraform docs
+        uses: terraform-docs/gh-actions@v1.4.1
+        with:
+          working-dir: ${{ matrix.terraform_module }}
+          output-file: README.md
+          output-method: inject
+          args: "--hide-empty=true"
+#          git-push: "true"
