@@ -1,11 +1,12 @@
 output "access_key" {
   description = "Access key id to access the backend bucket. Export this value as AWS_ACCESS_KEY_ID to access the bucket."
-  value       = stackit_objectstorage_credential.state_bucket_credential.access_key
+  value       = module.object_storage.credentials["default"].access_key
+  sensitive   = true
 }
 
 output "secret_access_key" {
   description = "Secret access key to access the backend bucket. Export this value as AWS_SECRET_ACCESS_KEY to access the bucket."
-  value       = stackit_objectstorage_credential.state_bucket_credential.secret_access_key
+  value       = module.object_storage.credentials["default"].secret_access_key
   sensitive   = true
 }
 
@@ -14,7 +15,7 @@ output "backend_file" {
   value       = <<-EOT
 terraform {
   backend "s3" {
-    bucket       = "${stackit_objectstorage_bucket.state_bucket.name}"
+    bucket       = "${module.object_storage.bucket_name}"
     key          = "tfstate-backend"
     use_lockfile = true
     endpoints = {
@@ -34,7 +35,7 @@ output "envrc_file" {
   description = "Content of the .envrc file to set environment variables for accessing the backend bucket."
   sensitive   = true
   value       = <<-EOT
-export AWS_ACCESS_KEY_ID="${stackit_objectstorage_credential.state_bucket_credential.access_key}"
-export AWS_SECRET_ACCESS_KEY="${stackit_objectstorage_credential.state_bucket_credential.secret_access_key}"
+export AWS_ACCESS_KEY_ID="${module.object_storage.credentials["default"].access_key}"
+export AWS_SECRET_ACCESS_KEY="${module.object_storage.credentials["default"].secret_access_key}"
   EOT
 }

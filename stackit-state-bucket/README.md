@@ -1,13 +1,16 @@
 # StackIT Terraform State Backend Module
+
 This module creates a terraform state backend on StackIT using Object Storage.
 
 ## Usage
+
 1. Execute the module in your terraform configuration
-2. The content  of a `backend.tf` file will be available as output from the module
+2. The content of a `backend.tf` file will be available as output from the module
 3. The credentials for this backend will be available as outputs from the module
-4. [Optional] The content of a `.envrc` file is also available as output and contains the credentials for the bucket 
+4. [Optional] The content of a `.envrc` file is also available as output and contains the credentials for the bucket
 
 ## Example
+
 ```hcl
 module "backend_bucket" {
   source            = "github.com/digitalservicebund/terraform-modules//stackit-state-bucket?ref=[sha of the commit you want to use]"
@@ -24,19 +27,11 @@ module "backend_bucket" {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >1.10.0 |
 | <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.65.0 |
 
-## Providers
+## Modules
 
-| Name | Version |
-|------|---------|
-| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | >=0.65.0 |
-
-## Resources
-
-| Name | Type |
-|------|------|
-| [stackit_objectstorage_bucket.state_bucket](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket) | resource |
-| [stackit_objectstorage_credential.state_bucket_credential](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credential) | resource |
-| [stackit_objectstorage_credentials_group.state_bucket_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credentials_group) | resource |
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_object_storage"></a> [object\_storage](#module\_object\_storage) | ../stackit-object-storage | n/a |
 
 ## Inputs
 
