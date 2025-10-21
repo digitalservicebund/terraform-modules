@@ -3,6 +3,9 @@
 This module creates a managed Postgres database on STACKIT. Creates a database server instance, a database with the same
 name and a user with the same username that is also the owner of the database.
 
+This module can optionally store the database user password in the STACKIT Secrets Manager and provides a Kubernetes
+External Secret manifest to fetch the credentials from there in the output. See documentation below for more details.
+
 ## Example
 
 ```hcl
@@ -15,6 +18,17 @@ module "database" {
   engine_version = "17"
   disk_size      = 5
   acls           = module.env.cluster_egress_range
+}
+
+# [OPTIONAL] Write the External Secret manifest to a file
+resource "null_resource" "external_secret" {
+  provisioner "local-exec" {
+    command = <<-EOT
+cat <<EOF > ../path/to/external-secret-manifest.yaml
+${module.database.external_secret_manifest}
+EOF
+    EOT
+  }
 }
 ```
 
