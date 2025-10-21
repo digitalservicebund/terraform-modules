@@ -44,6 +44,7 @@ module "backend_bucket" {
 
 | Name | Description |
 |------|-------------|
+| <a name="output_access_key"></a> [access\_key](#output\_access\_key) | Access key id to access the backend bucket. Export this value as AWS\_ACCESS\_KEY\_ID to access the bucket. |
 | <a name="output_backend_file"></a> [backend\_file](#output\_backend\_file) | Content of the backend configuration file for Terraform. |
 | <a name="output_envrc_file"></a> [envrc\_file](#output\_envrc\_file) | Content of the .envrc file to set environment variables for accessing the backend bucket. |
 | <a name="output_secret_access_key"></a> [secret\_access\_key](#output\_secret\_access\_key) | Secret access key to access the backend bucket. Export this value as AWS\_SECRET\_ACCESS\_KEY to access the bucket. |
