@@ -59,5 +59,4 @@ jobs:
           output-file: README.md
           output-method: inject
           args: "--hide-empty=true"
-          git-push: true
-          git-push-sign-off: true
+          fail-on-diff: true
