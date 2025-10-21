@@ -11,9 +11,9 @@ module "database" {
   name       = "my-database"
   cpu        = 2
   memory     = 4
-  version    = "17"
+  engine_version    = "17"
   disk_size  = 5
-  acl        = module.env.cluster_egress_range
+  acls        = module.env.cluster_egress_range
 }
 ```
 
@@ -59,4 +59,5 @@ module "database" {
 |------|-------------|
 | <a name="output_address"></a> [address](#output\_address) | Database host address |
 | <a name="output_password"></a> [password](#output\_password) | Database password |
+| <a name="output_username"></a> [username](#output\_username) | Database username |
 <!-- END_TF_DOCS -->

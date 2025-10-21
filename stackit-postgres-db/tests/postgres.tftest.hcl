@@ -74,4 +74,9 @@ run "basic_instance_creation" {
     condition     = nonsensitive(output.password) == "password"
     error_message = "The password should be available as output"
   }
+
+  assert {
+    condition     = output.username == "test-postgres"
+    error_message = "The username should be similar to the instance name"
+  }
 }

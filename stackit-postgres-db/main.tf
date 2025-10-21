@@ -19,5 +19,5 @@ resource "stackit_postgresflex_user" "user" {
   project_id  = var.project_id
   instance_id = stackit_postgresflex_instance.this.instance_id
   roles       = ["login"]
-  username    = "admin"
+  username    = var.name
 }
