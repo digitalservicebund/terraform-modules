@@ -1,4 +1,4 @@
-# StackIT S3 Bucket Module
+# StackIT Object Storage Module
 
 This module creates a STACKIT object storage bucket and credentials to access it.
 
@@ -6,7 +6,7 @@ This module creates a STACKIT object storage bucket and credentials to access it
 
 ```hcl
 module "object_storage_bucket" {
-  source            = "github.com/digitalservicebund/terraform-modules//stackit-s3-bucket?ref=[sha of the commit you want to use]"
+  source            = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
   project_id        = "[stackit project id]"
   bucket_name       = "[my-bucket-name]"
 }
