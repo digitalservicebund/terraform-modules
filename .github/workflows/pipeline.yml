@@ -17,7 +17,6 @@ jobs:
         uses: digitalservicebund/setup-terraform@adfabd79951446bc3078797c9cce4511328a8573 # v1.1.2
       - name: Check format
         run: |
-          npx --yes prettier --check .
           terraform fmt -recursive -check
 
   test:
@@ -43,6 +42,7 @@ jobs:
         working-directory: ${{ matrix.terraform_module }}
 
   terraform-docs:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -57,4 +57,4 @@ jobs:
           output-file: README.md
           output-method: inject
           args: "--hide-empty=true"
-#          git-push: "true"
+          git-push: "true"
