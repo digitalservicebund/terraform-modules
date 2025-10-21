@@ -15,6 +15,13 @@ resource "stackit_postgresflex_instance" "this" {
   version = var.engine_version
 }
 
+resource "stackit_postgresflex_database" "database" {
+  project_id  = var.project_id
+  instance_id = stackit_postgresflex_instance.this.instance_id
+  name        = var.name
+  owner       = stackit_postgresflex_user.user.username
+}
+
 resource "stackit_postgresflex_user" "user" {
   project_id  = var.project_id
   instance_id = stackit_postgresflex_instance.this.instance_id

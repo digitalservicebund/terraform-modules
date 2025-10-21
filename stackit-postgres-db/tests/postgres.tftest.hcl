@@ -10,6 +10,9 @@ mock_provider "stackit" {
       password = "password"
     }
   }
+
+  mock_resource "stackit_postgresflex_database" {
+  }
 }
 
 # Test 1: Basic instance creation with required variables
@@ -78,5 +81,15 @@ run "basic_instance_creation" {
   assert {
     condition     = output.username == "test-postgres"
     error_message = "The username should be similar to the instance name"
+  }
+
+  assert {
+    condition     = stackit_postgresflex_database.database.name == "test-postgres"
+    error_message = "The database name should be similar to the instance name"
+  }
+
+  assert {
+    condition     = stackit_postgresflex_database.database.owner == stackit_postgresflex_user.user.username
+    error_message = "The database owner should be the user created by this module "
   }
 }
