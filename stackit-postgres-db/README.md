@@ -1,19 +1,20 @@
 # STACKIT Postgres Database Module
 
-This module creates a managed Postgres database on STACKIT.
+This module creates a managed Postgres database on STACKIT. Creates a database server instance, a database with the same
+name and a user with the same username that is also the owner of the database.
 
 ## Example
 
 ```hcl
 module "database" {
-  source          = "github.com/digitalservicebund/terraform-modules//stackit-postgres-db?ref=[sha of the commit you want to use]"
-  project_id      = module.env.project_id
-  name            = "my-database"
-  cpu             = 2
-  memory          = 4
-  engine_version  = "17"
-  disk_size       = 5
-  acls            = module.env.cluster_egress_range
+  source         = "github.com/digitalservicebund/terraform-modules//stackit-postgres-db?ref=[sha of the commit you want to use]"
+  project_id     = module.env.project_id
+  name           = "my-database"
+  cpu            = 2
+  memory         = 4
+  engine_version = "17"
+  disk_size      = 5
+  acls           = module.env.cluster_egress_range
 }
 ```
 
