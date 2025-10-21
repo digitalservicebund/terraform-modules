@@ -49,6 +49,8 @@ jobs:
         terraform_module: ["stackit-object-storage", "stackit-state-bucket"]
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check and update terraform docs
         uses: terraform-docs/gh-actions@v1.4.1
