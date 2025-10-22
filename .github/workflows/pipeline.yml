@@ -31,7 +31,7 @@ jobs:
         # See https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
         with:
-          terraform_version: v1.13.3
+          terraform_version: v1.13.4
 
       - name: "Terraform Init"
         run: terraform init
