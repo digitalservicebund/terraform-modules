@@ -4,7 +4,7 @@ variable "name" {
 }
 
 variable "project_id" {
-  description = "The ID of the STACKIT project where the bucket will be created."
+  description = "The ID of the STACKIT project where the database will be created."
   type        = string
 }
 

@@ -71,7 +71,7 @@ EOF
 | <a name="input_manage_user_password"></a> [manage\_user\_password](#input\_manage\_user\_password) | Set true to add the user password into the STACKIT Secrets Manager. | `bool` | `true` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Specifies the memory (RAM) specs of the instance in GB. Available Options: 4, 8, 16, 32 & 128 | `number` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | Specifies the name of the Postgres instance. | `string` | n/a | yes |
-| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the STACKIT project where the bucket will be created. | `string` | n/a | yes |
+| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the STACKIT project where the database will be created. | `string` | n/a | yes |
 | <a name="input_replicas"></a> [replicas](#input\_replicas) | Number of read replicas for the instance. | `number` | `1` | no |
 | <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_user\_password is true. | `string` | `""` | no |
 
