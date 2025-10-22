@@ -77,8 +77,8 @@ EOF
 | Name | Description |
 |------|-------------|
 | <a name="output_external_secrets_password"></a> [external\_secrets\_password](#output\_external\_secrets\_password) | Password to be used by external secrets provider |
-| <a name="output_external_secrets_secret_manifest"></a> [external\_secrets\_secret\_manifest](#output\_external\_secrets\_secret\_manifest) | n/a |
-| <a name="output_external_secrets_secret_store_manifest"></a> [external\_secrets\_secret\_store\_manifest](#output\_external\_secrets\_secret\_store\_manifest) | n/a |
+| <a name="output_external_secrets_secret_manifest"></a> [external\_secrets\_secret\_manifest](#output\_external\_secrets\_secret\_manifest) | Kubernetes Secret manifest containing the password for the External Secrets user. Please use kubeseal to create a sealed secret from this manifest. |
+| <a name="output_external_secrets_secret_store_manifest"></a> [external\_secrets\_secret\_store\_manifest](#output\_external\_secrets\_secret\_store\_manifest) | Kubernetes SecretStore manifest for External Secrets to connect to STACKIT Secrets Manager. Use a null\_resource to store this output in a file. |
 | <a name="output_external_secrets_username"></a> [external\_secrets\_username](#output\_external\_secrets\_username) | Username to be used by external secrets provider |
 | <a name="output_instance_id"></a> [instance\_id](#output\_instance\_id) | Instance ID of the secrets manager instance |
 | <a name="output_terraform_password"></a> [terraform\_password](#output\_terraform\_password) | Password to be used by terraform. |

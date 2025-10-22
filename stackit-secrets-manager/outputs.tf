@@ -24,7 +24,8 @@ output "terraform_password" {
 }
 
 output "external_secrets_secret_store_manifest" {
-  value = <<EOF
+  description = "Kubernetes SecretStore manifest for External Secrets to connect to STACKIT Secrets Manager. Use a null_resource to store this output in a file."
+  value       = <<EOF
 apiVersion: external-secrets.io/v1
 kind: SecretStore
 metadata:
@@ -47,8 +48,9 @@ EOF
 }
 
 output "external_secrets_secret_manifest" {
-  sensitive = true
-  value     = <<EOF
+  description = "Kubernetes Secret manifest containing the password for the External Secrets user. Please use kubeseal to create a sealed secret from this manifest."
+  sensitive   = true
+  value       = <<EOF
 # DO NOT COMMIT THIS! USE KUBESEAL TO CREATE A SEALED SECRET INSTEAD
 apiVersion: v1
 kind: Secret
