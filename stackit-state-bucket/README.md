@@ -19,6 +19,29 @@ module "backend_bucket" {
 }
 ```
 
+[OPTIONAL] generate .envrc & backend.tf files:
+```hcl
+resource "null_resource" "backend_config" {
+  provisioner "local-exec" {
+    command = <<-EOT
+cat <<EOF > backend.tf
+${module.backend_bucket.backend_file}
+EOF
+    EOT
+  }
+}
+
+resource "null_resource" "envrc_file" {
+  provisioner "local-exec" {
+    command = <<-EOT
+cat <<EOF > .envrc
+${module.backend_bucket.envrc_file}
+EOF
+    EOT
+  }
+}
+```
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
