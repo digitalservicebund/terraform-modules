@@ -50,18 +50,35 @@ EOF
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >1.10.0 |
 | <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.65.0 |
 
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_object_storage"></a> [object\_storage](#module\_object\_storage) | ../stackit-object-storage | n/a |
 
+## Resources
+
+| Name | Type |
+|------|------|
+| [null_resource.backend_config](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.envrc_file](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.onepassword](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_create_onepassword_item"></a> [create\_onepassword\_item](#input\_create\_onepassword\_item) | Create a 1Password item containing the credentials for the state bucket. Needs the 1Password CLI. | `bool` | `true` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_state_bucket_name"></a> [state\_bucket\_name](#input\_state\_bucket\_name) | The name of the state bucket. | `string` | n/a | yes |
+| <a name="input_write_backend_config_file"></a> [write\_backend\_config\_file](#input\_write\_backend\_config\_file) | Write the backend.tf file containing the configuration to connect to the state bucket. | `bool` | `true` | no |
+| <a name="input_write_envrc_file"></a> [write\_envrc\_file](#input\_write\_envrc\_file) | Write a .envrc file containing the environment variables to read the state bucket credentials from 1Password. | `bool` | `true` | no |
 
 ## Outputs
 
