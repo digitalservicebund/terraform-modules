@@ -7,7 +7,6 @@ This module creates a terraform state backend on StackIT using Object Storage.
 1. Execute the module in your terraform configuration
 2. The content of a `backend.tf` file will be available as output from the module
 3. The credentials for this backend will be available as outputs from the module
-4. [Optional] The content of a `.envrc` file is also available as output and contains the credentials for the bucket
 
 ## Example
 
@@ -17,10 +16,8 @@ module "backend_bucket" {
   project_id        = "[stackit project id]"
   state_bucket_name = "ds-state-bucket-[project name]"
 }
-```
 
-[OPTIONAL] generate .envrc & backend.tf files:
-```hcl
+# [OPTIONAL] generate .envrc & backend.tf files:
 resource "null_resource" "backend_config" {
   provisioner "local-exec" {
     command = <<-EOT
@@ -30,17 +27,8 @@ EOF
     EOT
   }
 }
-
-resource "null_resource" "envrc_file" {
-  provisioner "local-exec" {
-    command = <<-EOT
-cat <<EOF > .envrc
-${module.backend_bucket.envrc_file}
-EOF
-    EOT
-  }
-}
 ```
+ℹ️ RECOMMENDATION: Use the [stackit-state-credentials](../stackit-state-credentials) module to store the credentials for the backend bucket in 1Password.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements

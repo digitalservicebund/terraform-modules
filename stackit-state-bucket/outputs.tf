@@ -32,7 +32,7 @@ terraform {
 }
 
 output "envrc_file" {
-  description = "Content of the .envrc file to set environment variables for accessing the backend bucket."
+  description = "DEPRECATED: Use stackit-state-credentials module to generate .envrc file for accessing the backend bucket via 1Password."
   sensitive   = true
   value       = <<-EOT
 export AWS_ACCESS_KEY_ID="${module.object_storage.credentials["default"].access_key}"
