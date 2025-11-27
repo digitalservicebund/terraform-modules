@@ -41,7 +41,7 @@ echo '${local.backend_file}' > backend.tf
 
 resource "null_resource" "onepassword" {
   provisioner "local-exec" {
-    command = "op item create --category 'Secure Note' --title '${module.object_storage.bucket_name} credentials' 'ACCESS_KEY_ID[text]=${module.object_storage.credentials["default"].access_key}' 'SECRET_ACCESS_KEY[text]=${module.object_storage.credentials["default"].access_key}'"
+    command = "op item create --category 'Secure Note' --title '${module.object_storage.bucket_name} credentials' 'ACCESS_KEY_ID[text]=${module.object_storage.credentials["default"].access_key}' 'SECRET_ACCESS_KEY[text]=${module.object_storage.credentials["default"].secret_access_key}'"
   }
 }
 
