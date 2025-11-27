@@ -10,25 +10,6 @@ output "secret_access_key" {
   sensitive   = true
 }
 
-locals {
-  backend_file = <<-EOT
-terraform {
-  backend "s3" {
-    bucket       = "${module.object_storage.bucket_name}"
-    key          = "tfstate-backend"
-    use_lockfile = true
-    endpoints = {
-      s3 = "https://object.storage.eu01.onstackit.cloud"
-    }
-    region                      = "eu01"
-    skip_credentials_validation = true
-    skip_region_validation      = true
-    skip_s3_checksum            = true
-    skip_requesting_account_id  = true
-  }
-}
-  EOT
-}
 output "backend_file" {
   description = "Content of the backend configuration file for Terraform."
   value       = <<-EOT
