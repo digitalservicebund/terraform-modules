@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        terraform_module: ["stackit-object-storage", "stackit-state-bucket", "stackit-secrets-manager", "stackit-postgres-db"]
+        terraform_module: ["stackit-object-storage", "stackit-state-bucket", "stackit-secrets-manager", "stackit-postgres-db", "stackit-state-credentials"]
     steps:
       - uses: actions/checkout@v5
       - name: "Install Terraform CLI"
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        terraform_module: ["stackit-object-storage", "stackit-state-bucket", "stackit-secrets-manager", "stackit-postgres-db"]
+        terraform_module: ["stackit-object-storage", "stackit-state-bucket", "stackit-secrets-manager", "stackit-postgres-db", "stackit-state-credentials"]
     steps:
       - uses: actions/checkout@v5
         with:
