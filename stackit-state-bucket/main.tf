@@ -4,7 +4,6 @@ module "object_storage" {
   bucket_name = var.state_bucket_name
 }
 
-
 locals {
   backend_file = <<-EOT
 terraform {
@@ -23,7 +22,8 @@ terraform {
   }
 }
   EOT
-  envrc_file   = <<-EOT
+
+  envrc_file = <<-EOT
 export STACKIT_SERVICE_ACCOUNT_KEY="op://Employee/STACKIT Terraform Credentials/notesPlain"
 
 export AWS_ACCESS_KEY_ID="op://Employee/${module.object_storage.bucket_name} credentials/ACCESS_KEY_ID"

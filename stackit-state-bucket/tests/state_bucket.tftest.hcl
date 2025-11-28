@@ -30,10 +30,10 @@ run "state_outputs" {
   command = apply
 
   variables {
-    state_bucket_name = "test-bucket-default"
+    state_bucket_name         = "test-bucket-default"
     write_backend_config_file = false
-    create_onepassword_item = false
-    write_envrc_file = false
+    create_onepassword_item   = false
+    write_envrc_file          = false
   }
 
   assert {
@@ -61,7 +61,7 @@ run "state_outputs" {
   }
 
   assert {
-    condition = nonsensitive(output.onepassword_command) == "op item create --category 'Secure Note' --title 'test-bucket-default credentials' 'ACCESS_KEY_ID[text]=mock-access-key' 'SECRET_ACCESS_KEY[text]=mock-secret-key'"
+    condition     = nonsensitive(output.onepassword_command) == "op item create --category 'Secure Note' --title 'test-bucket-default credentials' 'ACCESS_KEY_ID[text]=mock-access-key' 'SECRET_ACCESS_KEY[text]=mock-secret-key'"
     error_message = "The command to create the 1Password item is incorrect"
   }
 }
@@ -71,10 +71,10 @@ run "plan_disable_null_resources" {
 
 
   variables {
-    state_bucket_name = "test-bucket-default"
+    state_bucket_name         = "test-bucket-default"
     write_backend_config_file = false
-    create_onepassword_item = false
-    write_envrc_file = false
+    create_onepassword_item   = false
+    write_envrc_file          = false
   }
 
 
