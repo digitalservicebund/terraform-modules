@@ -21,6 +21,7 @@ output "envrc_file" {
 }
 
 output "onepassword_command" {
-  sensitive = true
-  value = local.onepassword_command
+  sensitive   = true
+  value       = local.onepassword_command
+  description = "The 1Password CLI command that needs to be executed to add the bucket credentials to 1Password."
 }
