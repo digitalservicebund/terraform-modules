@@ -1,46 +1,32 @@
 # StackIT Terraform State Backend Module
 
-This module creates a terraform state backend on StackIT using Object Storage.
+This module creates a terraform state backend on StackIT using Object Storage. This module is supposed to be used to
+bootstrap your terraform configuration by setting up the remote state for you.
+
+## Features
+
+- Creates an object storage bucket to store the terraform state in
+- Creates a `backend.tf` file to configure the terraform backend with this bucket
+- Creates a 1Password entry in the users vault to store the bucket credentials
+- Creates a `.envrc` file to referencing the credentials in 1Password
 
 ## Usage
 
-1. Execute the module in your terraform configuration
-2. The content of a `backend.tf` file will be available as output from the module
-3. The credentials for this backend will be available as outputs from the module
-4. [Optional] The content of a `.envrc` file is also available as output and contains the credentials for the bucket
+1. Add the module to your terraform folder
+   ```hcl
+   module "backend_bucket" {
+     source            = "github.com/digitalservicebund/terraform-modules//stackit-state-bucket?ref=[sha of the commit you want to use]"
+     project_id        = "[stackit project id]"
+     state_bucket_name = "ds-state-bucket-[project name]"
+   }
+   ```
+2. Run `terraform init` and `terraform apply`
+3. A `backend.tf` should have been generated in your terraform folder
+4. A `.envrc` file should have been generated in your terraform folder
+5. A 1Password item should have been generated in your vault
+6. Run `terraform init` to migrate your local state to the remote state bucket
 
-## Example
-
-```hcl
-module "backend_bucket" {
-  source            = "github.com/digitalservicebund/terraform-modules//stackit-state-bucket?ref=[sha of the commit you want to use]"
-  project_id        = "[stackit project id]"
-  state_bucket_name = "ds-state-bucket-[project name]"
-}
-```
-
-[OPTIONAL] generate .envrc & backend.tf files:
-```hcl
-resource "null_resource" "backend_config" {
-  provisioner "local-exec" {
-    command = <<-EOT
-cat <<EOF > backend.tf
-${module.backend_bucket.backend_file}
-EOF
-    EOT
-  }
-}
-
-resource "null_resource" "envrc_file" {
-  provisioner "local-exec" {
-    command = <<-EOT
-cat <<EOF > .envrc
-${module.backend_bucket.envrc_file}
-EOF
-    EOT
-  }
-}
-```
+You can disable all the magic with inputs.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
