@@ -11,13 +11,13 @@ External Secret manifest to fetch the credentials from there in the output. See 
 ```hcl
 module "database" {
   source         = "github.com/digitalservicebund/terraform-modules//stackit-postgres-db?ref=[sha of the commit you want to use]"
-  project_id     = module.env.project_id
-  name           = "my-database"
+  project_id     = "[your stackit project id]"
+  name           = "[database name]"
   cpu            = 2
   memory         = 4
   engine_version = "17"
   disk_size      = 5
-  acls           = module.env.cluster_egress_range
+  acls           = "[cluster egress range]"
 }
 
 # [OPTIONAL] Write the External Secret manifest to a file

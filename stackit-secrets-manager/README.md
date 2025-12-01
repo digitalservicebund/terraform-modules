@@ -11,8 +11,8 @@ Secrets Operator to fetch secrets from the created Secrets Manager.
 ```hcl
 module "secrets_manager" {
   source     = "github.com/digitalservicebund/terraform-modules//stackit-secrets-manager?ref=[sha of the commit you want to use]"
-  project_id = module.env.project_id
-  name       = "digitalcheck-secrets"
+  project_id = "[your stackit project id]"
+  name       = "[project name]-secrets"
 }
 
 provider "vault" {
