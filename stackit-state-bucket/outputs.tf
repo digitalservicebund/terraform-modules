@@ -12,30 +12,16 @@ output "secret_access_key" {
 
 output "backend_file" {
   description = "Content of the backend configuration file for Terraform."
-  value       = <<-EOT
-terraform {
-  backend "s3" {
-    bucket       = "${module.object_storage.bucket_name}"
-    key          = "tfstate-backend"
-    use_lockfile = true
-    endpoints = {
-      s3 = "https://object.storage.eu01.onstackit.cloud"
-    }
-    region                      = "eu01"
-    skip_credentials_validation = true
-    skip_region_validation      = true
-    skip_s3_checksum            = true
-    skip_requesting_account_id  = true
-  }
-}
-  EOT
+  value       = local.backend_file
 }
 
 output "envrc_file" {
   description = "Content of the .envrc file to set environment variables for accessing the backend bucket."
+  value       = local.envrc_file
+}
+
+output "onepassword_command" {
   sensitive   = true
-  value       = <<-EOT
-export AWS_ACCESS_KEY_ID="${module.object_storage.credentials["default"].access_key}"
-export AWS_SECRET_ACCESS_KEY="${module.object_storage.credentials["default"].secret_access_key}"
-  EOT
+  value       = local.onepassword_command
+  description = "The 1Password CLI command that needs to be executed to add the bucket credentials to 1Password."
 }
