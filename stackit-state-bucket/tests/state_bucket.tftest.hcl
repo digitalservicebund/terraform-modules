@@ -80,16 +80,16 @@ run "plan_disable_null_resources" {
 
   assert {
     condition     = length(null_resource.backend_config) == 0
-    error_message = "null_resource.backend_config should be planned for creation"
+    error_message = "null_resource.backend_config should not be planned for creation"
   }
 
   assert {
     condition     = length(null_resource.onepassword) == 0
-    error_message = "null_resource.onepassword should be planned for creation"
+    error_message = "null_resource.onepassword should not be planned for creation"
   }
 
   assert {
     condition     = length(null_resource.envrc_file) == 0
-    error_message = "null_resource.envrc_file should be planned for creation"
+    error_message = "null_resource.envrc_file should not be planned for creation"
   }
 }
