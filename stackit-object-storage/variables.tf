@@ -20,7 +20,7 @@ variable "credentials_names" {
 }
 
 variable "manage_credentials" {
-  description = "Set true to add the credentials into the STACKIT Secrets Manager."
+  description = "Set true to add the credentials into the STACKIT Secrets Manager. The credentials will be at `object-storage/[bucket name]/[credential name]`"
   type        = bool
   default     = false
 }

@@ -1,6 +1,6 @@
 output "credentials" {
   sensitive   = true
-  description = "Credentials to access the S3 bucket."
+  description = "Credentials to access the S3 bucket. Only available if `manage_credentials` is false"
   value = var.manage_credentials ? {} : {
     for name in var.credentials_names : name => {
       access_key        = stackit_objectstorage_credential.credential[name].access_key
@@ -43,6 +43,6 @@ EOF
 }
 
 output "external_secret_manifest" {
-  description = "Kubernetes External Secret manifest to fetch the bucket credentials from STACKIT Secrets Manager"
+  description = "Kubernetes External Secret manifest to fetch the bucket credentials from STACKIT Secrets Manager. Only available if `manage_credentials` is true."
   value       = var.manage_credentials ? local.external_secrets_manifest : ""
 }
