@@ -21,7 +21,14 @@ mock_provider "stackit" {
     }
   }
 }
-
+mock_provider "vault" {
+  mock_resource "vault_kv_secret_v2" {
+    defaults = {
+      mount = "secret-mount"
+      name  = "object-storage/mock-bucket"
+    }
+  }
+}
 variables {
   project_id = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
 }
@@ -130,4 +137,85 @@ run "bucket_name_too_long" {
   expect_failures = [
     var.bucket_name,
   ]
+}
+
+# Test 5: Vault integration and External Secret manifest generation
+run "vault_integration" {
+  command = apply
+
+  variables {
+    bucket_name                = "test-bucket-vault"
+    manage_credentials         = true
+    secret_manager_instance_id = "kv-mount"
+    kubernetes_namespace       = "production-ns"
+    credentials_names          = ["read-write", "read-only"]
+  }
+
+  # 1. Verify the Vault secret resource is created
+  assert {
+    condition     = length(vault_kv_secret_v2.bucket_credentials) == 2
+    error_message = "Should create exactly one Vault secret when manage_credentials is true"
+  }
+
+  assert {
+    condition     = vault_kv_secret_v2.bucket_credentials["read-write"].name == "object-storage/test-bucket-vault/read-write"
+    error_message = "Vault secret path/name does not match expected format"
+  }
+
+  # 2. Verify the Credentials Output is hidden/empty
+  assert {
+    condition     = length(nonsensitive(output.credentials)) == 0
+    error_message = "Output credentials should be empty when managed by Vault"
+  }
+
+  # 3. Verify External Secret Manifest Content
+  assert {
+    condition     = nonsensitive(output.external_secret_manifest) == <<EOF
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bucket-credentials-read-write
+  namespace: production-ns
+spec:
+  refreshInterval: "15m"
+  secretStoreRef:
+    name: secret-store
+    kind: SecretStore
+  target:
+    name: bucket-credentials-read-write
+  data:
+    - secretKey: access_key
+      remoteRef:
+        key: object-storage/test-bucket-vault/read-write
+        property: access_key
+    - secretKey: secret_access_key
+      remoteRef:
+        key: object-storage/test-bucket-vault/read-write
+        property: secret_access_key
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bucket-credentials-read-only
+  namespace: production-ns
+spec:
+  refreshInterval: "15m"
+  secretStoreRef:
+    name: secret-store
+    kind: SecretStore
+  target:
+    name: bucket-credentials-read-only
+  data:
+    - secretKey: access_key
+      remoteRef:
+        key: object-storage/test-bucket-vault/read-only
+        property: access_key
+    - secretKey: secret_access_key
+      remoteRef:
+        key: object-storage/test-bucket-vault/read-only
+        property: secret_access_key
+EOF
+    error_message = "External secret manifest output should be correct"
+  }
 }
