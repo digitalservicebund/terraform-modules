@@ -25,6 +25,12 @@ variable "create_onepassword_item" {
   description = "Create a 1Password item containing the credentials for the state bucket. Needs the 1Password CLI."
 }
 
+variable "onepassword_vault" {
+  type        = string
+  default     = "Employee"
+  description = "The 1Password vault where the state bucket credentials item will be created in."
+}
+
 variable "write_envrc_file" {
   type        = bool
   default     = true
