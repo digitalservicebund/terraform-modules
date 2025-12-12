@@ -3,8 +3,8 @@
 This module creates a managed Postgres database on STACKIT. Creates a database server instance, a database with the same
 name and a user with the same username that is also the owner of the database.
 
-This module can optionally store the database user password in the STACKIT Secrets Manager and provides a Kubernetes
-External Secret manifest to fetch the credentials from there in the output. See documentation below for more details.
+By default, the credentials for the database user are stored in the STACKIT Secrets Manager and a Kubernetes External Secret
+manifest is provided to fetch the credentials from there. 
 
 ## Example
 
@@ -17,10 +17,13 @@ module "database" {
   memory         = 4
   engine_version = "17"
   disk_size      = 5
-  acls           = "[cluster egress range]"
+  acls           = "[cluster egress range]" # Ask the platform team for the correct egress range
+  
+  secret_manager_instance_id = "[your secrets manager instance id]" # available as output from stackit-secrets-manager module
+  kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
 }
 
-# [OPTIONAL] Write the External Secret manifest to a file
+# Write the External Secret manifest to a file, null_resources will only be executed once, so you can keep them.
 resource "null_resource" "external_secret" {
   provisioner "local-exec" {
     command = <<-EOT

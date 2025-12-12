@@ -1,29 +1,43 @@
 # StackIT Object Storage Module
 
-This module creates a STACKIT object storage bucket and credentials to access it.
+This module creates a STACKIT object storage bucket and credentials to access it. Its recommended to use it together with the
+[STACKIT Secrets Manager Module](../stackit-secrets-manager) to store the credentials securely.
 
 ## Usage
-
-Without STACKIT Secrets Manager
-```hcl
-module "object_storage_bucket" {
-  source            = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
-  project_id        = "[stackit project id]"
-  bucket_name       = "[my-bucket-name]"
-}
-```
 
 With STACKIT Secrets Manager
 
 ```hcl
 module "object_storage_bucket" {
-  source                     = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
-  project_id                 = "[stackit project id]"
-  bucket_name                = "[my-bucket-name]"
+  source      = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
+  project_id  = "[stackit project id]"
+  bucket_name = "[my-bucket-name]"
+
   manage_credentials         = true
   secret_manager_instance_id = "[instance id of your secrets manager (can be referenced from the stackit-secrets-manager module)]"
 }
 
+
+# Write the External Secret manifest to a file, null_resources will only be executed once, so you can keep them.
+resource "null_resource" "external_secret" {
+  provisioner "local-exec" {
+    command = <<-EOT
+cat <<EOF > ../path/to/external-secret-manifest.yaml
+${module.object_storage_bucket.external_secret_manifest}
+EOF
+    EOT
+  }
+}
+```
+
+Without STACKIT Secrets Manager
+
+```hcl
+module "object_storage_bucket" {
+  source      = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
+  project_id  = "[stackit project id]"
+  bucket_name = "[my-bucket-name]"
+}
 ```
 
 <!-- BEGIN_TF_DOCS -->

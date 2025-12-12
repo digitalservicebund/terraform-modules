@@ -3,7 +3,7 @@
 This module creates a STACKIT Secrets Manager in your project with credentials for terraform and external secrets
 operator.
 
-The module also outputs a Secret Store kubernetes manifest and a Secret manifest that can be used to set up External
+The module also outputs a SecretStore kubernetes manifest and a Secret manifest that should be used to set up External
 Secrets Operator to fetch secrets from the created Secrets Manager.
 
 ## Example
@@ -26,7 +26,7 @@ provider "vault" {
 }
 
 
-# [OPTIONAL] Write the Secret Store manifest to a file
+# Write the Secret Store manifest to a file, null_resources will only be executed once, so you can keep them.
 resource "null_resource" "secret_store_manifest" {
   provisioner "local-exec" {
     command = <<-EOT
@@ -36,13 +36,24 @@ EOF
     EOT
   }
 }
+
+# Write the Secret manifest to a file, please use kubeseal to create a sealed secret from it and delete the do-not-commit.yaml file afterwards.
+resource "null_resource" "secret_store_manifest" {
+  provisioner "local-exec" {
+    command = <<-EOT
+cat <<EOF > ../path/to/overlay/do-not-commit.yaml
+${module.secrets_manager.external_secrets_secret_manifest}
+EOF
+    EOT
+  }
+}
 ```
 
-If you write the Secret Store manifest to a file, it's recommended to apply terraform locally and commit the newly
-created SecretStore manifest manually.
+The `null_resources` will only be executed once, so you can keep them in your configuration to regenerate the files if
+needed. Since they create new files, run `terraform apply` the first time on your local machine. Commit the SecretStore
+manifest, but make sure to use `kubeseal` to create a sealed secret from the Secret manifest and delete the unsealed
+file afterward.
 
-It would also be possible to run that in the pipeline and commit changes directly to the repo, but since this is only a
-one time operation it is likely not worth the effort.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements

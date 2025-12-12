@@ -1,6 +1,6 @@
 # StackIT Terraform State Backend Module
 
-This module creates a terraform state backend on StackIT using Object Storage. This module is supposed to be used to
+This module creates a terraform state backend on StackIT using Object Storage. It is supposed to be used to
 bootstrap your terraform configuration by setting up the remote state for you.
 
 ## Features
