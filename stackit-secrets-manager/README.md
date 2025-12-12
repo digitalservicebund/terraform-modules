@@ -27,10 +27,11 @@ provider "vault" {
 
 
 # Write the Secret Store manifest to a file, null_resources will only be executed once, so you can keep them.
+# Please adjust the path to your kustomize overlay accordingly.
 resource "null_resource" "secret_store_manifest" {
   provisioner "local-exec" {
     command = <<-EOT
-cat <<EOF > ../path/to/external-secret-secret-store-manifest.yaml
+cat <<EOF > ../path/to/overlay/secret-store.yaml
 ${module.secrets_manager.external_secrets_secret_store_manifest}
 EOF
     EOT
@@ -38,7 +39,8 @@ EOF
 }
 
 # Write the Secret manifest to a file, please use kubeseal to create a sealed secret from it and delete the do-not-commit.yaml file afterwards.
-resource "null_resource" "secret_store_manifest" {
+# Please adjust the path to your kustomize overlay accordingly.
+resource "null_resource" "secret_manifest" {
   provisioner "local-exec" {
     command = <<-EOT
 cat <<EOF > ../path/to/overlay/do-not-commit.yaml

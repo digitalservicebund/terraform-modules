@@ -19,10 +19,11 @@ module "object_storage_bucket" {
 
 
 # Write the External Secret manifest to a file, null_resources will only be executed once, so you can keep them.
+# Please adjust the path to your kustomize overlay accordingly.
 resource "null_resource" "external_secret" {
   provisioner "local-exec" {
     command = <<-EOT
-cat <<EOF > ../path/to/external-secret-manifest.yaml
+cat <<EOF > ../path/to/overlay/external-secret-manifest.yaml
 ${module.object_storage_bucket.external_secret_manifest}
 EOF
     EOT

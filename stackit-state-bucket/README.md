@@ -7,7 +7,7 @@ bootstrap your terraform configuration by setting up the remote state for you.
 
 - Creates an object storage bucket to store the terraform state in
 - Creates a `backend.tf` file to configure the terraform backend with this bucket
-- Creates a 1Password entry in the users vault to store the bucket credentials
+- Creates a 1Password entry in the users or team vault to store the bucket credentials
 - Creates a `.envrc` file to referencing the credentials in 1Password
 
 ## Usage
@@ -18,12 +18,13 @@ bootstrap your terraform configuration by setting up the remote state for you.
      source            = "github.com/digitalservicebund/terraform-modules//stackit-state-bucket?ref=[sha of the commit you want to use]"
      project_id        = "[stackit project id]"
      state_bucket_name = "ds-state-bucket-[project name]"
+     onepassword_vault = "[your team vault name]"
    }
    ```
 2. Run `terraform init` and `terraform apply`
 3. A `backend.tf` should have been generated in your terraform folder
 4. A `.envrc` file should have been generated in your terraform folder
-5. A 1Password item should have been generated in your vault
+5. A 1Password item should have been generated in your teams vault
 6. Run `terraform init` to migrate your local state to the remote state bucket
 
 You can disable all the magic with inputs.
@@ -61,6 +62,7 @@ You can disable all the magic with inputs.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_create_onepassword_item"></a> [create\_onepassword\_item](#input\_create\_onepassword\_item) | Create a 1Password item containing the credentials for the state bucket. Needs the 1Password CLI. | `bool` | `true` | no |
+| <a name="input_onepassword_vault"></a> [onepassword\_vault](#input\_onepassword\_vault) | The 1Password vault where the state bucket credentials item will be created in. | `string` | `"Employee"` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_state_bucket_name"></a> [state\_bucket\_name](#input\_state\_bucket\_name) | The name of the state bucket. | `string` | n/a | yes |
 | <a name="input_write_backend_config_file"></a> [write\_backend\_config\_file](#input\_write\_backend\_config\_file) | Write the backend.tf file containing the configuration to connect to the state bucket. | `bool` | `true` | no |
