@@ -42,7 +42,7 @@ run "default_configuration" {
   }
 
   assert {
-    condition     = stackit_objectstorage_bucket.state_bucket.name == "test-bucket-default"
+    condition     = stackit_objectstorage_bucket.bucket.name == "test-bucket-default"
     error_message = "Bucket name does not match expected value"
   }
 
@@ -116,7 +116,7 @@ run "max_bucket_name_length" {
   }
 
   assert {
-    condition     = stackit_objectstorage_bucket.state_bucket.name == "abcdefghijklmnopqrstuvwxyz123"
+    condition     = stackit_objectstorage_bucket.bucket.name == "abcdefghijklmnopqrstuvwxyz123"
     error_message = "Should accept 29 character bucket name"
   }
 

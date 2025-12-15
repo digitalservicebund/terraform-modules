@@ -10,7 +10,7 @@ output "credentials" {
 }
 
 output "bucket_name" {
-  value = stackit_objectstorage_bucket.state_bucket.name
+  value = stackit_objectstorage_bucket.bucket.name
 }
 
 locals {
@@ -31,11 +31,11 @@ spec:
   data:
     - secretKey: access_key
       remoteRef:
-        key: object-storage/${stackit_objectstorage_bucket.state_bucket.name}/${name}
+        key: object-storage/${stackit_objectstorage_bucket.bucket.name}/${name}
         property: access_key
     - secretKey: secret_access_key
       remoteRef:
-        key: object-storage/${stackit_objectstorage_bucket.state_bucket.name}/${name}
+        key: object-storage/${stackit_objectstorage_bucket.bucket.name}/${name}
         property: secret_access_key
 EOF
   ]
