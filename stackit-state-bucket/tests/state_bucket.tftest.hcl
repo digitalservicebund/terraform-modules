@@ -61,7 +61,7 @@ run "state_outputs" {
   }
 
   assert {
-    condition     = nonsensitive(output.onepassword_command) == "op item create --vault Employee --category 'Secure Note' --title 'test-bucket-default credentials' 'ACCESS_KEY_ID[text]=mock-access-key' 'SECRET_ACCESS_KEY[text]=mock-secret-key'"
+    condition     = nonsensitive(output.onepassword_command) == "op item create --vault 'Employee' --category 'Secure Note' --title 'test-bucket-default credentials' 'ACCESS_KEY_ID[text]=mock-access-key' 'SECRET_ACCESS_KEY[text]=mock-secret-key'"
     error_message = "The command to create the 1Password item is incorrect"
   }
 }
@@ -91,5 +91,22 @@ run "plan_disable_null_resources" {
   assert {
     condition     = length(null_resource.envrc_file) == 0
     error_message = "null_resource.envrc_file should not be planned for creation"
+  }
+}
+
+run "allow_spaces_in_team_vault" {
+  command = apply
+
+  variables {
+    state_bucket_name         = "test-bucket-default"
+    write_backend_config_file = false
+    create_onepassword_item   = true
+    write_envrc_file          = false
+    onepassword_vault         = "Team NeuRIS"
+  }
+
+  assert {
+    condition     = nonsensitive(output.onepassword_command) == "op item create --vault 'Team NeuRIS' --category 'Secure Note' --title 'test-bucket-default credentials' 'ACCESS_KEY_ID[text]=mock-access-key' 'SECRET_ACCESS_KEY[text]=mock-secret-key'"
+    error_message = "The command to create the 1Password item is incorrect"
   }
 }

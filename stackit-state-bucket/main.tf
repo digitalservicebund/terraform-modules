@@ -30,7 +30,7 @@ export AWS_ACCESS_KEY_ID="op://${var.onepassword_vault}/${module.object_storage.
 export AWS_SECRET_ACCESS_KEY="op://${var.onepassword_vault}/${module.object_storage.bucket_name} credentials/SECRET_ACCESS_KEY"
   EOT
 
-  onepassword_command = "op item create --vault ${var.onepassword_vault} --category 'Secure Note' --title '${module.object_storage.bucket_name} credentials' 'ACCESS_KEY_ID[text]=${module.object_storage.credentials["default"].access_key}' 'SECRET_ACCESS_KEY[text]=${module.object_storage.credentials["default"].secret_access_key}'"
+  onepassword_command = "op item create --vault '${var.onepassword_vault}' --category 'Secure Note' --title '${module.object_storage.bucket_name} credentials' 'ACCESS_KEY_ID[text]=${module.object_storage.credentials["default"].access_key}' 'SECRET_ACCESS_KEY[text]=${module.object_storage.credentials["default"].secret_access_key}'"
 }
 
 resource "null_resource" "backend_config" {
