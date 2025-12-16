@@ -61,7 +61,7 @@ module "object_storage_bucket" {
 
 | Name | Type |
 |------|------|
-| [stackit_objectstorage_bucket.state_bucket](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket) | resource |
+| [stackit_objectstorage_bucket.bucket](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket) | resource |
 | [stackit_objectstorage_credential.credential](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credential) | resource |
 | [stackit_objectstorage_credentials_group.credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credentials_group) | resource |
 | [vault_kv_secret_v2.bucket_credentials](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/kv_secret_v2) | resource |
