@@ -161,7 +161,7 @@ run "secrets_and_manifest" {
   }
 }
 
-run "validation_missing_external_secret_manifest" {
+run "external_secret_manifest_missing" {
   command = plan
 
   variables {
@@ -180,20 +180,11 @@ run "config_map_manifest" {
   command = apply
 
   variables {
-    name           = "test-postgres"
-    project_id     = var.project_id
-    cpu            = 2
-    memory         = 4
-    engine_version = "17"
-    disk_size      = 10
-    acls           = ["10.0.0.0/16"]
-
     database_names = ["neuris", "metabase"]
-    admin_name     = "root"
     user_names     = ["migration", "search"]
 
     manage_user_password = false
-    config_map_manifest  = "configmap.yaml"
+    config_map_manifest  = "config.yaml"
   }
   assert {
     condition     = yamldecode(split("\n---\n", local_file.config_map_manifest[0].content)[0]).metadata.name == "database-config-metabase"
@@ -205,3 +196,22 @@ run "config_map_manifest" {
     error_message = "First ConfigMap should be for 'neuris'"
   }
 }
+
+run "kubernetes_namespace_missing" {
+  command = plan
+
+  variables {
+    name                     = "fail-test"
+    manage_user_password     = true
+    external_secret_manifest = "secret.yaml"
+    config_map_manifest      = "config.yaml"
+    kubernetes_namespace     = null
+  }
+
+  # We want to mnanage the secrets externally but forgot to specify the K8s manifest file path to glue things together
+  expect_failures = [
+    local_file.external_secret_manifest,
+    local_file.config_map_manifest
+  ]
+}
+

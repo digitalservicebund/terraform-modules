@@ -84,8 +84,8 @@ resource "local_file" "external_secret_manifest" {
     precondition {
       # Only create the file if manage_user_password is set (otherwise the resource would not be created at all)
       # and error out if the filename was not provided.
-      condition     = var.external_secret_manifest != null
-      error_message = "You enabled 'manage_user_password' but did not provide a 'manifest_filename'."
+      condition     = var.external_secret_manifest != null && var.kubernetes_namespace != null
+      error_message = "You enabled 'manage_user_password' but did not provide 'manifest_filename' and 'kubernetes_namespace'."
     }
   }
 
@@ -135,6 +135,12 @@ resource "local_file" "external_secret_manifest" {
 resource "local_file" "config_map_manifest" {
   count = var.config_map_manifest != null ? 1 : 0
 
+  lifecycle {
+    precondition {
+      condition     = var.kubernetes_namespace != null
+      error_message = "You enabled 'config_map_manifest' but did not provide 'kubernetes_namespace'."
+    }
+  }
   filename = var.config_map_manifest
 
   content = join("\n---\n", [
