@@ -3,6 +3,24 @@ variable "name" {
   type        = string
 }
 
+variable "admin_name" {
+  description = "Specified the name of the Postgres Database Owner"
+  type        = string
+  default     = null
+}
+
+variable "database_names" {
+  description = "List of database names to create. If empty, defaults to a single database named after the instance."
+  type        = set(string)
+  default     = []
+}
+
+variable "user_names" {
+  description = "List of additional database users to create. Elements must be unique."
+  type        = set(string)
+  default     = []
+}
+
 variable "project_id" {
   description = "The ID of the STACKIT project where the database will be created."
   type        = string
@@ -71,5 +89,17 @@ variable "secret_manager_instance_id" {
 variable "kubernetes_namespace" {
   description = "Kubernetes namespace where the External Secret manifest will be applied."
   type        = string
-  default     = "[your-namespace]"
+  default     = null
+}
+
+variable "external_secret_manifest" {
+  description = "Path where the external secret manifest will be stored at"
+  type        = string
+  default     = null
+}
+
+variable "config_map_manifest" {
+  description = "Path where the config map manifest will be stored at"
+  type        = string
+  default     = null
 }

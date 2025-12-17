@@ -1,44 +1,38 @@
 mock_provider "stackit" {
   mock_resource "stackit_postgresflex_instance" {
     defaults = {
-      instance_id = "87778dd7-a506-45e8-9cd8-134585230603"
+      instance_id = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
     }
   }
-
   mock_resource "stackit_postgresflex_user" {
     defaults = {
       password = "password"
-      host     = "https://example.com"
+      host     = "postgres.stackit.internal"
     }
   }
-
-  mock_resource "stackit_postgresflex_database" {
-  }
+  mock_resource "stackit_postgresflex_database" {}
 }
 
 mock_provider "vault" {
-  mock_resource "vault_kv_secret_v2" {
-  }
+  mock_resource "vault_kv_secret_v2" {}
 }
 
-# Test 1: Basic instance creation with required variables
-run "basic_instance_creation" {
+variables {
+  project_id     = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+  name           = "test-postgres"
+  cpu            = 2
+  memory         = 4
+  engine_version = "17"
+  disk_size      = 10
+  acls           = ["10.0.0.0/16"]
+}
+
+# --- Test 1: Basic Creation ---
+run "basic_creation" {
   command = apply
 
   variables {
-    name                 = "test-postgres"
-    project_id           = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
-    cpu                  = 2
-    memory               = 4
-    engine_version       = "17"
-    disk_size            = 10
-    acls                 = ["10.0.0.0/16"]
     manage_user_password = false
-  }
-
-  assert {
-    condition     = stackit_postgresflex_instance.this.name == "test-postgres"
-    error_message = "Instance name should be 'test-postgres'"
   }
 
   assert {
@@ -76,101 +70,169 @@ run "basic_instance_creation" {
   }
 
   assert {
-    condition     = output.address != "https"
+    condition     = stackit_postgresflex_user.admin.username == "test-postgres"
+    error_message = "Admin username should be 'test-postgres'"
+  }
+
+  assert {
+    condition     = stackit_postgresflex_database.database["test-postgres"].owner == stackit_postgresflex_user.admin.username
+    error_message = "The database owner should be the user created by this module"
+  }
+
+  assert {
+    condition     = output.address == "postgres.stackit.internal"
     error_message = "The address output should be set correctly"
   }
 
   assert {
-    condition     = nonsensitive(output.password) == "password"
-    error_message = "The password should be available as output"
+    condition     = nonsensitive(output.credentials["test-postgres"]) == "password"
+    error_message = "Admin user and password should be available"
+  }
+}
+
+run "multiple_databases" {
+  variables {
+    database_names       = ["foo", "bar"]
+    manage_user_password = false
+  }
+
+
+  assert {
+    condition     = stackit_postgresflex_database.database["foo"].owner == stackit_postgresflex_user.admin.username
+    error_message = "The database owner should be the user created by this module"
   }
 
   assert {
-    condition     = output.username == "test-postgres"
-    error_message = "The username should be similar to the instance name"
-  }
-
-  assert {
-    condition     = stackit_postgresflex_database.database.name == "test-postgres"
-    error_message = "The database name should be similar to the instance name"
-  }
-
-  assert {
-    condition     = stackit_postgresflex_database.database.owner == stackit_postgresflex_user.user.username
+    condition     = stackit_postgresflex_database.database["bar"].owner == stackit_postgresflex_user.admin.username
     error_message = "The database owner should be the user created by this module"
   }
 }
 
-# Test 2: Instance creation with manage_user_password enabled
-run "manage_user_password_enabled" {
+run "multiple_users" {
+  variables {
+    user_names           = ["lorem", "ipsum"]
+    admin_name           = "admin"
+    manage_user_password = false
+  }
+
+  assert {
+    condition     = stackit_postgresflex_user.admin.username == "admin"
+    error_message = "Admin username should be 'admin'"
+  }
+
+  assert {
+    condition     = stackit_postgresflex_user.user["lorem"].username == "lorem"
+    error_message = "Admin username should be 'lorem'"
+  }
+}
+
+run "secrets_and_manifest" {
   command = apply
 
   variables {
-    name                       = "test-postgres-secrets"
-    project_id                 = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
-    cpu                        = 2
-    memory                     = 4
-    engine_version             = "17"
-    disk_size                  = 10
-    acls                       = [""]
+    name = "test-secrets"
+
+    user_names                 = ["lorem"]
+    admin_name                 = "root"
     manage_user_password       = true
-    secret_manager_instance_id = "secrets-manager-instance-id"
-    kubernetes_namespace       = "platform"
+    secret_manager_instance_id = "mock-vault"
+
+    external_secret_manifest = "output.yaml"
+    kubernetes_namespace     = "namespace"
+
   }
 
   assert {
-    condition     = vault_kv_secret_v2.postgres_credentials[0].name == "postgres/test-postgres-secrets"
-    error_message = "Vault secret name should match expected format"
-  }
-  assert {
-    condition     = vault_kv_secret_v2.postgres_credentials[0].mount == "secrets-manager-instance-id"
-    error_message = "Vault secret mount should match the provided secret_manager_instance_id"
-  }
-  assert {
-    condition = nonsensitive(vault_kv_secret_v2.postgres_credentials[0].data_json) == jsonencode({
-      username = "test-postgres-secrets"
+    condition = nonsensitive(vault_kv_secret_v2.postgres_admin_credentials[0].data_json) == jsonencode({
+      username = "root"
       password = "password"
-      host     = "https://example.com"
+      host     = "postgres.stackit.internal"
     })
     error_message = "Vault secret should contain the correct database credentials"
   }
 
   assert {
-    condition     = output.secret_manager_secret_name == "postgres/test-postgres-secrets"
-    error_message = "The secret_manager_secret_name output should be set correctly"
+    condition = nonsensitive(vault_kv_secret_v2.postgres_user_credentials["lorem"].data_json) == jsonencode({
+      username = "lorem"
+      password = "password"
+      host     = "postgres.stackit.internal"
+    })
+    error_message = "Vault secret should contain the correct user credentials"
   }
 
   assert {
-    condition     = output.password == ""
-    error_message = "The password output should be empty when manage_user_password is true"
+    condition     = contains(output.secret_manager_secret_names, "postgres/root")
+    error_message = "Secret names list should contain admin secret"
   }
 
   assert {
-    condition     = output.external_secret_manifest == <<EOF
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: database-credentials
-  namespace: platform
-spec:
-  refreshInterval: "15m"
-  secretStoreRef:
-    name: secret-store
-    kind: SecretStore
-  data:
-    - secretKey: username
-      remoteRef:
-        key: postgres/test-postgres-secrets
-        property: username
-    - secretKey: password
-      remoteRef:
-        key: postgres/test-postgres-secrets
-        property: password
-    - secretKey: host
-      remoteRef:
-        key: postgres/test-postgres-secrets
-        property: host
-EOF
-    error_message = "The external_secret_manifest output should contain the ExternalSecret manifest"
+    condition     = contains(output.secret_manager_secret_names, "postgres/lorem")
+    error_message = "Secret names list should contain lorem secret"
+  }
+
+  assert {
+    condition     = contains(yamldecode(local_file.external_secret_manifest[0].content).spec.data.*.secretKey, "root_user")
+    error_message = "Manifest missing root_user"
+  }
+
+  assert {
+    condition     = contains(yamldecode(local_file.external_secret_manifest[0].content).spec.data.*.secretKey, "lorem_user")
+    error_message = "Manifest missing lorem_user"
   }
 }
+
+run "external_secret_manifest_missing" {
+  command = plan
+
+  variables {
+    name                     = "fail-test"
+    manage_user_password     = true
+    external_secret_manifest = null
+  }
+
+  # We want to mnanage the secrets externally but forgot to specify the K8s manifest file path to glue things together
+  expect_failures = [
+    local_file.external_secret_manifest
+  ]
+}
+
+run "config_map_manifest" {
+  command = apply
+
+  variables {
+    database_names = ["foo", "bar"]
+    user_names     = ["lorem", "ipsum"]
+
+    manage_user_password = false
+    config_map_manifest  = "config.yaml"
+    kubernetes_namespace = "namespace"
+  }
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.config_map_manifest[0].content)[0]).metadata.name == "database-config-bar"
+    error_message = "First ConfigMap should be for 'bar'"
+  }
+
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.config_map_manifest[0].content)[1]).metadata.name == "database-config-foo"
+    error_message = "First ConfigMap should be for 'foo'"
+  }
+}
+
+run "kubernetes_namespace_missing" {
+  command = plan
+
+  variables {
+    name                     = "fail-test"
+    manage_user_password     = true
+    external_secret_manifest = "secret.yaml"
+    config_map_manifest      = "config.yaml"
+    kubernetes_namespace     = null
+  }
+
+  # We want to mnanage the secrets externally but forgot to specify the K8s manifest file path to glue things together
+  expect_failures = [
+    local_file.external_secret_manifest,
+    local_file.config_map_manifest
+  ]
+}
+
