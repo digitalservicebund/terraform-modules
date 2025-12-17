@@ -111,7 +111,7 @@ resource "local_file" "external_secret_manifest" {
             remoteRef = { key = "postgres/${local.admin_user}", property = "username" }
           },
           {
-            secretKey = "admin_password"
+            secretKey = "${local.admin_user}_password"
             remoteRef = { key = "postgres/${local.admin_user}", property = "password" }
           },
           {
