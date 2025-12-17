@@ -3,15 +3,7 @@ output "address" {
   value       = stackit_postgresflex_user.admin.host
 }
 
-output "usernames" {
-  description = "List of all database usernames (admin + standard users)"
-  value = concat(
-    [stackit_postgresflex_user.admin.username],
-    values(stackit_postgresflex_user.user)[*].username
-  )
-}
-
-output "passwords" {
+output "credentials" {
   description = "Map of user keys to passwords. Empty if managed in Secrets Manager."
   sensitive   = true
   value = merge(

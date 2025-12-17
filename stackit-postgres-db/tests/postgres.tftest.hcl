@@ -97,23 +97,13 @@ run "basic_creation" {
   }
 
   assert {
-    condition     = contains(output.usernames, "root")
-    error_message = "Usernames list should contain 'root'"
+    condition     = nonsensitive(output.credentials["root"]) == "password"
+    error_message = "Admin user and password should be available"
   }
 
   assert {
-    condition     = contains(output.usernames, "migration")
-    error_message = "Usernames list should contain 'migration'"
-  }
-
-  assert {
-    condition     = nonsensitive(output.passwords["root"]) == "password"
-    error_message = "The password should be available as output"
-  }
-
-  assert {
-    condition     = nonsensitive(output.passwords["migration"]) == "password"
-    error_message = "The password should be available as output"
+    condition     = nonsensitive(output.credentials["migration"]) == "password"
+    error_message = "User and password should be available"
   }
 
 }

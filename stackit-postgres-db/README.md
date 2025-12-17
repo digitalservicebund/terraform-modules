@@ -112,7 +112,6 @@ When the variable is not set, the manifest will not be created.
 | Name | Description |
 |------|-------------|
 | <a name="output_address"></a> [address](#output\_address) | Database host address |
-| <a name="output_passwords"></a> [passwords](#output\_passwords) | Map of user keys to passwords. Empty if managed in Secrets Manager. |
+| <a name="output_credentials"></a> [credentials](#output\_credentials) | Map of user keys to passwords. Empty if managed in Secrets Manager. |
 | <a name="output_secret_manager_secret_names"></a> [secret\_manager\_secret\_names](#output\_secret\_manager\_secret\_names) | List of secret paths created in STACKIT Secrets Manager |
-| <a name="output_usernames"></a> [usernames](#output\_usernames) | List of all database usernames (admin + standard users) |
 <!-- END_TF_DOCS -->
