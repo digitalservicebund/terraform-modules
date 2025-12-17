@@ -25,9 +25,6 @@ variables {
   engine_version = "17"
   disk_size      = 10
   acls           = ["10.0.0.0/16"]
-  admin_name     = "root"
-
-  kubernetes_namespace = "namespace"
 }
 
 # --- Test 1: Basic Creation ---
@@ -35,9 +32,6 @@ run "basic_creation" {
   command = apply
 
   variables {
-    database_names = ["neuris", "metabase"]
-    user_names     = ["migration", "search"]
-
     manage_user_password = false
   }
 
@@ -76,17 +70,12 @@ run "basic_creation" {
   }
 
   assert {
-    condition     = stackit_postgresflex_user.admin.username == "root"
-    error_message = "Admin username should be 'root'"
+    condition     = stackit_postgresflex_user.admin.username == "test-postgres"
+    error_message = "Admin username should be 'test-postgres'"
   }
 
   assert {
-    condition     = stackit_postgresflex_user.user["migration"].username == "migration"
-    error_message = "Migration user should exist"
-  }
-
-  assert {
-    condition     = stackit_postgresflex_database.database["neuris"].owner == stackit_postgresflex_user.admin.username
+    condition     = stackit_postgresflex_database.database["test-postgres"].owner == stackit_postgresflex_user.admin.username
     error_message = "The database owner should be the user created by this module"
   }
 
@@ -96,15 +85,45 @@ run "basic_creation" {
   }
 
   assert {
-    condition     = nonsensitive(output.credentials["root"]) == "password"
+    condition     = nonsensitive(output.credentials["test-postgres"]) == "password"
     error_message = "Admin user and password should be available"
+  }
+}
+
+run "multiple_databases" {
+  variables {
+    database_names       = ["foo", "bar"]
+    manage_user_password = false
+  }
+
+
+  assert {
+    condition     = stackit_postgresflex_database.database["foo"].owner == stackit_postgresflex_user.admin.username
+    error_message = "The database owner should be the user created by this module"
   }
 
   assert {
-    condition     = nonsensitive(output.credentials["migration"]) == "password"
-    error_message = "User and password should be available"
+    condition     = stackit_postgresflex_database.database["bar"].owner == stackit_postgresflex_user.admin.username
+    error_message = "The database owner should be the user created by this module"
+  }
+}
+
+run "multiple_users" {
+  variables {
+    user_names           = ["lorem", "ipsum"]
+    admin_name           = "admin"
+    manage_user_password = false
   }
 
+  assert {
+    condition     = stackit_postgresflex_user.admin.username == "admin"
+    error_message = "Admin username should be 'admin'"
+  }
+
+  assert {
+    condition     = stackit_postgresflex_user.user["lorem"].username == "lorem"
+    error_message = "Admin username should be 'lorem'"
+  }
 }
 
 run "secrets_and_manifest" {
@@ -113,13 +132,14 @@ run "secrets_and_manifest" {
   variables {
     name = "test-secrets"
 
-    database_names = ["neuris"]
-    user_names     = ["migration"]
-
+    user_names                 = ["lorem"]
+    admin_name                 = "root"
     manage_user_password       = true
     secret_manager_instance_id = "mock-vault"
 
     external_secret_manifest = "output.yaml"
+    kubernetes_namespace     = "namespace"
+
   }
 
   assert {
@@ -132,8 +152,8 @@ run "secrets_and_manifest" {
   }
 
   assert {
-    condition = nonsensitive(vault_kv_secret_v2.postgres_user_credentials["migration"].data_json) == jsonencode({
-      username = "migration"
+    condition = nonsensitive(vault_kv_secret_v2.postgres_user_credentials["lorem"].data_json) == jsonencode({
+      username = "lorem"
       password = "password"
       host     = "postgres.stackit.internal"
     })
@@ -146,8 +166,8 @@ run "secrets_and_manifest" {
   }
 
   assert {
-    condition     = contains(output.secret_manager_secret_names, "postgres/migration")
-    error_message = "Secret names list should contain migration secret"
+    condition     = contains(output.secret_manager_secret_names, "postgres/lorem")
+    error_message = "Secret names list should contain lorem secret"
   }
 
   assert {
@@ -156,8 +176,8 @@ run "secrets_and_manifest" {
   }
 
   assert {
-    condition     = contains(yamldecode(local_file.external_secret_manifest[0].content).spec.data.*.secretKey, "migration_user")
-    error_message = "Manifest missing migration_user"
+    condition     = contains(yamldecode(local_file.external_secret_manifest[0].content).spec.data.*.secretKey, "lorem_user")
+    error_message = "Manifest missing lorem_user"
   }
 }
 
@@ -180,20 +200,21 @@ run "config_map_manifest" {
   command = apply
 
   variables {
-    database_names = ["neuris", "metabase"]
-    user_names     = ["migration", "search"]
+    database_names = ["foo", "bar"]
+    user_names     = ["lorem", "ipsum"]
 
     manage_user_password = false
     config_map_manifest  = "config.yaml"
+    kubernetes_namespace = "namespace"
   }
   assert {
-    condition     = yamldecode(split("\n---\n", local_file.config_map_manifest[0].content)[0]).metadata.name == "database-config-metabase"
-    error_message = "First ConfigMap should be for 'metabase'"
+    condition     = yamldecode(split("\n---\n", local_file.config_map_manifest[0].content)[0]).metadata.name == "database-config-bar"
+    error_message = "First ConfigMap should be for 'bar'"
   }
 
   assert {
-    condition     = yamldecode(split("\n---\n", local_file.config_map_manifest[0].content)[1]).metadata.name == "database-config-neuris"
-    error_message = "First ConfigMap should be for 'neuris'"
+    condition     = yamldecode(split("\n---\n", local_file.config_map_manifest[0].content)[1]).metadata.name == "database-config-foo"
+    error_message = "First ConfigMap should be for 'foo'"
   }
 }
 
