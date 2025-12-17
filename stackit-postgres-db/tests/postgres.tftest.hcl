@@ -91,7 +91,6 @@ run "basic_creation" {
     error_message = "The database owner should be the user created by this module"
   }
 
-
   assert {
     condition     = output.address == "postgres.stackit.internal"
     error_message = "The address output should be set correctly"
@@ -137,8 +136,8 @@ run "secrets_and_manifest" {
     manage_user_password       = true
     secret_manager_instance_id = "mock-vault"
 
-    manifest_filename    = "output.yaml"
-    kubernetes_namespace = "platform"
+    external_secret_manifest = "output.yaml"
+    kubernetes_namespace     = "platform"
   }
 
   assert {
@@ -180,7 +179,7 @@ run "secrets_and_manifest" {
   }
 }
 
-run "validation_missing_filename" {
+run "validation_missing_external_secret_manifest" {
   command = plan
 
   variables {
@@ -191,13 +190,44 @@ run "validation_missing_filename" {
     disk_size  = 10
     acls       = []
 
-    manage_user_password   = true
-    manifest_filename      = null
-    kubernetes_namespace   = "namespace"
+    manage_user_password     = true
+    external_secret_manifest = null
+    kubernetes_namespace     = "namespace"
   }
 
   # We want to mnanage the secrets externally but forgot to specify the K8s manifest file path to glue things together
   expect_failures = [
     local_file.external_secret_manifest
   ]
+}
+
+run "config_map_manifest" {
+  command = apply
+
+  variables {
+    name           = "test-postgres"
+    project_id     = var.project_id
+    cpu            = 2
+    memory         = 4
+    engine_version = "17"
+    disk_size      = 10
+    acls           = ["10.0.0.0/16"]
+
+    database_names = ["neuris", "metabase"]
+    admin_name     = "root"
+    user_names     = ["migration", "search"]
+
+    manage_user_password = false
+    kubernetes_namespace = "namespace"
+    config_map_manifest  = "configmap.yaml"
+  }
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.config_map_manifest[0].content)[0]).metadata.name == "database-config-metabase"
+    error_message = "First ConfigMap should be for 'metabase'"
+  }
+
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.config_map_manifest[0].content)[1]).metadata.name == "database-config-neuris"
+    error_message = "First ConfigMap should be for 'neuris'"
+  }
 }

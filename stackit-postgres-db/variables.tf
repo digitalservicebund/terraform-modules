@@ -92,8 +92,14 @@ variable "kubernetes_namespace" {
   default     = "[your-namespace]"
 }
 
-variable "manifest_filename" {
-  description = "Kubernetes namespace where the External Secret manifest will be applied."
+variable "external_secret_manifest" {
+  description = "Path where the external secret manifest will be stored at"
+  type        = string
+  default     = null
+}
+
+variable "config_map_manifest" {
+  description = "Path where the config map manifest will be stored at"
   type        = string
   default     = null
 }

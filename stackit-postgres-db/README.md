@@ -29,8 +29,9 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   user_names     = ["additional", "user"] # optional
 
   secret_manager_instance_id = "[your secrets manager instance id]" # available as output from stackit-secrets-manager module
-  kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
-  manifest_filename = "[path-to-the-manifest-file-to-be-created]" # The path in your system the manifest will be stored at
+  kubernetes_namespace       = "[your-namespace]" # Namespace where the External Secret manifest will be applied
+  external_secret_manifest   = "[path-to-the-manifest-file-to-be-created]" # The path in your system the external secret manifest will be stored at
+  config_map_manifest        = "[patth-to-the-manifestt-file-to-be-created" # The path in your system the config map manifest will be stored at
 } 
 ```
 
@@ -41,6 +42,16 @@ If `manage_user_password` is set to `true` (default):
 1.  **Vault Storage:** The module generates strong passwords and stores them in your STACKIT Secrets Manager instance.
 2.  **Manifest Generation:** It generates a local YAML file containing an `ExternalSecret` resource.
 3.  **Kubernetes Sync:** You can apply this manifest to your cluster. The External Secrets Operator will then fetch the credentials from Secrets Manager
+
+## Kubernetes Config Maps
+
+If `config_map_manifest` is set, then the module will also create a manifest file with the following contents per defined databases:
+
+- database: <name of database>
+- host: <host of database instance>
+- port: <port of database instance>
+
+When the variable is not set, the manifest will not be created.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -64,6 +75,7 @@ If `manage_user_password` is set to `true` (default):
 
 | Name | Type |
 |------|------|
+| [local_file.config_map_manifest](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.external_secret_manifest](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [stackit_postgresflex_database.database](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_database) | resource |
 | [stackit_postgresflex_instance.this](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_instance) | resource |
@@ -79,14 +91,15 @@ If `manage_user_password` is set to `true` (default):
 | <a name="input_acls"></a> [acls](#input\_acls) | List of ACL IDs to associate with the database instance. This should be the cluster Egress IP Range only! | `list(string)` | n/a | yes |
 | <a name="input_admin_name"></a> [admin\_name](#input\_admin\_name) | Specified the name of the Postgres Database Owner | `string` | `null` | no |
 | <a name="input_backup_schedule"></a> [backup\_schedule](#input\_backup\_schedule) | Backup schedule in cron format. Defaults to daily at 3am UTC. | `string` | `"0 3 * * *"` | no |
+| <a name="input_config_map_manifest"></a> [config\_map\_manifest](#input\_config\_map\_manifest) | Path where the config map manifest will be stored at | `string` | `null` | no |
 | <a name="input_cpu"></a> [cpu](#input\_cpu) | Specifies the CPU specs of the instance. Available Options: 2, 4, 8 & 16 | `number` | n/a | yes |
 | <a name="input_database_names"></a> [database\_names](#input\_database\_names) | List of database names to create. If empty, defaults to a single database named after the instance. | `set(string)` | `[]` | no |
 | <a name="input_disk_size"></a> [disk\_size](#input\_disk\_size) | Size of the instance disk volume. Its value range is from 5 GB to 4000 GB. | `number` | n/a | yes |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | Specifies the storage performance class. e.g. premium-perf6-stackit | `string` | `"premium-perf6-stackit"` | no |
 | <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | Specifies the postgres version. | `string` | `"17"` | no |
+| <a name="input_external_secret_manifest"></a> [external\_secret\_manifest](#input\_external\_secret\_manifest) | Path where the external secret manifest will be stored at | `string` | `null` | no |
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `"[your-namespace]"` | no |
 | <a name="input_manage_user_password"></a> [manage\_user\_password](#input\_manage\_user\_password) | Set true to add the user password into the STACKIT Secrets Manager. | `bool` | `true` | no |
-| <a name="input_manifest_filename"></a> [manifest\_filename](#input\_manifest\_filename) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Specifies the memory (RAM) specs of the instance in GB. Available Options: 4, 8, 16, 32 & 128 | `number` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | Specifies the name of the Postgres instance. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the STACKIT project where the database will be created. | `string` | n/a | yes |
