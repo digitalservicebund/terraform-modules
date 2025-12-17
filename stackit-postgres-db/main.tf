@@ -98,7 +98,7 @@ resource "local_file" "external_secret_manifest" {
   filename = var.external_secret_manifest
 
   content = format("%s%s", local.yaml_autocreate_warning, yamlencode({
-    apiVersion = "external-secrets.io/v1beta1"
+    apiVersion = "external-secrets.io/v1"
     kind       = "ExternalSecret"
     metadata = {
       name      = "database-credentials"
