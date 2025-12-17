@@ -113,10 +113,6 @@ resource "local_file" "external_secret_manifest" {
           {
             secretKey = "${local.admin_user}_password"
             remoteRef = { key = "postgres/${local.admin_user}", property = "password" }
-          },
-          {
-            secretKey = "database_host"
-            remoteRef = { key = "postgres/${local.admin_user}", property = "host" }
           }
         ],
         flatten([
