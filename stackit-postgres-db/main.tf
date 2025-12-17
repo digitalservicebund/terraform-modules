@@ -3,7 +3,13 @@ locals {
   # Otherwise, use the provided set.
   databases = length(var.database_names) == 0 ? toset([var.name]) : var.database_names
   # Create the admin user with the name of the instance if not set explicitly
-  admin_user = coalesce(var.admin_name, var.name)
+  admin_user              = coalesce(var.admin_name, var.name)
+  yaml_autocreate_warning = <<-EOT
+    ###
+    # DO NOT EDIT MANUALLY
+    # THIS FILE IS MANAGED BY TERRAFORM
+    ###
+  EOT
 }
 
 resource "stackit_postgresflex_instance" "this" {
@@ -91,7 +97,7 @@ resource "local_file" "external_secret_manifest" {
 
   filename = var.external_secret_manifest
 
-  content = yamlencode({
+  content = format("%s%s", local.yaml_autocreate_warning, yamlencode({
     apiVersion = "external-secrets.io/v1beta1"
     kind       = "ExternalSecret"
     metadata = {
@@ -129,7 +135,7 @@ resource "local_file" "external_secret_manifest" {
         ])
       )
     }
-  })
+  }))
 }
 
 resource "local_file" "config_map_manifest" {
@@ -143,7 +149,7 @@ resource "local_file" "config_map_manifest" {
   }
   filename = var.config_map_manifest
 
-  content = join("\n---\n", [
+  content = format("%s%s", local.yaml_autocreate_warning, join("\n---\n", [
     for db_name in local.databases : yamlencode({
       apiVersion = "v1"
       kind       = "ConfigMap"
@@ -159,5 +165,5 @@ resource "local_file" "config_map_manifest" {
         }
       }
     })
-  ])
+  ]))
 }
