@@ -18,7 +18,16 @@ mock_provider "vault" {
 }
 
 variables {
-  project_id = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+  project_id     = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+  name           = "test-postgres"
+  cpu            = 2
+  memory         = 4
+  engine_version = "17"
+  disk_size      = 10
+  acls           = ["10.0.0.0/16"]
+  admin_name     = "root"
+
+  kubernetes_namespace = "namespace"
 }
 
 # --- Test 1: Basic Creation ---
@@ -26,20 +35,10 @@ run "basic_creation" {
   command = apply
 
   variables {
-    name           = "test-postgres"
-    project_id     = var.project_id
-    cpu            = 2
-    memory         = 4
-    engine_version = "17"
-    disk_size      = 10
-    acls           = ["10.0.0.0/16"]
-
     database_names = ["neuris", "metabase"]
-    admin_name     = "root"
     user_names     = ["migration", "search"]
 
     manage_user_password = false
-    kubernetes_namespace = "namespace"
   }
 
   assert {
@@ -112,22 +111,15 @@ run "secrets_and_manifest" {
   command = apply
 
   variables {
-    name       = "test-secrets"
-    project_id = var.project_id
-    cpu        = 2
-    memory     = 4
-    disk_size  = 10
-    acls       = ["0.0.0.0/0"]
+    name = "test-secrets"
 
     database_names = ["neuris"]
-    admin_name     = "root"
     user_names     = ["migration"]
 
     manage_user_password       = true
     secret_manager_instance_id = "mock-vault"
 
     external_secret_manifest = "output.yaml"
-    kubernetes_namespace     = "platform"
   }
 
   assert {
@@ -173,16 +165,9 @@ run "validation_missing_external_secret_manifest" {
   command = plan
 
   variables {
-    name       = "fail-test"
-    project_id = var.project_id
-    cpu        = 2
-    memory     = 4
-    disk_size  = 10
-    acls       = []
-
+    name                     = "fail-test"
     manage_user_password     = true
     external_secret_manifest = null
-    kubernetes_namespace     = "namespace"
   }
 
   # We want to mnanage the secrets externally but forgot to specify the K8s manifest file path to glue things together
@@ -208,7 +193,6 @@ run "config_map_manifest" {
     user_names     = ["migration", "search"]
 
     manage_user_password = false
-    kubernetes_namespace = "namespace"
     config_map_manifest  = "configmap.yaml"
   }
   assert {
