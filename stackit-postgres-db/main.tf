@@ -158,11 +158,9 @@ resource "local_file" "config_map_manifest" {
         namespace = var.kubernetes_namespace
       }
       data = {
-        database = {
-          database = db_name
-          host     = stackit_postgresflex_user.admin.host
-          port     = tostring(stackit_postgresflex_user.admin.port)
-        }
+        "database.name" = db_name
+        "database.host" = stackit_postgresflex_user.admin.host
+        "database.port" = tostring(stackit_postgresflex_user.admin.port)
       }
     })
   ]))
