@@ -34,5 +34,11 @@ variable "secret_manager_instance_id" {
 variable "kubernetes_namespace" {
   description = "Kubernetes namespace where the External Secret manifest will be applied."
   type        = string
-  default     = "[your-namespace]"
+  default     = null
+}
+
+variable "external_secret_manifest" {
+  description = "Path where the external secret manifest will be stored at"
+  type        = string
+  default     = null
 }

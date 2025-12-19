@@ -15,19 +15,8 @@ module "object_storage_bucket" {
 
   manage_credentials         = true
   secret_manager_instance_id = "[instance id of your secrets manager (can be referenced from the stackit-secrets-manager module)]"
-}
-
-
-# Write the External Secret manifest to a file, null_resources will only be executed once, so you can keep them.
-# Please adjust the path to your kustomize overlay accordingly.
-resource "null_resource" "external_secret" {
-  provisioner "local-exec" {
-    command = <<-EOT
-cat <<EOF > ../path/to/overlay/external-secret-manifest.yaml
-${module.object_storage_bucket.external_secret_manifest}
-EOF
-    EOT
-  }
+  kubernetes_namespace       = "[your-namespace]" # Namespace where the External Secret manifest will be applied
+  external_secret_manifest   = "[path-to-the-manifest-file-to-be-created]" # The path in your system the external secret manifest will be stored at
 }
 ```
 
@@ -47,6 +36,7 @@ module "object_storage_bucket" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >1.10.0 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >=2.6.1 |
 | <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.65.0 |
 | <a name="requirement_vault"></a> [vault](#requirement\_vault) | >=5.3.0 |
 
@@ -54,6 +44,7 @@ module "object_storage_bucket" {
 
 | Name | Version |
 |------|---------|
+| <a name="provider_local"></a> [local](#provider\_local) | 2.6.1 |
 | <a name="provider_stackit"></a> [stackit](#provider\_stackit) | 0.68.0 |
 | <a name="provider_vault"></a> [vault](#provider\_vault) | 5.6.0 |
 
@@ -61,6 +52,7 @@ module "object_storage_bucket" {
 
 | Name | Type |
 |------|------|
+| [local_file.external_secret_manifest](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [stackit_objectstorage_bucket.bucket](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket) | resource |
 | [stackit_objectstorage_credential.credential](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credential) | resource |
 | [stackit_objectstorage_credentials_group.credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credentials_group) | resource |
@@ -72,7 +64,8 @@ module "object_storage_bucket" {
 |------|-------------|------|---------|:--------:|
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket. | `string` | n/a | yes |
 | <a name="input_credentials_names"></a> [credentials\_names](#input\_credentials\_names) | Names of credentials to create for the bucket. Defaults to ['default']. | `list(string)` | <pre>[<br/>  "default"<br/>]</pre> | no |
-| <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `"[your-namespace]"` | no |
+| <a name="input_external_secret_manifest"></a> [external\_secret\_manifest](#input\_external\_secret\_manifest) | Path where the external secret manifest will be stored at | `string` | `null` | no |
+| <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_manage_credentials"></a> [manage\_credentials](#input\_manage\_credentials) | Set true to add the credentials into the STACKIT Secrets Manager. The credentials will be at `object-storage/[bucket name]/[credential name]` | `bool` | `false` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_credentials is true. | `string` | `null` | no |
@@ -83,5 +76,4 @@ module "object_storage_bucket" {
 |------|-------------|
 | <a name="output_bucket_name"></a> [bucket\_name](#output\_bucket\_name) | n/a |
 | <a name="output_credentials"></a> [credentials](#output\_credentials) | Credentials to access the S3 bucket. Only available if `manage_credentials` is false |
-| <a name="output_external_secret_manifest"></a> [external\_secret\_manifest](#output\_external\_secret\_manifest) | Kubernetes External Secret manifest to fetch the bucket credentials from STACKIT Secrets Manager. Only available if `manage_credentials` is true. |
 <!-- END_TF_DOCS -->

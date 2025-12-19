@@ -12,37 +12,3 @@ output "credentials" {
 output "bucket_name" {
   value = stackit_objectstorage_bucket.bucket.name
 }
-
-locals {
-  manifest_list = [
-    for name in var.credentials_names : <<EOF
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: bucket-credentials-${name}
-  namespace: ${var.kubernetes_namespace}
-spec:
-  refreshInterval: "15m"
-  secretStoreRef:
-    name: secret-store
-    kind: SecretStore
-  target:
-    name: bucket-credentials-${name}
-  data:
-    - secretKey: access_key
-      remoteRef:
-        key: object-storage/${stackit_objectstorage_bucket.bucket.name}/${name}
-        property: access_key
-    - secretKey: secret_access_key
-      remoteRef:
-        key: object-storage/${stackit_objectstorage_bucket.bucket.name}/${name}
-        property: secret_access_key
-EOF
-  ]
-  external_secrets_manifest = var.manage_credentials ? join("\n---\n", local.manifest_list) : ""
-}
-
-output "external_secret_manifest" {
-  description = "Kubernetes External Secret manifest to fetch the bucket credentials from STACKIT Secrets Manager. Only available if `manage_credentials` is true."
-  value       = var.manage_credentials ? local.external_secrets_manifest : ""
-}
