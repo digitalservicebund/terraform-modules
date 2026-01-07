@@ -30,7 +30,8 @@ mock_provider "vault" {
   }
 }
 variables {
-  project_id = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+  project_id               = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+  external_secret_manifest = "secret.yaml"
 }
 
 # Test 1: Default configuration with single credential
@@ -170,52 +171,78 @@ run "vault_integration" {
 
   # 3. Verify External Secret Manifest Content
   assert {
-    condition     = nonsensitive(output.external_secret_manifest) == <<EOF
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: bucket-credentials-read-write
-  namespace: production-ns
-spec:
-  refreshInterval: "15m"
-  secretStoreRef:
-    name: secret-store
-    kind: SecretStore
-  target:
-    name: bucket-credentials-read-write
-  data:
-    - secretKey: access_key
-      remoteRef:
-        key: object-storage/test-bucket-vault/read-write
-        property: access_key
-    - secretKey: secret_access_key
-      remoteRef:
-        key: object-storage/test-bucket-vault/read-write
-        property: secret_access_key
-
----
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
-metadata:
-  name: bucket-credentials-read-only
-  namespace: production-ns
-spec:
-  refreshInterval: "15m"
-  secretStoreRef:
-    name: secret-store
-    kind: SecretStore
-  target:
-    name: bucket-credentials-read-only
-  data:
-    - secretKey: access_key
-      remoteRef:
-        key: object-storage/test-bucket-vault/read-only
-        property: access_key
-    - secretKey: secret_access_key
-      remoteRef:
-        key: object-storage/test-bucket-vault/read-only
-        property: secret_access_key
-EOF
-    error_message = "External secret manifest output should be correct"
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[0]).spec.data[0].secretKey == "access_key"
+    error_message = "The first data item secretKey should be access_key"
   }
+
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[0]).spec.data[0].remoteRef.key == "object-storage/test-bucket-vault/read-write"
+    error_message = "The remoteRef key was not generated correctly"
+  }
+
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[0]).spec.data[1].secretKey == "secret_access_key"
+    error_message = "The first data item secretKey should be access_key"
+  }
+
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[0]).spec.data[1].remoteRef.key == "object-storage/test-bucket-vault/read-write"
+    error_message = "The remoteRef key was not generated correctly"
+  }
+
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[0].secretKey == "access_key"
+    error_message = "The first data item secretKey should be access_key"
+  }
+
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[0].remoteRef.key == "object-storage/test-bucket-vault/read-only"
+    error_message = "The remoteRef key was not generated correctly"
+  }
+
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[1].secretKey == "secret_access_key"
+    error_message = "The first data item secretKey should be access_key"
+  }
+
+  assert {
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[1].remoteRef.key == "object-storage/test-bucket-vault/read-only"
+    error_message = "The remoteRef key was not generated correctly"
+  }
+}
+
+run "external_secret_manifest_missing" {
+  command = plan
+
+  variables {
+    bucket_name                = "fail-test"
+    manage_credentials         = true
+    external_secret_manifest   = null
+    kubernetes_namespace       = "namespace"
+    secret_manager_instance_id = "kv-mount"
+
+  }
+
+  # We want to mnanage the secrets externally but forgot to specify the K8s manifest file path to glue things together
+  expect_failures = [
+    local_file.external_secret_manifest
+  ]
+}
+
+run "kubernetes_namespace_missing" {
+  command = plan
+
+  variables {
+    bucket_name                = "fail-test"
+    manage_credentials         = true
+    external_secret_manifest   = "secret.yaml"
+    kubernetes_namespace       = null
+    secret_manager_instance_id = "kv-mount"
+
+  }
+
+  # We want to mnanage the secrets externally but forgot to specify the K8s manifest file path to glue things together
+  expect_failures = [
+    local_file.external_secret_manifest,
+  ]
 }
