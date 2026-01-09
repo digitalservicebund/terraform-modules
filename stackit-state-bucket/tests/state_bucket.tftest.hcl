@@ -22,6 +22,14 @@ mock_provider "stackit" {
   }
 }
 
+mock_provider "aws"{
+  mock_data "aws_iam_policy_document" {
+    defaults = {
+      json = "{\"Statement\":[],\"Version\":\"2012-10-17\"}"
+    }
+  }
+}
+
 variables {
   project_id = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
 }
