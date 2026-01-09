@@ -12,10 +12,10 @@ output "credentials" {
 output "terraform_credentials" {
   sensitive   = true
   description = "Credentials to manage S3 bucket via Terraform"
-    value = {
-        access_key        = stackit_objectstorage_credential.terraform_credentials.access_key
-        secret_access_key = stackit_objectstorage_credential.terraform_credentials.secret_access_key
-    }
+  value = {
+    access_key        = stackit_objectstorage_credential.terraform_credentials.access_key
+    secret_access_key = stackit_objectstorage_credential.terraform_credentials.secret_access_key
+  }
 }
 
 output "bucket_name" {
