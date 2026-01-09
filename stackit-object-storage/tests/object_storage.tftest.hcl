@@ -31,7 +31,7 @@ mock_provider "vault" {
     }
   }
 }
-mock_provider "aws"{
+mock_provider "aws" {
   mock_data "aws_iam_policy_document" {
     defaults = {
       json = "{\"Statement\":[],\"Version\":\"2012-10-17\"}"

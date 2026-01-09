@@ -1,11 +1,17 @@
 # StackIT Object Storage Module
 
-This module creates a STACKIT object storage bucket and credentials to access it. Its recommended to use it together with the
+This module creates a STACKIT object storage bucket and credentials to access it. It is recommended to use it together
+with the
 [STACKIT Secrets Manager Module](../stackit-secrets-manager) to store the credentials securely.
+
+By default, two credentials are created:
+
+- `default` with `superuser` role to be used by your application
+- `terraform` with `superuser` role to be used by terraform to manage the bucket
 
 ## Usage
 
-With STACKIT Secrets Manager
+### With STACKIT Secrets Manager
 
 ```hcl
 module "object_storage_bucket" {
@@ -15,12 +21,13 @@ module "object_storage_bucket" {
 
   manage_credentials         = true
   secret_manager_instance_id = "[instance id of your secrets manager (can be referenced from the stackit-secrets-manager module)]"
-  kubernetes_namespace       = "[your-namespace]" # Namespace where the External Secret manifest will be applied
-  external_secret_manifest   = "[path-to-the-manifest-file-to-be-created]" # The path in your system the external secret manifest will be stored at
+  kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
+  external_secret_manifest   = "[path-to-the-manifest-file-to-be-created]"
+  # The path in your system the external secret manifest will be stored at
 }
 ```
 
-Without STACKIT Secrets Manager
+### Without STACKIT Secrets Manager
 
 ```hcl
 module "object_storage_bucket" {
@@ -29,6 +36,28 @@ module "object_storage_bucket" {
   bucket_name = "[my-bucket-name]"
 }
 ```
+
+### Generating multiple credentials
+
+The module supports the generation of multiple credentials with different roles. You can specify the credentials to be
+created using the `credentials` input variable.
+
+For example, to create two read-only credentials in addition to the default superuser credential:
+
+```hcl
+module "object_storage_bucket" {
+  source      = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
+  project_id  = "[stackit project id]"
+  bucket_name = "[my-bucket-name]"
+  
+  credentials = {
+    # <name> = <role>
+    default  = "superuser"
+    team1 = "read-only"
+    team2 = "read-only"
+  }
+}
+```  
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -59,8 +88,8 @@ module "object_storage_bucket" {
 | [stackit_objectstorage_bucket.bucket](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket) | resource |
 | [stackit_objectstorage_credential.credential](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credential) | resource |
 | [stackit_objectstorage_credential.terraform_credentials](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credential) | resource |
-| [stackit_objectstorage_credentials_group.credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credentials_group) | resource |
 | [stackit_objectstorage_credentials_group.terraform_credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credentials_group) | resource |
+| [stackit_objectstorage_credentials_group.user_credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credentials_group) | resource |
 | [vault_kv_secret_v2.bucket_credentials](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/kv_secret_v2) | resource |
 | [aws_iam_policy_document.combined_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.disable_access_for_other_credentials_groups](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |

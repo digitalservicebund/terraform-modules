@@ -79,7 +79,6 @@ run "policy_generation" {
     }
   }
 
-
   assert {
     condition     = length(keys(stackit_objectstorage_credentials_group.user_credentials_group)) == 3
     error_message = "Should create exactly three credential groups"
