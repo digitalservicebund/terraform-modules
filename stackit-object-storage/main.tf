@@ -12,6 +12,8 @@ locals {
   }
 
   roles_used = toset([for name, role in var.credentials : role])
+  # Either the existing terraform credentials group URN or the newly created one
+  terraform_credentials_group_urn = var.terraform_credentials_group_id != null ? data.stackit_objectstorage_credentials_group.existing_terraform_credentials_group[0].urn : stackit_objectstorage_credentials_group.terraform_credentials_group[0].urn
 }
 
 resource "stackit_objectstorage_bucket" "bucket" {
@@ -24,14 +26,22 @@ resource "stackit_objectstorage_credentials_group" "terraform_credentials_group"
   # depends_on needed to avoid 409, because of simultaneously requests
   # REF: https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket
   depends_on = [stackit_objectstorage_bucket.bucket]
+  count      = var.terraform_credentials_group_id == null ? 1 : 0
 
   project_id = var.project_id
   name       = "${var.bucket_name}-cg"
 }
 
-resource "stackit_objectstorage_credential" "terraform_credentials" {
+data "stackit_objectstorage_credentials_group" "existing_terraform_credentials_group" {
+  count                = var.terraform_credentials_group_id != null ? 1 : 0
   project_id           = var.project_id
-  credentials_group_id = stackit_objectstorage_credentials_group.terraform_credentials_group.credentials_group_id
+  credentials_group_id = var.terraform_credentials_group_id
+}
+
+resource "stackit_objectstorage_credential" "terraform_credentials" {
+  count                = var.terraform_credentials_group_id == null ? 1 : 0
+  project_id           = var.project_id
+  credentials_group_id = stackit_objectstorage_credentials_group.terraform_credentials_group[0].credentials_group_id
 }
 
 # Credentials requested by user with specific roles
@@ -68,7 +78,7 @@ data "aws_iam_policy_document" "disable_access_for_other_credentials_groups" {
   statement {
     effect = "Deny"
     not_principals {
-      identifiers = concat([stackit_objectstorage_credentials_group.terraform_credentials_group.urn], [for cg in stackit_objectstorage_credentials_group.user_credentials_group : cg.urn])
+      identifiers = concat([local.terraform_credentials_group_urn], [for cg in stackit_objectstorage_credentials_group.user_credentials_group : cg.urn])
       type        = "AWS"
     }
     actions = [

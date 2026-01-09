@@ -29,6 +29,11 @@ variable "credentials" {
   }
 }
 
+variable "terraform_credentials_group_id" {
+  description = "ID of the credentials group that is used by Terraform to manage the bucket. If not provided, a new credentials group will be created."
+  type        = string
+}
+
 variable "manage_credentials" {
   description = "Set true to add the credentials into the STACKIT Secrets Manager. The credentials will be at `object-storage/[bucket name]/[credential name]`"
   type        = bool

@@ -40,8 +40,9 @@ mock_provider "aws" {
 }
 
 variables {
-  project_id               = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
-  external_secret_manifest = "secret.yaml"
+  project_id                     = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+  external_secret_manifest       = "secret.yaml"
+  terraform_credentials_group_id = null
 }
 
 # Test 1: Default configuration with only terraform credential
@@ -58,7 +59,7 @@ run "default_configuration" {
   }
 
   assert {
-    condition     = stackit_objectstorage_credentials_group.terraform_credentials_group.name == "test-bucket-default-cg"
+    condition     = stackit_objectstorage_credentials_group.terraform_credentials_group[0].name == "test-bucket-default-cg"
     error_message = "Credentials group name does not match expected format"
   }
 
@@ -130,7 +131,7 @@ run "max_bucket_name_length" {
   }
 
   assert {
-    condition     = length(stackit_objectstorage_credentials_group.terraform_credentials_group.name) <= 32
+    condition     = length(stackit_objectstorage_credentials_group.terraform_credentials_group[0].name) <= 32
     error_message = "Credentials group name should not exceed 32 characters"
   }
 }

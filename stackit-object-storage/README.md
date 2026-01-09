@@ -18,6 +18,7 @@ module "object_storage_bucket" {
   source      = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
   project_id  = "[stackit project id]"
   bucket_name = "[my-bucket-name]"
+  terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (can be referenced from the stackit-state-bucket module)]"
 
   manage_credentials         = true
   secret_manager_instance_id = "[instance id of your secrets manager (can be referenced from the stackit-secrets-manager module)]"
@@ -34,6 +35,7 @@ module "object_storage_bucket" {
   source      = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
   project_id  = "[stackit project id]"
   bucket_name = "[my-bucket-name]"
+  terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (can be referenced from the stackit-state-bucket module)]"
 }
 ```
 
@@ -46,15 +48,17 @@ For example, to create two read-only credentials in addition to the default supe
 
 ```hcl
 module "object_storage_bucket" {
-  source      = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
-  project_id  = "[stackit project id]"
-  bucket_name = "[my-bucket-name]"
-  
+  source                         = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
+  project_id                     = "[stackit project id]"
+  bucket_name                    = "[my-bucket-name]"
+  terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (can be referenced from the stackit-state-bucket module)]"
+
+
   credentials = {
     # <name> = <role>
-    default  = "superuser"
-    team1 = "read-only"
-    team2 = "read-only"
+    default = "superuser"
+    team1   = "read-only"
+    team2   = "read-only"
   }
 }
 ```  
@@ -95,6 +99,7 @@ module "object_storage_bucket" {
 | [aws_iam_policy_document.disable_access_for_other_credentials_groups](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.read_only](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.read_write](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [stackit_objectstorage_credentials_group.existing_terraform_credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/data-sources/objectstorage_credentials_group) | data source |
 
 ## Inputs
 
@@ -107,6 +112,7 @@ module "object_storage_bucket" {
 | <a name="input_manage_credentials"></a> [manage\_credentials](#input\_manage\_credentials) | Set true to add the credentials into the STACKIT Secrets Manager. The credentials will be at `object-storage/[bucket name]/[credential name]` | `bool` | `false` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_credentials is true. | `string` | `null` | no |
+| <a name="input_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#input\_terraform\_credentials\_group\_id) | ID of the credentials group that is used by Terraform to manage the bucket. If not provided, a new credentials group will be created. | `string` | n/a | yes |
 
 ## Outputs
 
@@ -114,5 +120,6 @@ module "object_storage_bucket" {
 |------|-------------|
 | <a name="output_bucket_name"></a> [bucket\_name](#output\_bucket\_name) | n/a |
 | <a name="output_credentials"></a> [credentials](#output\_credentials) | Credentials to access the S3 bucket. Only available if `manage_credentials` is false |
-| <a name="output_terraform_credentials"></a> [terraform\_credentials](#output\_terraform\_credentials) | Credentials to manage S3 bucket via Terraform |
+| <a name="output_terraform_credentials"></a> [terraform\_credentials](#output\_terraform\_credentials) | Credentials to manage S3 bucket via Terraform. This will be empty if `terraform_credentails_group_id` is provided. |
+| <a name="output_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#output\_terraform\_credentials\_group\_id) | The ID of the credentials group used by Terraform to manage the S3 bucket. |
 <!-- END_TF_DOCS -->

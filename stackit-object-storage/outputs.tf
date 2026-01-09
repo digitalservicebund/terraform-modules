@@ -11,11 +11,16 @@ output "credentials" {
 
 output "terraform_credentials" {
   sensitive   = true
-  description = "Credentials to manage S3 bucket via Terraform"
-  value = {
-    access_key        = stackit_objectstorage_credential.terraform_credentials.access_key
-    secret_access_key = stackit_objectstorage_credential.terraform_credentials.secret_access_key
+  description = "Credentials to manage S3 bucket via Terraform. This will be empty if `terraform_credentails_group_id` is provided."
+  value = var.terraform_credentials_group_id != null ? {} : {
+    access_key        = stackit_objectstorage_credential.terraform_credentials[0].access_key
+    secret_access_key = stackit_objectstorage_credential.terraform_credentials[0].secret_access_key
   }
+}
+
+output "terraform_credentials_group_id" {
+  description = "The ID of the credentials group used by Terraform to manage the S3 bucket."
+  value       = var.terraform_credentials_group_id != null ? var.terraform_credentials_group_id : stackit_objectstorage_credentials_group.terraform_credentials_group[0].credentials_group_id
 }
 
 output "bucket_name" {
