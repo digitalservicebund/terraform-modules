@@ -35,7 +35,7 @@ resource "stackit_objectstorage_credential" "terraform_credentials" {
 }
 
 # Credentials requested by user with specific roles
-resource "stackit_objectstorage_credentials_group" "credentials_group" {
+resource "stackit_objectstorage_credentials_group" "user_credentials_group" {
   # depends_on needed to avoid 409, because of simultaneously requests
   # REF: https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket
   depends_on = [stackit_objectstorage_bucket.bucket]
@@ -48,7 +48,7 @@ resource "stackit_objectstorage_credentials_group" "credentials_group" {
 resource "stackit_objectstorage_credential" "credential" {
   for_each             = var.credentials
   project_id           = var.project_id
-  credentials_group_id = stackit_objectstorage_credentials_group.credentials_group[each.value].credentials_group_id
+  credentials_group_id = stackit_objectstorage_credentials_group.user_credentials_group[each.value].credentials_group_id
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
@@ -68,7 +68,7 @@ data "aws_iam_policy_document" "disable_access_for_other_credentials_groups" {
   statement {
     effect = "Deny"
     not_principals {
-      identifiers = concat([stackit_objectstorage_credentials_group.terraform_credentials_group.urn], [for cg in stackit_objectstorage_credentials_group.credentials_group : cg.urn])
+      identifiers = concat([stackit_objectstorage_credentials_group.terraform_credentials_group.urn], [for cg in stackit_objectstorage_credentials_group.user_credentials_group : cg.urn])
       type        = "AWS"
     }
     actions = [
@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "read_only" {
   statement {
     effect = "Deny"
     principals {
-      identifiers = [stackit_objectstorage_credentials_group.credentials_group["read-only"].urn]
+      identifiers = [stackit_objectstorage_credentials_group.user_credentials_group["read-only"].urn]
       type        = "AWS"
     }
     actions = [
@@ -109,7 +109,7 @@ data "aws_iam_policy_document" "read_write" {
   statement {
     effect = "Deny"
     principals {
-      identifiers = [stackit_objectstorage_credentials_group.credentials_group["read-write"].urn]
+      identifiers = [stackit_objectstorage_credentials_group.user_credentials_group["read-write"].urn]
       type        = "AWS"
     }
     actions = [

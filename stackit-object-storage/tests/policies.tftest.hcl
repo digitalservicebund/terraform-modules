@@ -58,21 +58,21 @@ run "policy_generation" {
     }
   }
   override_resource {
-    target = stackit_objectstorage_credentials_group.credentials_group["superuser"]
+    target = stackit_objectstorage_credentials_group.user_credentials_group["superuser"]
     values = {
       credentials_group_id = "636573b0-f12d-461a-ac55-5078a1bf18f5"
       urn                  = "urn:stackit:objectstorage:credentialsgroup:su"
     }
   }
   override_resource {
-    target = stackit_objectstorage_credentials_group.credentials_group["read-write"]
+    target = stackit_objectstorage_credentials_group.user_credentials_group["read-write"]
     values = {
       credentials_group_id = "3b5f9bef-9040-4351-817e-c8a0f92eece8"
       urn                  = "urn:stackit:objectstorage:credentialsgroup:rw"
     }
   }
   override_resource {
-    target = stackit_objectstorage_credentials_group.credentials_group["read-only"]
+    target = stackit_objectstorage_credentials_group.user_credentials_group["read-only"]
     values = {
       credentials_group_id = "2831a53d-dc92-471e-b280-75f2843383f1"
       urn                  = "urn:stackit:objectstorage:credentialsgroup:ro"
@@ -81,7 +81,7 @@ run "policy_generation" {
 
 
   assert {
-    condition     = length(keys(stackit_objectstorage_credentials_group.credentials_group)) == 3
+    condition     = length(keys(stackit_objectstorage_credentials_group.user_credentials_group)) == 3
     error_message = "Should create exactly three credential groups"
   }
   assert {
