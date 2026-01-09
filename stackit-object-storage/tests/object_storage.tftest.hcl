@@ -10,6 +10,7 @@ mock_provider "stackit" {
     defaults = {
       credentials_group_id = "12168432-2b8f-44de-8514-11bd9f9ad8b6"
       project_id           = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+      urn                  = "urn:stackit:objectstorage:credentialsgroup:12168432-2b8f-44de-8514-11bd9f9ad8b6"
     }
   }
 
@@ -21,6 +22,7 @@ mock_provider "stackit" {
     }
   }
 }
+
 mock_provider "vault" {
   mock_resource "vault_kv_secret_v2" {
     defaults = {
@@ -29,12 +31,20 @@ mock_provider "vault" {
     }
   }
 }
+mock_provider "aws"{
+  mock_data "aws_iam_policy_document" {
+    defaults = {
+      json = "{\"Statement\":[],\"Version\":\"2012-10-17\"}"
+    }
+  }
+}
+
 variables {
   project_id               = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
   external_secret_manifest = "secret.yaml"
 }
 
-# Test 1: Default configuration with single credential
+# Test 1: Default configuration with only terraform credential
 run "default_configuration" {
   command = apply
 
@@ -48,7 +58,7 @@ run "default_configuration" {
   }
 
   assert {
-    condition     = stackit_objectstorage_credentials_group.credentials_group.name == "test-bucket-default-cg"
+    condition     = stackit_objectstorage_credentials_group.terraform_credentials_group.name == "test-bucket-default-cg"
     error_message = "Credentials group name does not match expected format"
   }
 
@@ -78,13 +88,16 @@ run "multiple_credentials" {
   command = apply
 
   variables {
-    bucket_name       = "test-bucket-multi"
-    credentials_names = ["credential-1", "credential-2", "credential-3"]
+    bucket_name = "test-bucket-multi"
+    credentials = {
+      "credential-1" = "read-only"
+      "credential-2" = "superuser"
+    }
   }
 
   assert {
-    condition     = length(keys(stackit_objectstorage_credential.credential)) == 3
-    error_message = "Should create exactly three credentials"
+    condition     = length(keys(stackit_objectstorage_credential.credential)) == 2
+    error_message = "Should create exactly two credentials"
   }
 
   assert {
@@ -98,13 +111,8 @@ run "multiple_credentials" {
   }
 
   assert {
-    condition     = contains(keys(stackit_objectstorage_credential.credential), "credential-3")
-    error_message = "credential-3 should exist"
-  }
-
-  assert {
-    condition     = length(keys(output.credentials)) == 3
-    error_message = "Output should contain all three credentials"
+    condition     = length(keys(output.credentials)) == 2
+    error_message = "Output should contain all two credentials"
   }
 }
 
@@ -122,7 +130,7 @@ run "max_bucket_name_length" {
   }
 
   assert {
-    condition     = length(stackit_objectstorage_credentials_group.credentials_group.name) <= 32
+    condition     = length(stackit_objectstorage_credentials_group.terraform_credentials_group.name) <= 32
     error_message = "Credentials group name should not exceed 32 characters"
   }
 }
@@ -149,7 +157,7 @@ run "vault_integration" {
     manage_credentials         = true
     secret_manager_instance_id = "kv-mount"
     kubernetes_namespace       = "production-ns"
-    credentials_names          = ["read-write", "read-only"]
+    credentials                = { rw = "read-write", ro = "read-only" }
   }
 
   # 1. Verify the Vault secret resource is created
@@ -159,7 +167,7 @@ run "vault_integration" {
   }
 
   assert {
-    condition     = vault_kv_secret_v2.bucket_credentials["read-write"].name == "object-storage/test-bucket-vault/read-write"
+    condition     = vault_kv_secret_v2.bucket_credentials["rw"].name == "object-storage/test-bucket-vault/rw"
     error_message = "Vault secret path/name does not match expected format"
   }
 
@@ -176,7 +184,7 @@ run "vault_integration" {
   }
 
   assert {
-    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[0]).spec.data[0].remoteRef.key == "object-storage/test-bucket-vault/read-write"
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[0]).spec.data[0].remoteRef.key == "object-storage/test-bucket-vault/ro"
     error_message = "The remoteRef key was not generated correctly"
   }
 
@@ -186,7 +194,7 @@ run "vault_integration" {
   }
 
   assert {
-    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[0]).spec.data[1].remoteRef.key == "object-storage/test-bucket-vault/read-write"
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[0]).spec.data[1].remoteRef.key == "object-storage/test-bucket-vault/ro"
     error_message = "The remoteRef key was not generated correctly"
   }
 
@@ -196,7 +204,7 @@ run "vault_integration" {
   }
 
   assert {
-    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[0].remoteRef.key == "object-storage/test-bucket-vault/read-only"
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[0].remoteRef.key == "object-storage/test-bucket-vault/rw"
     error_message = "The remoteRef key was not generated correctly"
   }
 
@@ -206,7 +214,7 @@ run "vault_integration" {
   }
 
   assert {
-    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[1].remoteRef.key == "object-storage/test-bucket-vault/read-only"
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[1].remoteRef.key == "object-storage/test-bucket-vault/rw"
     error_message = "The remoteRef key was not generated correctly"
   }
 }
@@ -223,7 +231,7 @@ run "external_secret_manifest_missing" {
 
   }
 
-  # We want to mnanage the secrets externally but forgot to specify the K8s manifest file path to glue things together
+  # We want to manage the secrets externally but forgot to specify the K8s manifest file path to glue things together
   expect_failures = [
     local_file.external_secret_manifest
   ]
@@ -241,7 +249,7 @@ run "kubernetes_namespace_missing" {
 
   }
 
-  # We want to mnanage the secrets externally but forgot to specify the K8s manifest file path to glue things together
+  # We want to manage the secrets externally but forgot to specify the K8s manifest file path to glue things together
   expect_failures = [
     local_file.external_secret_manifest,
   ]

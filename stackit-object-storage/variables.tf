@@ -13,10 +13,20 @@ variable "bucket_name" {
   }
 }
 
-variable "credentials_names" {
-  description = "Names of credentials to create for the bucket. Defaults to ['default']."
-  type        = list(string)
-  default     = ["default"]
+variable "credentials" {
+  description = "Credentials to create for the bucket. Map of credential name to role. Valid roles are: superuser, read-only, read-write."
+  type        = map(string)
+  default = {
+    default = "superuser"
+  }
+
+  validation {
+    condition = alltrue([
+      for c in values(var.credentials) : contains(["superuser", "read-only", "read-write"], c)
+    ])
+    error_message = "Each credential role must be one of: superuser, read-only, read-write."
+
+  }
 }
 
 variable "manage_credentials" {
