@@ -69,6 +69,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 data "aws_iam_policy_document" "combined_policy" {
   source_policy_documents = [
     data.aws_iam_policy_document.disable_access_for_other_credentials_groups.json,
+    data.aws_iam_policy_document.terraform_object_access.json,
     contains(local.roles_used, "read-only") ? data.aws_iam_policy_document.read_only[0].json : "",
     contains(local.roles_used, "read-write") ? data.aws_iam_policy_document.read_write[0].json : "",
   ]
@@ -131,6 +132,29 @@ data "aws_iam_policy_document" "read_write" {
       "s3:PutEncryptionConfiguration",
       "s3:PutReplicationConfiguration",
       "s3:PutLifecycleConfiguration"
+    ]
+    resources = [
+      "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}",
+      "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}/*"
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "terraform_object_access" {
+  statement {
+    effect = "Deny"
+    principals {
+      identifiers = [local.terraform_credentials_group_urn]
+      type        = "AWS"
+    }
+    actions = [
+      "s3:AbortMultipartUpload",
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:PutObject",
+      "s3:DeleteObject",
+      "s3:DeleteObjectVersion",
+      "s3:RestoreObject"
     ]
     resources = [
       "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}",

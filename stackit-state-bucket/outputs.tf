@@ -10,6 +10,11 @@ output "secret_access_key" {
   sensitive   = true
 }
 
+output "terraform_credentials_group_id" {
+  description = "The ID of the credentials group used by Terraform to manage the S3 bucket."
+  value       = module.object_storage.terraform_credentials_group_id
+}
+
 output "backend_file" {
   description = "Content of the backend configuration file for Terraform."
   value       = local.backend_file
