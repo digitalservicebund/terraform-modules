@@ -14,7 +14,7 @@ variable "bucket_name" {
 }
 
 variable "credentials" {
-  description = "Credentials to create for the bucket. Map of credential name to role. Valid roles are: superuser, read-only, read-write."
+  description = "Credentials to create for the bucket. Map of credential name to role (e.g. { name = role }. Valid roles are: superuser, read-only, read-write."
   type        = map(string)
   default = {
     default = "superuser"
@@ -30,7 +30,7 @@ variable "credentials" {
 }
 
 variable "terraform_credentials_group_id" {
-  description = "ID of the credentials group that is used by Terraform to manage the bucket. If not provided, a new credentials group will be created."
+  description = "ID of the credentials group that is used by Terraform to manage the bucket. A credential of this credential group must be used in the AWS provider config. If not provided, a new credentials group will be created."
   type        = string
 }
 

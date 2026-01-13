@@ -21,22 +21,23 @@ resource "stackit_objectstorage_bucket" "bucket" {
   name       = var.bucket_name
 }
 
-# Default terraform superuser credentials
-resource "stackit_objectstorage_credentials_group" "terraform_credentials_group" {
-  # depends_on needed to avoid 409, because of simultaneously requests
-  # REF: https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket
-  depends_on = [stackit_objectstorage_bucket.bucket]
-  count      = var.terraform_credentials_group_id == null ? 1 : 0
-
-  project_id = var.project_id
-  name       = "${var.bucket_name}-cg"
-}
-
 data "stackit_objectstorage_credentials_group" "existing_terraform_credentials_group" {
   count                = var.terraform_credentials_group_id != null ? 1 : 0
   project_id           = var.project_id
   credentials_group_id = var.terraform_credentials_group_id
 }
+
+# Default terraform superuser credentials
+resource "stackit_objectstorage_credentials_group" "terraform_credentials_group" {
+  count      = var.terraform_credentials_group_id == null ? 1 : 0
+  # depends_on needed to avoid 409, because of simultaneously requests
+  # REF: https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket
+  depends_on = [stackit_objectstorage_bucket.bucket]
+
+  project_id = var.project_id
+  name       = "${var.bucket_name}-cg"
+}
+
 
 resource "stackit_objectstorage_credential" "terraform_credentials" {
   count                = var.terraform_credentials_group_id == null ? 1 : 0

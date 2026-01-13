@@ -26,7 +26,6 @@ provider "aws" {
   skip_region_validation      = true
   skip_requesting_account_id = true
 
-  # You can also use credentials from another object storage module
   access_key = module.backend_bucket.access_key
   secret_key = module.backend_bucket.secret_access_key
 
