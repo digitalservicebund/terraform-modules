@@ -29,7 +29,7 @@ data "stackit_objectstorage_credentials_group" "existing_terraform_credentials_g
 
 # Default terraform superuser credentials
 resource "stackit_objectstorage_credentials_group" "terraform_credentials_group" {
-  count      = var.terraform_credentials_group_id == null ? 1 : 0
+  count = var.terraform_credentials_group_id == null ? 1 : 0
   # depends_on needed to avoid 409, because of simultaneously requests
   # REF: https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket
   depends_on = [stackit_objectstorage_bucket.bucket]
