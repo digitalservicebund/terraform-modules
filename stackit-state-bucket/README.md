@@ -95,4 +95,5 @@ You can disable all the magic with inputs.
 | <a name="output_envrc_file"></a> [envrc\_file](#output\_envrc\_file) | Content of the .envrc file to set environment variables for accessing the backend bucket. |
 | <a name="output_onepassword_command"></a> [onepassword\_command](#output\_onepassword\_command) | The 1Password CLI command that needs to be executed to add the bucket credentials to 1Password. |
 | <a name="output_secret_access_key"></a> [secret\_access\_key](#output\_secret\_access\_key) | Secret access key to access the backend bucket. Export this value as AWS\_SECRET\_ACCESS\_KEY to access the bucket. |
+| <a name="output_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#output\_terraform\_credentials\_group\_id) | The ID of the credentials group used by Terraform to manage the S3 bucket. |
 <!-- END_TF_DOCS -->
