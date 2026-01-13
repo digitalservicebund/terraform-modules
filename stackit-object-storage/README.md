@@ -130,13 +130,13 @@ module "object_storage_bucket" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket. | `string` | n/a | yes |
-| <a name="input_credentials"></a> [credentials](#input\_credentials) | Credentials to create for the bucket. Map of credential name to role. Valid roles are: superuser, read-only, read-write. | `map(string)` | <pre>{<br/>  "default": "superuser"<br/>}</pre> | no |
+| <a name="input_credentials"></a> [credentials](#input\_credentials) | Credentials to create for the bucket. Map of credential name to role (e.g. { name = role }. Valid roles are: superuser, read-only, read-write. | `map(string)` | <pre>{<br/>  "default": "superuser"<br/>}</pre> | no |
 | <a name="input_external_secret_manifest"></a> [external\_secret\_manifest](#input\_external\_secret\_manifest) | Path where the external secret manifest will be stored at | `string` | `null` | no |
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_manage_credentials"></a> [manage\_credentials](#input\_manage\_credentials) | Set true to add the credentials into the STACKIT Secrets Manager. The credentials will be at `object-storage/[bucket name]/[credential name]` | `bool` | `false` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_credentials is true. | `string` | `null` | no |
-| <a name="input_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#input\_terraform\_credentials\_group\_id) | ID of the credentials group that is used by Terraform to manage the bucket. If not provided, a new credentials group will be created. | `string` | n/a | yes |
+| <a name="input_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#input\_terraform\_credentials\_group\_id) | ID of the credentials group that is used by Terraform to manage the bucket. A credential of this credential group must be used in the AWS provider config. If not provided, a new credentials group will be created. | `string` | n/a | yes |
 
 ## Outputs
 
@@ -144,6 +144,6 @@ module "object_storage_bucket" {
 |------|-------------|
 | <a name="output_bucket_name"></a> [bucket\_name](#output\_bucket\_name) | n/a |
 | <a name="output_credentials"></a> [credentials](#output\_credentials) | Credentials to access the S3 bucket. Only available if `manage_credentials` is false |
-| <a name="output_terraform_credentials"></a> [terraform\_credentials](#output\_terraform\_credentials) | Credentials to manage S3 bucket via Terraform. This will be empty if `terraform_credentails_group_id` is provided. |
+| <a name="output_terraform_credentials"></a> [terraform\_credentials](#output\_terraform\_credentials) | Credentials to manage buckets via Terraform. Use these credentials when configuring the AWS provider. This will be empty if `terraform_credentials_group_id` is provided. |
 | <a name="output_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#output\_terraform\_credentials\_group\_id) | The ID of the credentials group used by Terraform to manage the S3 bucket. |
 <!-- END_TF_DOCS -->
