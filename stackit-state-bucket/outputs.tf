@@ -1,13 +1,18 @@
 output "access_key" {
   description = "Access key id to access the backend bucket. Export this value as AWS_ACCESS_KEY_ID to access the bucket."
-  value       = module.object_storage.credentials["default"].access_key
+  value       = module.object_storage.terraform_credentials.access_key
   sensitive   = true
 }
 
 output "secret_access_key" {
   description = "Secret access key to access the backend bucket. Export this value as AWS_SECRET_ACCESS_KEY to access the bucket."
-  value       = module.object_storage.credentials["default"].secret_access_key
+  value       = module.object_storage.terraform_credentials.secret_access_key
   sensitive   = true
+}
+
+output "terraform_credentials_group_id" {
+  description = "The ID of the credentials group used by Terraform to manage the S3 bucket."
+  value       = module.object_storage.terraform_credentials_group_id
 }
 
 output "backend_file" {

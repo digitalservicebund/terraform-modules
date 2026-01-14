@@ -1,7 +1,9 @@
 module "object_storage" {
-  source      = "../stackit-object-storage"
-  project_id  = var.project_id
-  bucket_name = var.state_bucket_name
+  source                         = "../stackit-object-storage"
+  project_id                     = var.project_id
+  bucket_name                    = var.state_bucket_name
+  credentials                    = {}   # No additional credentials needed
+  terraform_credentials_group_id = null # Let the module create credentials for Terraform
 }
 
 locals {
@@ -34,8 +36,8 @@ export AWS_SECRET_ACCESS_KEY="op://${var.onepassword_vault}/${module.object_stor
     "op item create --vault %q --category 'Secure Note' --title %q 'ACCESS_KEY_ID[text]=%s' 'SECRET_ACCESS_KEY[text]=%s'",
     var.onepassword_vault,
     "${module.object_storage.bucket_name} credentials",
-    module.object_storage.credentials["default"].access_key,
-    module.object_storage.credentials["default"].secret_access_key
+    module.object_storage.terraform_credentials.access_key,
+    module.object_storage.terraform_credentials.secret_access_key
   )
 }
 

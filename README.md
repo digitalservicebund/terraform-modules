@@ -4,7 +4,6 @@ This repository contains a collection of Terraform modules we use in our infrast
 
 When developing modules for the OpenTelekomCloud, this repository can serve as useful inspiration: https://github.com/iits-consulting/terraform-opentelekomcloud-project-factory/tree/master/modules
 
-
 # terraform-docs
 
 When developing our modules for STACKIT, please ensure to also use `terraform-docs` to autogenerate additional documentation for each module.

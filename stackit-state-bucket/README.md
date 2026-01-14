@@ -21,11 +21,28 @@ bootstrap your terraform configuration by setting up the remote state for you.
      onepassword_vault = "[your team vault name]"
    }
    ```
-2. Run `terraform init` and `terraform apply`
-3. A `backend.tf` should have been generated in your terraform folder
-4. A `.envrc` file should have been generated in your terraform folder
-5. A 1Password item should have been generated in your teams vault
-6. Run `terraform init` to migrate your local state to the remote state bucket
+2. Add the `aws` provider config to you `providers.tf` file
+   ```hcl
+    provider "aws" {
+      region                      = "eu01"
+      skip_credentials_validation = true
+      skip_region_validation      = true
+      skip_requesting_account_id  = true
+    
+      access_key = module.backend_bucket.access_key
+      secret_key = module.backend_bucket.secret_access_key
+    
+      endpoints {
+        s3 = "https://object.storage.eu01.onstackit.cloud"
+      }
+    }
+   ```
+   This is needed to configure access policies on the bucket.
+3. Run `terraform init` and `terraform apply`
+4. A `backend.tf` should have been generated in your terraform folder
+5. A `.envrc` file should have been generated in your terraform folder
+6. A 1Password item should have been generated in your teams vault
+7. Run `terraform init` to migrate your local state to the remote state bucket
 
 You can disable all the magic with inputs.
 
@@ -35,6 +52,7 @@ You can disable all the magic with inputs.
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >1.10.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >=6.28.0 |
 | <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.65.0 |
 
 ## Providers
@@ -77,4 +95,5 @@ You can disable all the magic with inputs.
 | <a name="output_envrc_file"></a> [envrc\_file](#output\_envrc\_file) | Content of the .envrc file to set environment variables for accessing the backend bucket. |
 | <a name="output_onepassword_command"></a> [onepassword\_command](#output\_onepassword\_command) | The 1Password CLI command that needs to be executed to add the bucket credentials to 1Password. |
 | <a name="output_secret_access_key"></a> [secret\_access\_key](#output\_secret\_access\_key) | Secret access key to access the backend bucket. Export this value as AWS\_SECRET\_ACCESS\_KEY to access the bucket. |
+| <a name="output_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#output\_terraform\_credentials\_group\_id) | The ID of the credentials group used by Terraform to manage the S3 bucket. |
 <!-- END_TF_DOCS -->
