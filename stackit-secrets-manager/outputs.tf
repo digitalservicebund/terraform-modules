@@ -25,40 +25,51 @@ output "terraform_password" {
 
 output "external_secrets_secret_store_manifest" {
   description = "Kubernetes SecretStore manifest for External Secrets to connect to STACKIT Secrets Manager. Use a null_resource to store this output in a file."
-  value       = <<EOF
-apiVersion: external-secrets.io/v1
-kind: SecretStore
-metadata:
-  name: secret-store
-  namespace: ${var.kubernetes_namespace}
-spec:
-  provider:
-    vault:
-      server: https://prod.sm.eu01.stackit.cloud
-      path: ${stackit_secretsmanager_instance.this.instance_id}
-      version: "v2"
-      auth:
-        userPass:
-          path: "userpass"
-          username: ${stackit_secretsmanager_user.external_secrets.username}
-          secretRef:
-            name: secrets-manager-password
-            key: password
-EOF
+  value = yamlencode({
+    apiVersion = "external-secrets.io/v1"
+    kind       = "SecretStore"
+    metadata = {
+      name      = "secret-store"
+      namespace = var.kubernetes_namespace
+    }
+    spec = {
+      provider = {
+        vault = {
+          server  = "https://prod.sm.eu01.stackit.cloud"
+          path    = stackit_secretsmanager_instance.this.instance_id
+          version = "v2"
+          auth = {
+            userPass = {
+              path     = "userpass"
+              username = stackit_secretsmanager_user.external_secrets.username
+              secretRef = {
+                name = "secrets-manager-password"
+                key  = "password"
+              }
+            }
+          }
+        }
+      }
+    }
+  })
 }
 
 output "external_secrets_secret_manifest" {
   description = "Kubernetes Secret manifest containing the password for the External Secrets user. Please use kubeseal to create a sealed secret from this manifest."
   sensitive   = true
-  value       = <<EOF
-# DO NOT COMMIT THIS! USE KUBESEAL TO CREATE A SEALED SECRET INSTEAD
-apiVersion: v1
-kind: Secret
-metadata:
-  name: secrets-manager-password
-  namespace: ${var.kubernetes_namespace}
-type: Opaque
-stringData:
-  password: ${stackit_secretsmanager_user.external_secrets.password}
-EOF
+  value = format(
+    "# DO NOT COMMIT THIS! USE KUBESEAL TO CREATE A SEALED SECRET INSTEAD\n%s",
+    yamlencode({
+      apiVersion = "v1"
+      kind       = "Secret"
+      metadata = {
+        name      = "secrets-manager-password"
+        namespace = var.kubernetes_namespace
+      }
+      type = "Opaque"
+      stringData = {
+        password = stackit_secretsmanager_user.external_secrets.password
+      }
+    })
+  )
 }

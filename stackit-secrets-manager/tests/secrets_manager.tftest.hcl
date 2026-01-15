@@ -50,24 +50,24 @@ run "external_secrets_outputs" {
 
   assert {
     condition     = output.external_secrets_secret_store_manifest == <<EOT
-apiVersion: external-secrets.io/v1
-kind: SecretStore
-metadata:
-  name: secret-store
-  namespace: platform
-spec:
-  provider:
-    vault:
-      server: https://prod.sm.eu01.stackit.cloud
-      path: ff0253d0-bd75-4ee6-a33a-63b41c320260
-      version: "v2"
-      auth:
-        userPass:
-          path: "userpass"
-          username: username
-          secretRef:
-            name: secrets-manager-password
-            key: password
+"apiVersion": "external-secrets.io/v1"
+"kind": "SecretStore"
+"metadata":
+  "name": "secret-store"
+  "namespace": "platform"
+"spec":
+  "provider":
+    "vault":
+      "auth":
+        "userPass":
+          "path": "userpass"
+          "secretRef":
+            "key": "password"
+            "name": "secrets-manager-password"
+          "username": "username"
+      "path": "ff0253d0-bd75-4ee6-a33a-63b41c320260"
+      "server": "https://prod.sm.eu01.stackit.cloud"
+      "version": "v2"
 EOT
     error_message = "External Secrets SecretStore manifest is incorrect"
   }
@@ -75,14 +75,14 @@ EOT
   assert {
     condition     = nonsensitive(output.external_secrets_secret_manifest) == <<EOT
 # DO NOT COMMIT THIS! USE KUBESEAL TO CREATE A SEALED SECRET INSTEAD
-apiVersion: v1
-kind: Secret
-metadata:
-  name: secrets-manager-password
-  namespace: platform
-type: Opaque
-stringData:
-  password: password
+"apiVersion": "v1"
+"kind": "Secret"
+"metadata":
+  "name": "secrets-manager-password"
+  "namespace": "platform"
+"stringData":
+  "password": "password"
+"type": "Opaque"
 EOT
     error_message = "External Secrets Secret manifest is incorrect"
   }
