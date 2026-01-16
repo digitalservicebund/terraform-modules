@@ -1,6 +1,6 @@
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  count = var.enable_policy_creation ? 1 : 0
+  count  = var.enable_policy_creation ? 1 : 0
   bucket = stackit_objectstorage_bucket.bucket.name
   policy = data.aws_iam_policy_document.combined_policy.json
 }
