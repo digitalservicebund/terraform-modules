@@ -50,6 +50,21 @@ module "object_storage_bucket" {
   external_secret_manifest   = "[path-to-the-manifest-file-to-be-created]"
   # The path in your system the external secret manifest will be stored at
 }
+
+```
+
+Add the vault provider config to your `provider.tf` file to integrate with the STACKIT Secrets Manager:
+
+```hcl
+provider "vault" {
+  address          = "https://prod.sm.eu01.stackit.cloud"
+  skip_child_token = true
+
+  auth_login_userpass {
+    username = module.secrets_manager.terraform_username
+    password = module.secrets_manager.terraform_password
+  }
+}
 ```
 
 ### Without STACKIT Secrets Manager

@@ -1,15 +1,16 @@
 # STACKIT Postgres Database Module
 
-This module provisions a managed PostgreSQL database instance on STACKIT. It handles the creation of the instance, databases, and users, while optionally integrating with STACKIT Secrets Manager for secure credential storage.
+This module provisions a managed PostgreSQL database instance on STACKIT. It handles the creation of the instance,
+databases, and users, while optionally integrating with STACKIT Secrets Manager for secure credential storage.
 
 ## Configuration Logic
 
 To minimize configuration for simple use cases, this module uses "Convention over Configuration" with fallback logic:
 
-| Resource | Logic |
-| :--- | :--- |
-| **Databases** | Creates databases listed in `database_names`. <br> *Fallback:* If the list is empty, creates a single database named after the instance (`var.name`). |
-| **Admin User** | Creates an admin user named `admin_user`. <br> *Fallback:* If not set, creates a user named after the instance (`var.name`). |
+| Resource       | Logic                                                                                                                                                 |
+|:---------------|:------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Databases**  | Creates databases listed in `database_names`. <br> *Fallback:* If the list is empty, creates a single database named after the instance (`var.name`). |
+| **Admin User** | Creates an admin user named `admin_user`. <br> *Fallback:* If not set, creates a user named after the instance (`var.name`).                          |
 
 ## Usage Example
 
@@ -22,30 +23,49 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   memory         = 4
   engine_version = "17"
   disk_size      = 5
-  acls           = "[cluster egress range]" # Ask the platform team for the correct egress range
+  acls = "[cluster egress range]" # Ask the platform team for the correct egress range
 
   database_names = ["list-of-names", "to-create-databases"] # optional, will fallback to `var.name` if not present
-  admin_name     = "root" # optional, will fallback to `var.name` if not present
-  user_names     = ["additional", "user"] # optional
+  admin_name = "root" # optional, will fallback to `var.name` if not present
+  user_names = ["additional", "user"] # optional
 
-  secret_manager_instance_id = "[your secrets manager instance id]" # available as output from stackit-secrets-manager module
-  kubernetes_namespace       = "[your-namespace]" # Namespace where the External Secret manifest will be applied
-  external_secret_manifest   = "[path-to-the-manifest-file-to-be-created]" # The path in your system the external secret manifest will be stored at
-  config_map_manifest        = "[patth-to-the-manifestt-file-to-be-created" # The path in your system the config map manifest will be stored at
+  secret_manager_instance_id = "[your secrets manager instance id]"
+  # available as output from stackit-secrets-manager module
+  kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
+  external_secret_manifest = "[path-to-the-manifest-file-to-be-created]"
+  # The path in your system the external secret manifest will be stored at
+  config_map_manifest = "[patth-to-the-manifestt-file-to-be-created"
+  # The path in your system the config map manifest will be stored at
 } 
 ```
 
-## Secrets & Kubernetes Integration
+## Secrets Manager & Kubernetes Integration
 
 If `manage_user_password` is set to `true` (default):
 
-1.  **Vault Storage:** The module generates strong passwords and stores them in your STACKIT Secrets Manager instance.
-2.  **Manifest Generation:** It generates a local YAML file containing an `ExternalSecret` resource.
-3.  **Kubernetes Sync:** You can apply this manifest to your cluster. The External Secrets Operator will then fetch the credentials from Secrets Manager
+1. **Vault Storage:** The module generates strong passwords and stores them in your STACKIT Secrets Manager instance.
+2. **Manifest Generation:** It generates a local YAML file containing an `ExternalSecret` resource.
+3. **Kubernetes Sync:** You can apply this manifest to your cluster. The External Secrets Operator will then fetch the
+   credentials from Secrets Manager
+
+Add the vault provider config to your `provider.tf` file for this feature to work:
+
+```hcl
+provider "vault" {
+  address          = "https://prod.sm.eu01.stackit.cloud"
+  skip_child_token = true
+
+  auth_login_userpass {
+    username = module.secrets_manager.terraform_username
+    password = module.secrets_manager.terraform_password
+  }
+}
+```
 
 ## Kubernetes Config Maps
 
-If `config_map_manifest` is set, then the module will also create a manifest file with the following contents per defined databases:
+If `config_map_manifest` is set, then the module will also create a manifest file with the following contents per
+defined databases:
 
 - database: <name of database>
 - host: <host of database instance>
