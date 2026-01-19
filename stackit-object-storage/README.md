@@ -13,6 +13,12 @@ By default, two credentials are created:
 > 💡 In case you already have another bucket in your terraform configuration, you should provide the
 `terraform_credentials_group_id` input variable to let terraform manage the bucket with the existing credentials group.
 
+The module is also creating polices that restrict access to the bucket only to the created credentials (and the
+credentials group identified by `terraform_credentials_group_id` to manage the bucket). If you want to create your own
+policies (e.g. in case you need public access), you can disable this behavior by setting the `enable_policy_creation`
+input variable to `false`. Please note that in this case all credentials in the same STACKIT project will have access to
+your bucket.
+
 ## Usage
 
 ### AWS Provider Configuration
@@ -24,7 +30,7 @@ provider "aws" {
   region                      = "eu01"
   skip_credentials_validation = true
   skip_region_validation      = true
-  skip_requesting_account_id = true
+  skip_requesting_account_id  = true
 
   access_key = module.backend_bucket.access_key
   secret_key = module.backend_bucket.secret_access_key
@@ -146,7 +152,7 @@ module "object_storage_bucket" {
 |------|-------------|------|---------|:--------:|
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket. | `string` | n/a | yes |
 | <a name="input_credentials"></a> [credentials](#input\_credentials) | Credentials to create for the bucket. Map of credential name to role (e.g. { name = role }. Valid roles are: superuser, read-only, read-write. | `map(string)` | <pre>{<br/>  "default": "superuser"<br/>}</pre> | no |
-| <a name="input_enable_policy_creation"></a> [enable\_policy\_creation](#input\_enable\_policy\_creation) | Set to false in case you want to create your own policy. WARNING: If you disable this, all credentials in the same STACKIT project to access you bucket. | `bool` | `true` | no |
+| <a name="input_enable_policy_creation"></a> [enable\_policy\_creation](#input\_enable\_policy\_creation) | Set to false in case you want to create your own policy. WARNING: If you disable this, all credentials in the same STACKIT project have access to your bucket. | `bool` | `true` | no |
 | <a name="input_external_secret_manifest"></a> [external\_secret\_manifest](#input\_external\_secret\_manifest) | Path where the external secret manifest will be stored at | `string` | `null` | no |
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_manage_credentials"></a> [manage\_credentials](#input\_manage\_credentials) | Set true to add the credentials into the STACKIT Secrets Manager. The credentials will be at `object-storage/[bucket name]/[credential name]` | `bool` | `false` | no |

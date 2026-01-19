@@ -35,7 +35,7 @@ variable "terraform_credentials_group_id" {
 }
 
 variable "enable_policy_creation" {
-  description = "Set to false in case you want to create your own policy. WARNING: If you disable this, all credentials in the same STACKIT project to access you bucket."
+  description = "Set to false in case you want to create your own policy. WARNING: If you disable this, all credentials in the same STACKIT project have access to your bucket."
   type        = bool
   default     = true
 }
