@@ -34,6 +34,12 @@ variable "terraform_credentials_group_id" {
   type        = string
 }
 
+variable "enable_policy_creation" {
+  description = "Set to false in case you want to create your own policy. WARNING: If you disable this, all credentials in the same STACKIT project have access to your bucket."
+  type        = bool
+  default     = true
+}
+
 variable "manage_credentials" {
   description = "Set true to add the credentials into the STACKIT Secrets Manager. The credentials will be at `object-storage/[bucket name]/[credential name]`"
   type        = bool
