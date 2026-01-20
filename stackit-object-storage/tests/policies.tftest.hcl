@@ -106,7 +106,7 @@ run "policy_generation" {
 
   assert {
     condition = (
-      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[1].Action == ["s3:Restore*", "s3:Put*", "s3:Delete*", "s3:Create*", "s3:Abort*"] &&
+      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[1].Action == ["s3:Restore*", "s3:Put*", "s3:Delete*", "s3:Abort*"] &&
       jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[1].Principal.AWS == "urn:stackit:objectstorage:credentialsgroup:ro"
     )
     error_message = "Read-only policy is incorrect"
@@ -114,7 +114,7 @@ run "policy_generation" {
 
   assert {
     condition = (
-      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].Action == ["s3:PutReplicationConfiguration", "s3:PutLifecycleConfiguration", "s3:PutEncryptionConfiguration", "s3:PutBucketTagging", "s3:PutBucketPolicy", "s3:DeleteBucketPolicy", "s3:DeleteBucket", "s3:CreateBucket"] &&
+      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].Action == ["s3:PutReplicationConfiguration", "s3:PutLifecycleConfiguration", "s3:PutEncryptionConfiguration", "s3:PutBucketTagging", "s3:PutBucketPolicy", "s3:DeleteBucketPolicy", "s3:DeleteBucket"] &&
       jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].Principal.AWS == "urn:stackit:objectstorage:credentialsgroup:rw"
     )
     error_message = "Read-write policy is incorrect"

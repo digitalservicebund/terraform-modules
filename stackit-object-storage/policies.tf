@@ -1,4 +1,3 @@
-
 resource "aws_s3_bucket_policy" "bucket_policy" {
   count  = var.enable_policy_creation ? 1 : 0
   bucket = stackit_objectstorage_bucket.bucket.name
@@ -44,7 +43,6 @@ data "aws_iam_policy_document" "read_only" {
       type        = "AWS"
     }
     actions = [
-      "s3:Create*",
       "s3:Put*",
       "s3:Delete*",
       "s3:Restore*",
@@ -67,7 +65,6 @@ data "aws_iam_policy_document" "read_write" {
       type        = "AWS"
     }
     actions = [
-      "s3:CreateBucket",
       "s3:PutBucketPolicy",
       "s3:PutBucketTagging",
       "s3:DeleteBucketPolicy",
