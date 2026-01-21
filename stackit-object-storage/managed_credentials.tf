@@ -11,14 +11,14 @@ resource "vault_kv_secret_v2" "bucket_credentials" {
 }
 
 resource "local_file" "external_secret_manifest" {
-  count = var.manage_credentials ? 1 : 0
+  count = var.manage_credentials && var.enable_manifest_creation ? 1 : 0
 
   lifecycle {
     precondition {
       # Only create the file if manage_credentials is set (otherwise the resource would not be created at all)
       # and error out if the filename was not provided.
       condition     = var.external_secret_manifest != null && var.kubernetes_namespace != null
-      error_message = "You enabled 'manage_credentials' but did not provide 'external_secret_manifest' and 'kubernetes_namespace'."
+      error_message = "You enabled 'manage_credentials' but did not provide 'external_secret_manifest' and 'kubernetes_namespace'. Please add them to your module call or disable the manifest creation with 'enable_manifest_creation = false'."
     }
   }
 

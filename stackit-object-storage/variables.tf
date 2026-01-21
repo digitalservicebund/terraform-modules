@@ -63,3 +63,9 @@ variable "external_secret_manifest" {
   type        = string
   default     = null
 }
+
+variable "enable_manifest_creation" {
+    description = "Set to true to create an External Secret manifest for Kubernetes to access the created credentials."
+    type        = bool
+    default     = true
+}

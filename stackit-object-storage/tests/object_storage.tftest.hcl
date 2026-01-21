@@ -255,3 +255,18 @@ run "kubernetes_namespace_missing" {
     local_file.external_secret_manifest,
   ]
 }
+
+run "disable_manifest_creation" {
+  command = apply
+
+  variables {
+    bucket_name                = "fail-test"
+    manage_credentials         = true
+    secret_manager_instance_id = "kv-mount"
+    enable_manifest_creation   = false
+  }
+  assert {
+    condition     = length(local_file.external_secret_manifest) == 0
+    error_message = "External Secret manifest should not be created when enable_manifest_creation is false"
+  }
+}

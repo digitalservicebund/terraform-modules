@@ -152,6 +152,7 @@ module "object_storage_bucket" {
 |------|-------------|------|---------|:--------:|
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket. | `string` | n/a | yes |
 | <a name="input_credentials"></a> [credentials](#input\_credentials) | Credentials to create for the bucket. Map of credential name to role (e.g. { name = role }. Valid roles are: superuser, read-only, read-write. | `map(string)` | <pre>{<br/>  "default": "superuser"<br/>}</pre> | no |
+| <a name="input_enable_manifest_creation"></a> [enable\_manifest\_creation](#input\_enable\_manifest\_creation) | Set to true to create an External Secret manifest for Kubernetes to access the created credentials. | `bool` | `true` | no |
 | <a name="input_enable_policy_creation"></a> [enable\_policy\_creation](#input\_enable\_policy\_creation) | Set to false in case you want to create your own policy. WARNING: If you disable this, all credentials in the same STACKIT project have access to your bucket. | `bool` | `true` | no |
 | <a name="input_external_secret_manifest"></a> [external\_secret\_manifest](#input\_external\_secret\_manifest) | Path where the external secret manifest will be stored at | `string` | `null` | no |
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
