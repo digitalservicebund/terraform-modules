@@ -69,3 +69,13 @@ variable "enable_manifest_creation" {
     type        = bool
     default     = true
 }
+
+variable "lifecycle_days" {
+  description = "Lifespan of stored data. Data will be deleted after specified value in days. Default value is 0 (no automatic deletion)"
+  type        = number
+  default     = 0
+  validation {
+    condition     = var.lifecycle_days >= 0
+    error_message = "The value for lifecycle in days must be 0 (deactivated) or a positive number."
+  }
+}

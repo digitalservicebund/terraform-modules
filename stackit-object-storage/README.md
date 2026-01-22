@@ -130,21 +130,22 @@ module "object_storage_bucket" {
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [aws_s3_bucket_policy.bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
-| [local_file.external_secret_manifest](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
-| [stackit_objectstorage_bucket.bucket](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket) | resource |
-| [stackit_objectstorage_credential.credential](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credential) | resource |
-| [stackit_objectstorage_credential.terraform_credentials](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credential) | resource |
-| [stackit_objectstorage_credentials_group.terraform_credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credentials_group) | resource |
-| [stackit_objectstorage_credentials_group.user_credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credentials_group) | resource |
-| [vault_kv_secret_v2.bucket_credentials](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/kv_secret_v2) | resource |
-| [aws_iam_policy_document.combined_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.disable_access_for_other_credentials_groups](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.read_only](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.read_write](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| Name                                                                                                                                                                                                  | Type |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|
+| [aws_s3_bucket_policy.bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy)                                                                    | resource |
+| [local_file.external_secret_manifest](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file)                                                                             | resource |
+| [stackit_objectstorage_bucket.bucket](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_bucket)                                                        | resource |
+| [stackit_objectstorage_credential.credential](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credential)                                            | resource |
+| [stackit_objectstorage_credential.terraform_credentials](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credential)                                 | resource |
+| [stackit_objectstorage_credentials_group.terraform_credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credentials_group)             | resource |
+| [stackit_objectstorage_credentials_group.user_credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/objectstorage_credentials_group)                  | resource |
+| [vault_kv_secret_v2.bucket_credentials](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/kv_secret_v2)                                                                   | resource |
+| [aws_iam_policy_document.combined_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document)                                                         | data source |
+| [aws_iam_policy_document.disable_access_for_other_credentials_groups](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document)                             | data source |
+| [aws_iam_policy_document.read_only](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document)                                                               | data source |
+| [aws_iam_policy_document.read_write](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document)                                                              | data source |
 | [stackit_objectstorage_credentials_group.existing_terraform_credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/data-sources/objectstorage_credentials_group) | data source |
+| [aws_s3_bucket_lifecycle_configuration.bucket_lifecycle](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration)                               | resource    |
 
 ## Inputs
 
@@ -160,6 +161,7 @@ module "object_storage_bucket" {
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_credentials is true. | `string` | `null` | no |
 | <a name="input_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#input\_terraform\_credentials\_group\_id) | ID of the credentials group that is used by Terraform to manage the bucket. A credential of this credential group must be used in the AWS provider config. If not provided, a new credentials group will be created. | `string` | n/a | yes |
+| <a name="input_lifecycle_days"></a> [lifecycle\_days](#input\_lifecycle\_days) | Lifespan of stored data. Data will be deleted after specified value in days. Default value is 0 (no automatic deletion), so that no lifecycle configuration will be created. | `number` | `null` | no |
 
 ## Outputs
 

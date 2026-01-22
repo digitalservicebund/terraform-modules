@@ -256,6 +256,55 @@ run "kubernetes_namespace_missing" {
   ]
 }
 
+# Test: Default lifecycle does not create lifecycle resource
+run "lifecycle_disabled_by_default" {
+  command = plan
+
+  variables {
+    bucket_name    = "test-lifecycle-off"
+    lifecycle_days = 0
+  }
+
+  assert {
+    condition     = !can(aws_s3_bucket_lifecycle_configuration.bucket_lifecycle[0])
+    error_message = "Lifecycle configuration should not be created when lifecycle_days is 0"
+  }
+}
+
+# Test: Positive Lifecycle value creates a lifecycle resource
+run "lifecycle_enabled" {
+  command = plan
+
+  variables {
+    bucket_name    = "test-lifecycle-on"
+    lifecycle_days = 30
+  }
+
+  assert {
+    condition     = length(aws_s3_bucket_lifecycle_configuration.bucket_lifecycle) == 1
+    error_message = "Lifecycle configuration should be created when days > 0"
+  }
+
+  assert {
+    condition     = aws_s3_bucket_lifecycle_configuration.bucket_lifecycle[0].rule[0].expiration[0].days == 30
+    error_message = "Lifecycle expiration days do not match expected value"
+  }
+}
+
+# Test: Validierung schlägt bei negativen Zahlen fehl
+run "lifecycle_invalid_value" {
+  command = plan
+
+  variables {
+    bucket_name           = "test-lifecycle-fail"
+    lifecycle_days = -5
+  }
+
+  expect_failures = [
+    var.lifecycle_days,
+  ]
+}
+
 run "disable_manifest_creation" {
   command = apply
 
