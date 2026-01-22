@@ -296,7 +296,7 @@ run "lifecycle_invalid_value" {
   command = plan
 
   variables {
-    bucket_name           = "test-lifecycle-fail"
+    bucket_name    = "test-lifecycle-fail"
     lifecycle_days = -5
   }
 
