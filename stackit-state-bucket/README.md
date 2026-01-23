@@ -17,7 +17,7 @@ bootstrap your terraform configuration by setting up the remote state for you.
    module "backend_bucket" {
      source            = "github.com/digitalservicebund/terraform-modules//stackit-state-bucket?ref=[sha of the commit you want to use]"
      project_id        = "[stackit project id]"
-     state_bucket_name = "ds-state-bucket-[project name]"
+     state_bucket_name = "ds-[project name]-state-bucket"
      onepassword_vault = "[your team vault name]"
    }
    ```
