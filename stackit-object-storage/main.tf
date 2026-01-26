@@ -63,7 +63,7 @@ resource "stackit_objectstorage_credential" "credential" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
-  count  = var.lifecycle_days > 0 ? 1 : 0
+  count  = var.lifecycle_days != null ? 1 : 0
   bucket = stackit_objectstorage_bucket.bucket.name
 
   rule {

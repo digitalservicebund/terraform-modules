@@ -262,7 +262,7 @@ run "lifecycle_disabled_by_default" {
 
   variables {
     bucket_name    = "test-lifecycle-off"
-    lifecycle_days = 0
+    lifecycle_days = null
   }
 
   assert {
