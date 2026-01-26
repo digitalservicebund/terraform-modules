@@ -256,7 +256,7 @@ run "kubernetes_namespace_missing" {
   ]
 }
 
-# Test: Default lifecycle does not create lifecycle resource
+# Test: Default object_expiration_days does not create lifecycle resource
 run "lifecycle_disabled_by_default" {
   command = plan
 
@@ -271,7 +271,7 @@ run "lifecycle_disabled_by_default" {
   }
 }
 
-# Test: Positive Lifecycle value creates a lifecycle resource
+# Test: Positive object_expiration_days value creates a lifecycle resource
 run "lifecycle_enabled" {
   command = plan
 
@@ -291,7 +291,7 @@ run "lifecycle_enabled" {
   }
 }
 
-# Test: Validierung schlägt bei negativen Zahlen fehl
+# Test: No negative value allowed for object_expiration_days
 run "lifecycle_invalid_value" {
   command = plan
 
