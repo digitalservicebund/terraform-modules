@@ -61,3 +61,17 @@ resource "stackit_objectstorage_credential" "credential" {
   project_id           = var.project_id
   credentials_group_id = stackit_objectstorage_credentials_group.user_credentials_group[each.value].credentials_group_id
 }
+
+resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
+  count  = var.object_expiration_days != null ? 1 : 0
+  bucket = stackit_objectstorage_bucket.bucket.name
+
+  rule {
+    id     = "auto-cleanup"
+    status = "Enabled"
+
+    expiration {
+      days = var.object_expiration_days
+    }
+  }
+}

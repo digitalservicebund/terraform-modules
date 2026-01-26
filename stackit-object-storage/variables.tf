@@ -65,7 +65,17 @@ variable "external_secret_manifest" {
 }
 
 variable "enable_manifest_creation" {
-    description = "Set to true to create an External Secret manifest for Kubernetes to access the created credentials."
-    type        = bool
-    default     = true
+  description = "Set to true to create an External Secret manifest for Kubernetes to access the created credentials."
+  type        = bool
+  default     = true
+}
+
+variable "object_expiration_days" {
+  description = "Lifespan of stored data. Data will be deleted after specified value in days. Default value is null (no automatic deletion)"
+  type        = number
+  default     = null
+  validation {
+    condition     = var.object_expiration_days == null || (var.object_expiration_days != null && var.object_expiration_days > 0)
+    error_message = "The value for lifecycle in days must be a positive number."
+  }
 }
