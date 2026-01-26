@@ -262,12 +262,12 @@ run "lifecycle_disabled_by_default" {
 
   variables {
     bucket_name    = "test-lifecycle-off"
-    lifecycle_days = null
+    object_expiration_days = null
   }
 
   assert {
     condition     = !can(aws_s3_bucket_lifecycle_configuration.bucket_lifecycle[0])
-    error_message = "Lifecycle configuration should not be created when lifecycle_days is 0"
+    error_message = "Lifecycle configuration should not be created when object_expiration_days is null"
   }
 }
 
@@ -277,7 +277,7 @@ run "lifecycle_enabled" {
 
   variables {
     bucket_name    = "test-lifecycle-on"
-    lifecycle_days = 30
+    object_expiration_days = 30
   }
 
   assert {
@@ -297,11 +297,11 @@ run "lifecycle_invalid_value" {
 
   variables {
     bucket_name    = "test-lifecycle-fail"
-    lifecycle_days = -5
+    object_expiration_days = -5
   }
 
   expect_failures = [
-    var.lifecycle_days,
+    var.object_expiration_days,
   ]
 }
 
