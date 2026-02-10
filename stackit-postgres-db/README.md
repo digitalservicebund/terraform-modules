@@ -36,7 +36,7 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   # The path in your system the external secret manifest will be stored at
   config_map_manifest = "[path-to-the-manifestt-file-to-be-created]"
   # The path in your system the config map manifest will be stored at
-} 
+}
 ```
 
 ## Secrets Manager & Kubernetes Integration
