@@ -23,7 +23,7 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   memory         = 4
   engine_version = "17"
   disk_size      = 5
-  acls = "[cluster egress range]" # Ask the platform team for the correct egress range
+  acls = ["cluster", "egress", "range"] # Ask the platform team for the correct egress range
 
   database_names = ["list-of-names", "to-create-databases"] # optional, will fallback to `var.name` if not present
   admin_name = "root" # optional, will fallback to `var.name` if not present
@@ -34,9 +34,9 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
   external_secret_manifest = "[path-to-the-manifest-file-to-be-created]"
   # The path in your system the external secret manifest will be stored at
-  config_map_manifest = "[patth-to-the-manifestt-file-to-be-created"
+  config_map_manifest = "[path-to-the-manifestt-file-to-be-created]"
   # The path in your system the config map manifest will be stored at
-} 
+}
 ```
 
 ## Secrets Manager & Kubernetes Integration
