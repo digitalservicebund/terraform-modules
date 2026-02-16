@@ -74,4 +74,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
       days = var.object_expiration_days
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      transition_default_minimum_object_size,
+    ]
+  }
 }
