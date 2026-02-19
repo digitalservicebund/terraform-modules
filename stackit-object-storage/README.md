@@ -103,13 +103,13 @@ module "object_storage_bucket" {
 
 
   credentials = {
-    # <name> = <role>
-    default = "superuser"
-    team1   = "read-only"
-    team2   = "read-only"
+    # <key> = { role = <role>, (optional) secret_manager_path = <path> }
+    default = { role = "superuser" }
+    team1   = { role = "read-only" }
+    team2   = { role = "read-only", secret_manager_path = "custom/path/secret-name" }
   }
 }
-```  
+```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
