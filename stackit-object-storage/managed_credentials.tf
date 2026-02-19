@@ -2,8 +2,11 @@
 resource "vault_kv_secret_v2" "bucket_credentials" {
   for_each = var.manage_credentials ? var.credentials : {}
   mount    = var.secret_manager_instance_id
-  name     = "object-storage/${stackit_objectstorage_bucket.bucket.name}/${each.key}"
-
+  name = lookup(
+    var.secret_path_map,
+    each.key,
+    "object-storage/${stackit_objectstorage_bucket.bucket.name}/${each.key}"
+  )
   data_json = jsonencode({
     access_key        = stackit_objectstorage_credential.credential[each.key].access_key
     secret_access_key = stackit_objectstorage_credential.credential[each.key].secret_access_key
@@ -42,14 +45,22 @@ resource "local_file" "external_secret_manifest" {
           {
             secretKey = "access_key"
             remoteRef = {
-              key      = "object-storage/${stackit_objectstorage_bucket.bucket.name}/${name}"
+              key = lookup(
+                var.secret_path_map,
+                name,
+                "object-storage/${stackit_objectstorage_bucket.bucket.name}/${name}"
+              )
               property = "access_key"
             }
           },
           {
             secretKey = "secret_access_key"
             remoteRef = {
-              key      = "object-storage/${stackit_objectstorage_bucket.bucket.name}/${name}"
+              key = lookup(
+                var.secret_path_map,
+                name,
+                "object-storage/${stackit_objectstorage_bucket.bucket.name}/${name}"
+              )
               property = "secret_access_key"
             }
           }

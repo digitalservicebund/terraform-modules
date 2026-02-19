@@ -13,6 +13,12 @@ variable "bucket_name" {
   }
 }
 
+variable "secret_path_map" {
+  description = "Path in the STACKIT Secret Manager where the credentials will be stored in the format { credential_name = secret_path }. If not provided, it will default to object-storage/[bucket name]/[credential name]."
+  type        = map(string)
+  default     = {}
+}
+
 variable "credentials" {
   description = "Credentials to create for the bucket. Map of credential name to role (e.g. { name = role }. Valid roles are: superuser, read-only, read-write."
   type        = map(string)
