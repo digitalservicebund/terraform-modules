@@ -84,7 +84,7 @@ run "policy_generation" {
       "credential-1" = { role = "superuser" }
       "credential-2" = { role = "read-write" }
       "credential-3" = { role = "read-only" }
-      "credential-4" = { role = "read-only", secret_manager_path = "object-storage/test-bucket-vault/rw-custom" }
+      "credential-4" = { role = "read-only" }
     }
   }
 
