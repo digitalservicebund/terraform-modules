@@ -2,9 +2,8 @@
 resource "vault_kv_secret_v2" "bucket_credentials" {
   for_each = var.manage_credentials ? var.credentials : {}
   mount    = var.secret_manager_instance_id
-  name = lookup(
-    var.secret_path_map,
-    each.key,
+  name = coalesce(
+    try(trimspace(each.value.secret_manager_path), null),
     "object-storage/${stackit_objectstorage_bucket.bucket.name}/${each.key}"
   )
   data_json = jsonencode({
@@ -18,8 +17,6 @@ resource "local_file" "external_secret_manifest" {
 
   lifecycle {
     precondition {
-      # Only create the file if manage_credentials is set (otherwise the resource would not be created at all)
-      # and error out if the filename was not provided.
       condition     = var.external_secret_manifest != null && var.kubernetes_namespace != null
       error_message = "You enabled 'manage_credentials' but did not provide 'external_secret_manifest' and 'kubernetes_namespace'. Please add them to your module call or disable the manifest creation with 'enable_manifest_creation = false'."
     }
@@ -28,7 +25,7 @@ resource "local_file" "external_secret_manifest" {
   filename = var.external_secret_manifest
 
   content = format("%s%s", local.yaml_autocreate_warning, join("\n---\n", [
-    for name, role in var.credentials : yamlencode({
+    for name, cred in var.credentials : yamlencode({
       apiVersion = "external-secrets.io/v1"
       kind       = "ExternalSecret"
       metadata = {
@@ -45,9 +42,8 @@ resource "local_file" "external_secret_manifest" {
           {
             secretKey = "access_key"
             remoteRef = {
-              key = lookup(
-                var.secret_path_map,
-                name,
+              key = coalesce(
+                try(trimspace(cred.secret_manager_path), null),
                 "object-storage/${stackit_objectstorage_bucket.bucket.name}/${name}"
               )
               property = "access_key"
@@ -56,9 +52,8 @@ resource "local_file" "external_secret_manifest" {
           {
             secretKey = "secret_access_key"
             remoteRef = {
-              key = lookup(
-                var.secret_path_map,
-                name,
+              key = coalesce(
+                try(trimspace(cred.secret_manager_path), null),
                 "object-storage/${stackit_objectstorage_bucket.bucket.name}/${name}"
               )
               property = "secret_access_key"
@@ -68,16 +63,4 @@ resource "local_file" "external_secret_manifest" {
       }
     })
   ]))
-}
-
-resource "null_resource" "validate_secret_path_map" {
-  lifecycle {
-    precondition {
-      condition = (
-        length(var.secret_path_map) == 0 ||
-        sort(keys(var.secret_path_map)) == sort(keys(var.credentials))
-      )
-      error_message = "secret_path_map keys must exactly match credentials keys."
-    }
-  }
 }

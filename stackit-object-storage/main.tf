@@ -11,7 +11,7 @@ locals {
     "superuser"  = "su"
   }
 
-  roles_used = toset([for name, role in var.credentials : role])
+  roles_used = toset([for _, cred in var.credentials : cred.role])
   # Either the existing terraform credentials group URN or the newly created one
   terraform_credentials_group_urn = var.terraform_credentials_group_id != null ? data.stackit_objectstorage_credentials_group.existing_terraform_credentials_group[0].urn : stackit_objectstorage_credentials_group.terraform_credentials_group[0].urn
 }
@@ -53,13 +53,13 @@ resource "stackit_objectstorage_credentials_group" "user_credentials_group" {
 
   for_each   = local.roles_used
   project_id = var.project_id
-  name       = "${var.bucket_name}-${local.access_codes[each.key]}"
+  name       = "${var.bucket_name}-${local.access_codes[each.value]}"
 }
 
 resource "stackit_objectstorage_credential" "credential" {
   for_each             = var.credentials
   project_id           = var.project_id
-  credentials_group_id = stackit_objectstorage_credentials_group.user_credentials_group[each.value].credentials_group_id
+  credentials_group_id = stackit_objectstorage_credentials_group.user_credentials_group[each.value.role].credentials_group_id
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {

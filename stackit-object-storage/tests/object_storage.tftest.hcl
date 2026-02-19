@@ -91,8 +91,8 @@ run "multiple_credentials" {
   variables {
     bucket_name = "test-bucket-multi"
     credentials = {
-      "credential-1" = "read-only"
-      "credential-2" = "superuser"
+      "credential-1" = { role = "read-only", secret_manager_path = "object-storage/test-bucket-vault/rw-custom" }
+      "credential-2" = { role = "superuser" }
     }
   }
 
@@ -158,7 +158,7 @@ run "vault_integration" {
     manage_credentials         = true
     secret_manager_instance_id = "kv-mount"
     kubernetes_namespace       = "production-ns"
-    credentials                = { rw = "read-write", ro = "read-only" }
+    credentials                = { rw = { role = "read-write" }, ro = { role = "read-only" } }
   }
 
   # 1. Verify the Vault secret resource is created
@@ -261,7 +261,7 @@ run "lifecycle_disabled_by_default" {
   command = plan
 
   variables {
-    bucket_name    = "test-lifecycle-off"
+    bucket_name            = "test-lifecycle-off"
     object_expiration_days = null
   }
 
@@ -276,7 +276,7 @@ run "lifecycle_enabled" {
   command = plan
 
   variables {
-    bucket_name    = "test-lifecycle-on"
+    bucket_name            = "test-lifecycle-on"
     object_expiration_days = 30
   }
 
@@ -296,7 +296,7 @@ run "lifecycle_invalid_value" {
   command = plan
 
   variables {
-    bucket_name    = "test-lifecycle-fail"
+    bucket_name            = "test-lifecycle-fail"
     object_expiration_days = -5
   }
 

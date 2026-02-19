@@ -81,10 +81,10 @@ run "policy_generation" {
     bucket_name                    = "test-bucket-default"
     terraform_credentials_group_id = null
     credentials = {
-      "credential-1" = "superuser"
-      "credential-2" = "read-write"
-      "credential-3" = "read-only"
-      "credential-4" = "read-only"
+      "credential-1" = { role = "superuser" }
+      "credential-2" = { role = "read-write" }
+      "credential-3" = { role = "read-only" }
+      "credential-4" = { role = "read-only", secret_manager_path = "object-storage/test-bucket-vault/rw-custom" }
     }
   }
 
@@ -128,7 +128,7 @@ run "exsting_terraform_credential_group" {
   variables {
     bucket_name                    = "test-bucket-existing-tf-cred"
     terraform_credentials_group_id = "12168432-2b8f-44de-8514-11bd9f9ad8b6"
-    credentials                    = { ro = "read-only" }
+    credentials                    = { ro = { role = "read-only" } }
   }
 
   assert {
