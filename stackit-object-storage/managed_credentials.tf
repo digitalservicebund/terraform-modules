@@ -70,3 +70,14 @@ resource "local_file" "external_secret_manifest" {
   ]))
 }
 
+resource "null_resource" "validate_secret_path_map" {
+  lifecycle {
+    precondition {
+      condition = (
+        length(var.secret_path_map) == 0 ||
+        sort(keys(var.secret_path_map)) == sort(keys(var.credentials))
+      )
+      error_message = "secret_path_map keys must exactly match credentials keys."
+    }
+  }
+}
