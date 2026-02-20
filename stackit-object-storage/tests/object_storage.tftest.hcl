@@ -91,8 +91,8 @@ run "multiple_credentials" {
   variables {
     bucket_name = "test-bucket-multi"
     credentials = {
-      "credential-1" = "read-only"
-      "credential-2" = "superuser"
+      "credential-1" = { role = "read-only" }
+      "credential-2" = { role = "superuser" }
     }
   }
 
@@ -158,7 +158,7 @@ run "vault_integration" {
     manage_credentials         = true
     secret_manager_instance_id = "kv-mount"
     kubernetes_namespace       = "production-ns"
-    credentials                = { rw = "read-write", ro = "read-only" }
+    credentials                = { rw = { role = "read-write", secret_manager_path = "object-storage/custom/test-bucket-vault/rw" }, ro = { role = "read-only" } }
   }
 
   # 1. Verify the Vault secret resource is created
@@ -168,7 +168,7 @@ run "vault_integration" {
   }
 
   assert {
-    condition     = vault_kv_secret_v2.bucket_credentials["rw"].name == "object-storage/test-bucket-vault/rw"
+    condition     = vault_kv_secret_v2.bucket_credentials["rw"].name == "object-storage/custom/test-bucket-vault/rw"
     error_message = "Vault secret path/name does not match expected format"
   }
 
@@ -205,7 +205,7 @@ run "vault_integration" {
   }
 
   assert {
-    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[0].remoteRef.key == "object-storage/test-bucket-vault/rw"
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[0].remoteRef.key == "object-storage/custom/test-bucket-vault/rw"
     error_message = "The remoteRef key was not generated correctly"
   }
 
@@ -215,7 +215,7 @@ run "vault_integration" {
   }
 
   assert {
-    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[1].remoteRef.key == "object-storage/test-bucket-vault/rw"
+    condition     = yamldecode(split("\n---\n", local_file.external_secret_manifest[0].content)[1]).spec.data[1].remoteRef.key == "object-storage/custom/test-bucket-vault/rw"
     error_message = "The remoteRef key was not generated correctly"
   }
 }
@@ -261,7 +261,7 @@ run "lifecycle_disabled_by_default" {
   command = plan
 
   variables {
-    bucket_name    = "test-lifecycle-off"
+    bucket_name            = "test-lifecycle-off"
     object_expiration_days = null
   }
 
@@ -276,7 +276,7 @@ run "lifecycle_enabled" {
   command = plan
 
   variables {
-    bucket_name    = "test-lifecycle-on"
+    bucket_name            = "test-lifecycle-on"
     object_expiration_days = 30
   }
 
@@ -296,7 +296,7 @@ run "lifecycle_invalid_value" {
   command = plan
 
   variables {
-    bucket_name    = "test-lifecycle-fail"
+    bucket_name            = "test-lifecycle-fail"
     object_expiration_days = -5
   }
 
