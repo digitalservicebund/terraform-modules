@@ -1,9 +1,23 @@
 locals {
   # If database_names is empty, default to a set containing just the instance name.
   # Otherwise, use the provided set.
-  databases = length(var.database_names) == 0 ? toset([var.name]) : var.database_names
-  # Create the admin user with the name of the instance if not set explicitly
-  admin_user              = coalesce(var.admin_name, var.name)
+  databases      = length(var.database_names) == 0 ? toset([var.name]) : var.database_names
+  admin_username = coalesce(try(var.admin_user.name, null), var.name)
+  admin_secret_path = coalesce(
+    try(trimspace(var.admin_user.secret_manager_path), null),
+    "postgres/${local.admin_username}"
+  )
+
+  additional_users_map = { for u in var.additional_users : u.name => u }
+
+  user_secret_paths = {
+    for k, u in local.additional_users_map :
+    k => coalesce(
+      try(trimspace(u.secret_manager_path), null),
+      "postgres/${u.name}"
+    )
+  }
+
   yaml_autocreate_warning = <<-EOT
     ###
     # DO NOT EDIT MANUALLY
@@ -33,7 +47,7 @@ resource "stackit_postgresflex_user" "admin" {
   project_id  = var.project_id
   instance_id = stackit_postgresflex_instance.this.instance_id
   roles       = ["login", "createdb"]
-  username    = local.admin_user
+  username    = local.admin_username
 }
 
 resource "stackit_postgresflex_database" "database" {
@@ -46,21 +60,20 @@ resource "stackit_postgresflex_database" "database" {
 }
 
 resource "stackit_postgresflex_user" "user" {
-  for_each = var.user_names # Simple set iteration
+  for_each = local.additional_users_map
 
   project_id  = var.project_id
   instance_id = stackit_postgresflex_instance.this.instance_id
   roles       = ["login"]
-  username    = each.key
+  username    = each.value.name
 }
-
 
 resource "vault_kv_secret_v2" "postgres_admin_credentials" {
   # Create only if enabled
   count = var.manage_user_password ? 1 : 0
 
   mount = var.secret_manager_instance_id
-  name  = "postgres/${stackit_postgresflex_user.admin.username}"
+  name  = local.admin_secret_path
 
   data_json = jsonencode({
     username = stackit_postgresflex_user.admin.username
@@ -70,11 +83,10 @@ resource "vault_kv_secret_v2" "postgres_admin_credentials" {
 }
 
 resource "vault_kv_secret_v2" "postgres_user_credentials" {
-  # Loop over users only if enabled
-  for_each = var.manage_user_password ? var.user_names : []
+  for_each = var.manage_user_password ? local.additional_users_map : {}
 
   mount = var.secret_manager_instance_id
-  name  = "postgres/${stackit_postgresflex_user.user[each.key].username}"
+  name  = local.user_secret_paths[each.key]
 
   data_json = jsonencode({
     username = stackit_postgresflex_user.user[each.key].username
@@ -113,23 +125,23 @@ resource "local_file" "external_secret_manifest" {
       data = concat(
         [
           {
-            secretKey = "${local.admin_user}_user"
-            remoteRef = { key = "postgres/${local.admin_user}", property = "username" }
+            secretKey = "${local.admin_username}_user"
+            remoteRef = { key = local.admin_secret_path, property = "username" }
           },
           {
-            secretKey = "${local.admin_user}_password"
-            remoteRef = { key = "postgres/${local.admin_user}", property = "password" }
+            secretKey = "${local.admin_username}_password"
+            remoteRef = { key = local.admin_secret_path, property = "password" }
           }
         ],
         flatten([
-          for user in var.user_names : [
+          for k, u in local.additional_users_map : [
             {
-              secretKey = "${user}_user"
-              remoteRef = { key = "postgres/${user}", property = "username" }
+              secretKey = "${u.name}_user"
+              remoteRef = { key = local.user_secret_paths[k], property = "username" }
             },
             {
-              secretKey = "${user}_password"
-              remoteRef = { key = "postgres/${user}", property = "password" }
+              secretKey = "${u.name}_password"
+              remoteRef = { key = local.user_secret_paths[k], property = "password" }
             }
           ]
         ])
@@ -147,6 +159,7 @@ resource "local_file" "config_map_manifest" {
       error_message = "You enabled 'config_map_manifest' but did not provide 'kubernetes_namespace'."
     }
   }
+
   filename = var.config_map_manifest
 
   content = format("%s%s", local.yaml_autocreate_warning, join("\n---\n", [

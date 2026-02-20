@@ -9,8 +9,8 @@ output "credentials" {
   value = merge(
     { (stackit_postgresflex_user.admin.username) = var.manage_user_password ? "" : stackit_postgresflex_user.admin.password },
     {
-      for user in var.user_names :
-      user => var.manage_user_password ? "" : stackit_postgresflex_user.user[user].password
+      for name, user in local.additional_users_map :
+      name => var.manage_user_password ? "" : stackit_postgresflex_user.user[name].password
     }
   )
 }

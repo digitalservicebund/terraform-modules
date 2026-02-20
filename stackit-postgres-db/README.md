@@ -8,9 +8,9 @@ databases, and users, while optionally integrating with STACKIT Secrets Manager 
 To minimize configuration for simple use cases, this module uses "Convention over Configuration" with fallback logic:
 
 | Resource       | Logic                                                                                                                                                 |
-|:---------------|:------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Databases**  | Creates databases listed in `database_names`. <br> *Fallback:* If the list is empty, creates a single database named after the instance (`var.name`). |
-| **Admin User** | Creates an admin user named `admin_user`. <br> *Fallback:* If not set, creates a user named after the instance (`var.name`).                          |
+| :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Databases**  | Creates databases listed in `database_names`. <br> _Fallback:_ If the list is empty, creates a single database named after the instance (`var.name`). |
+| **Admin User** | Creates an admin user named `admin_user.name`. <br> _Fallback:_ If not set, creates a user named after the instance (`var.name`).                     |
 
 ## Usage Example
 
@@ -26,8 +26,8 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   acls = ["cluster", "egress", "range"] # Ask the platform team for the correct egress range
 
   database_names = ["list-of-names", "to-create-databases"] # optional, will fallback to `var.name` if not present
-  admin_name = "root" # optional, will fallback to `var.name` if not present
-  user_names = ["additional", "user"] # optional
+  admin_user = { name = "root" } # optional, will fallback to `var.name` if not present
+  additional_users = { lorem = { name = "lorem" }, ipsum = { name = "ipsum" } } # optional
 
   secret_manager_instance_id = "[your secrets manager instance id]"
   # available as output from stackit-secrets-manager module
@@ -109,7 +109,8 @@ When the variable is not set, the manifest will not be created.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_acls"></a> [acls](#input\_acls) | List of ACL IDs to associate with the database instance. This should be the cluster Egress IP Range only! | `list(string)` | n/a | yes |
-| <a name="input_admin_name"></a> [admin\_name](#input\_admin\_name) | Specified the name of the Postgres Database Owner | `string` | `null` | no |
+| <a name="input_additional_users"></a> [additional\_users](#input\_additional\_users) | List of additional database users to create. Names must be unique. Example: [{ name = "user1", secret\_manager\_path = "custom/path/user1" }, { name = "user2" }]. If secret\_manager\_path is omitted for a user, a default path is used. | <pre>list(object({<br/>    name                = string<br/>    secret_manager_path = optional(string)<br/>  }))</pre> | `[]` | no |
+| <a name="input_admin_user"></a> [admin\_user](#input\_admin\_user) | Specified the name of the Postgres Database Owner and (optionally) a custom Secret Manager path. Example: { name = "admin", secret\_manager\_path = "custom/path/admin" }. If secret\_manager\_path is omitted, a default path is used. If admin\_user is not specified, a user with the same name as the instance will be created. | <pre>object({<br/>    name                = string<br/>    secret_manager_path = optional(string)<br/>  })</pre> | <pre>{<br/>  "name": null<br/>}</pre> | no |
 | <a name="input_backup_schedule"></a> [backup\_schedule](#input\_backup\_schedule) | Backup schedule in cron format. Defaults to daily at 3am UTC. | `string` | `"0 3 * * *"` | no |
 | <a name="input_config_map_manifest"></a> [config\_map\_manifest](#input\_config\_map\_manifest) | Path where the config map manifest will be stored at | `string` | `null` | no |
 | <a name="input_cpu"></a> [cpu](#input\_cpu) | Specifies the CPU specs of the instance. Available Options: 2, 4, 8 & 16 | `number` | n/a | yes |
@@ -125,7 +126,6 @@ When the variable is not set, the manifest will not be created.
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the STACKIT project where the database will be created. | `string` | n/a | yes |
 | <a name="input_replicas"></a> [replicas](#input\_replicas) | Number of read replicas for the instance. | `number` | `1` | no |
 | <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_user\_password is true. | `string` | `""` | no |
-| <a name="input_user_names"></a> [user\_names](#input\_user\_names) | List of additional database users to create. Elements must be unique. | `set(string)` | `[]` | no |
 
 ## Outputs
 
