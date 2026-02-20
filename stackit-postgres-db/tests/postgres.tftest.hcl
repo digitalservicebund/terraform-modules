@@ -109,13 +109,13 @@ run "multiple_databases" {
 
 run "multiple_users" {
   variables {
-    admin_spec = {
+    admin_user = {
       name = "admin"
     }
-    user_spec_map = {
-      lorem = { name = "lorem" }
-      ipsum = { name = "ipsum" }
-    }
+    additional_users = [
+      { name = "lorem" },
+      { name = "ipsum" }
+    ]
     manage_user_password = false
   }
 
@@ -140,12 +140,12 @@ run "secrets_and_manifest" {
 
   variables {
     name = "test-secrets"
-    admin_spec = {
+    admin_user = {
       name = "root"
     }
-    user_spec_map = {
-      lorem = { name = "lorem" }
-    }
+    additional_users = [
+      { name = "lorem" }
+    ]
     manage_user_password       = true
     secret_manager_instance_id = "mock-vault"
 
@@ -212,10 +212,10 @@ run "config_map_manifest" {
 
   variables {
     database_names = ["foo", "bar"]
-    user_spec_map = {
-      lorem = { name = "lorem" }
-      ipsum = { name = "ipsum" }
-    }
+    additional_users = [
+      { name = "lorem" },
+      { name = "ipsum" }
+    ]
 
     manage_user_password = false
     config_map_manifest  = "config.yaml"
@@ -263,16 +263,16 @@ run "custom_secret_manager_paths" {
     kubernetes_namespace     = "namespace"
     external_secret_manifest = "custom-paths.yaml"
 
-    admin_spec = {
+    admin_user = {
       name                = "root"
       secret_manager_path = "custom/root-admin"
     }
-    user_spec_map = {
-      lorem = {
+    additional_users = [
+      {
         name                = "lorem"
         secret_manager_path = "custom/lorem-user"
       }
-    }
+    ]
   }
 
   assert {

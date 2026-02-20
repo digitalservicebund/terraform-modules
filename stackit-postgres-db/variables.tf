@@ -3,8 +3,8 @@ variable "name" {
   type        = string
 }
 
-variable "admin_spec" {
-  description = "Specified the name of the Postgres Database Owner and (optionally) a custom Secret Manager path. Example: { name = \"admin\", secret_manager_path = \"custom/path/admin\" }. If secret_manager_path is omitted, a default path is used."
+variable "admin_user" {
+  description = "Specified the name of the Postgres Database Owner and (optionally) a custom Secret Manager path. Example: { name = \"admin\", secret_manager_path = \"custom/path/admin\" }. If secret_manager_path is omitted, a default path is used. If admin_user is not specified, a user with the same name as the instance will be created."
   type = object({
     name                = string
     secret_manager_path = optional(string)
@@ -18,13 +18,13 @@ variable "database_names" {
   default     = []
 }
 
-variable "user_spec_map" {
-  description = "Map of additional database users to create. Elements must be unique. Example: { user1 = { name = \"user1\", secret_manager_path = \"custom/path/user1\" }, user2 = { name = \"user2\" } }. If secret_manager_path is omitted for a user, a default path is used."
-  type = map(object({
+variable "additional_users" {
+  description = "List of additional database users to create. Names must be unique. Example: [{ name = \"user1\", secret_manager_path = \"custom/path/user1\" }, { name = \"user2\" }]. If secret_manager_path is omitted for a user, a default path is used."
+  type = list(object({
     name                = string
     secret_manager_path = optional(string)
   }))
-  default = {}
+  default = []
 }
 
 variable "project_id" {

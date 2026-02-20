@@ -2,13 +2,16 @@ locals {
   # If database_names is empty, default to a set containing just the instance name.
   # Otherwise, use the provided set.
   databases      = length(var.database_names) == 0 ? toset([var.name]) : var.database_names
-  admin_username = coalesce(try(var.admin_spec.name, null), var.name)
+  admin_username = coalesce(try(var.admin_user.name, null), var.name)
   admin_secret_path = coalesce(
-    try(trimspace(var.admin_spec.secret_manager_path), null),
+    try(trimspace(var.admin_user.secret_manager_path), null),
     "postgres/${local.admin_username}"
   )
+
+  additional_users_map = { for u in var.additional_users : u.name => u }
+
   user_secret_paths = {
-    for k, u in var.user_spec_map :
+    for k, u in local.additional_users_map :
     k => coalesce(
       try(trimspace(u.secret_manager_path), null),
       "postgres/${u.name}"
@@ -57,7 +60,7 @@ resource "stackit_postgresflex_database" "database" {
 }
 
 resource "stackit_postgresflex_user" "user" {
-  for_each = var.user_spec_map
+  for_each = local.additional_users_map
 
   project_id  = var.project_id
   instance_id = stackit_postgresflex_instance.this.instance_id
@@ -80,7 +83,7 @@ resource "vault_kv_secret_v2" "postgres_admin_credentials" {
 }
 
 resource "vault_kv_secret_v2" "postgres_user_credentials" {
-  for_each = var.manage_user_password ? var.user_spec_map : {}
+  for_each = var.manage_user_password ? local.additional_users_map : {}
 
   mount = var.secret_manager_instance_id
   name  = local.user_secret_paths[each.key]
@@ -131,7 +134,7 @@ resource "local_file" "external_secret_manifest" {
           }
         ],
         flatten([
-          for k, u in var.user_spec_map : [
+          for k, u in local.additional_users_map : [
             {
               secretKey = "${u.name}_user"
               remoteRef = { key = local.user_secret_paths[k], property = "username" }
