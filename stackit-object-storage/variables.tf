@@ -14,15 +14,19 @@ variable "bucket_name" {
 }
 
 variable "credentials" {
-  description = "Credentials to create for the bucket. Map of credential name to role (e.g. { name = role }. Valid roles are: superuser, read-only, read-write."
-  type        = map(string)
+  description = "Bucket credentials to create. Map of credential name to an object with the credential's role and (optionally) a custom Secret Manager path. Example: { admin = { role = \"superuser\", secret_manager_path = \"object-storage/bucket-name/admin\" } }. If secret_manager_path is omitted, a default path is used."
+  type = map(object({
+    role                = string
+    secret_manager_path = optional(string)
+  }))
   default = {
-    default = "superuser"
+    default = {
+      role = "superuser"
+    }
   }
-
   validation {
     condition = alltrue([
-      for c in values(var.credentials) : contains(["superuser", "read-only", "read-write"], c)
+      for c in values(var.credentials) : contains(["superuser", "read-only", "read-write"], c.role)
     ])
     error_message = "Each credential role must be one of: superuser, read-only, read-write."
 
@@ -76,7 +80,7 @@ variable "object_expiration_days" {
   type        = number
   default     = null
   validation {
-    condition     = var.object_expiration_days == null || (var.object_expiration_days != null && var.object_expiration_days > 0)
+    condition     = var.object_expiration_days == null || try(var.object_expiration_days > 0, false)
     error_message = "The value for lifecycle in days must be a positive number."
   }
 }

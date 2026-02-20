@@ -103,13 +103,13 @@ module "object_storage_bucket" {
 
 
   credentials = {
-    # <name> = <role>
-    default = "superuser"
-    team1   = "read-only"
-    team2   = "read-only"
+    # <key> = { role = <role>, (optional) secret_manager_path = <path> }
+    default = { role = "superuser" }
+    team1   = { role = "read-only" }
+    team2   = { role = "read-only", secret_manager_path = "custom/path/secret-name" }
   }
 }
-```  
+```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -155,7 +155,7 @@ module "object_storage_bucket" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket. | `string` | n/a | yes |
-| <a name="input_credentials"></a> [credentials](#input\_credentials) | Credentials to create for the bucket. Map of credential name to role (e.g. { name = role }. Valid roles are: superuser, read-only, read-write. | `map(string)` | <pre>{<br/>  "default": "superuser"<br/>}</pre> | no |
+| <a name="input_credentials"></a> [credentials](#input\_credentials) | Bucket credentials to create. Map of credential name to an object with the credential's role and (optionally) a custom Secret Manager path. Example: { admin = { role = "superuser", secret\_manager\_path = "object-storage/bucket-name/admin" } }. If secret\_manager\_path is omitted, a default path is used. | <pre>map(object({<br/>    role                = string<br/>    secret_manager_path = optional(string)<br/>  }))</pre> | <pre>{<br/>  "default": {<br/>    "role": "superuser"<br/>  }<br/>}</pre> | no |
 | <a name="input_enable_manifest_creation"></a> [enable\_manifest\_creation](#input\_enable\_manifest\_creation) | Set to true to create an External Secret manifest for Kubernetes to access the created credentials. | `bool` | `true` | no |
 | <a name="input_enable_policy_creation"></a> [enable\_policy\_creation](#input\_enable\_policy\_creation) | Set to false in case you want to create your own policy. WARNING: If you disable this, all credentials in the same STACKIT project have access to your bucket. | `bool` | `true` | no |
 | <a name="input_external_secret_manifest"></a> [external\_secret\_manifest](#input\_external\_secret\_manifest) | Path where the external secret manifest will be stored at | `string` | `null` | no |
