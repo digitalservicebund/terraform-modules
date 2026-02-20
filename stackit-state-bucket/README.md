@@ -38,11 +38,13 @@ bootstrap your terraform configuration by setting up the remote state for you.
     }
    ```
    This is needed to configure access policies on the bucket.
-3. Run `terraform init` and `terraform apply`
-4. A `backend.tf` should have been generated in your terraform folder
-5. A `.envrc` file should have been generated in your terraform folder
-6. A 1Password item should have been generated in your teams vault
-7. Run `terraform init` to migrate your local state to the remote state bucket
+3. Run `terraform init` 
+4. Run `terraform apply -target module.backend_bucket.module.object_storage.stackit_objectstorage_credential.terraform_credentials`. This is needed, because the credential first needs to be created, before it can be used in the aws provider.
+5. Run `terraform apply` to apply the rest of the configuration.
+6. A `backend.tf` should have been generated in your terraform folder
+7. A `.envrc` file should have been generated in your terraform folder
+8. A 1Password item should have been generated in your teams vault
+9. Run `terraform init` to migrate your local state to the remote state bucket
 
 You can disable all the magic with inputs.
 

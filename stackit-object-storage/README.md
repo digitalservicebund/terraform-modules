@@ -4,14 +4,16 @@ This module creates a STACKIT object storage bucket and credentials to access it
 with the
 [STACKIT Secrets Manager Module](../stackit-secrets-manager) to store the credentials securely.
 
-By default, two credentials are created:
+Because we need to use the bucket credentials to configure the AWS provider to manage access policies on the bucket,
+there are two types of credentials:
 
-- `default` with `superuser` role to be used by your application
-- `terraform` with a role to be used by terraform to manage the bucket. This role does not have access to the content of
-  the bucket.
-
-> 💡 In case you already have another bucket in your terraform configuration, you should provide the
-`terraform_credentials_group_id` input variable to let terraform manage the bucket with the existing credentials group.
+- Credentials defined in the `credentials` input variable, which are created by default with the module and can be used
+  by your application to access the bucket. These credentials can optionally be stored in the STACKIT Secrets Manager if
+  `manage_credentials` is set to true.
+- Terraform credentials, which are used by terraform to manage the bucket. 💡 These are only created if
+  `terraform_credentials_group_id` is set to `null`. Since the `stackit-state-bucket` module also creates terraform
+  credentials, it is recommended to provide the credentials group id created by that module to avoid creating multiple
+  terraform credentials groups.
 
 The module is also creating polices that restrict access to the bucket only to the created credentials (and the
 credentials group identified by `terraform_credentials_group_id` to manage the bucket). If you want to create your own
@@ -54,7 +56,7 @@ module "object_storage_bucket" {
   terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (can be referenced from the stackit-state-bucket module)]"
 
   manage_credentials         = true
-  secret_manager_instance_id = "[instance id of your secrets manager (can be referenced from the stackit-secrets-manager module)]"
+  secret_manager_instance_id = "[instance id of your secrets manager (should be referenced from the stackit-secrets-manager module)]"
   kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
   external_secret_manifest   = "[path-to-the-manifest-file-to-be-created]"
   # The path in your system the external secret manifest will be stored at
@@ -105,11 +107,52 @@ module "object_storage_bucket" {
   credentials = {
     # <key> = { role = <role>, (optional) secret_manager_path = <path> }
     default = { role = "superuser" }
-    team1   = { role = "read-only" }
-    team2   = { role = "read-only", secret_manager_path = "custom/path/secret-name" }
+    team1 = { role = "read-only" }
+    team2 = { role = "read-only", secret_manager_path = "custom/path/secret-name" }
   }
 }
 ```
+
+# Troubleshooting
+
+## Error: No valid credential sources found
+
+Example:
+
+```
+│ Error: No valid credential sources found
+│ 
+│   with provider["registry.terraform.io/hashicorp/aws"],
+│   on main.tf line 24, in provider "aws":
+│   24: provider "aws" {
+│ 
+│ Please see https://registry.terraform.io/providers/hashicorp/aws
+│ for more information about providing credentials.
+│ 
+│ Error: failed to refresh cached credentials, no EC2 IMDS role found,
+│ operation error ec2imds: GetMetadata, request canceled, context deadline
+│ exceeded
+│ 
+```
+
+### Solution:
+
+Run a targeted apply to create the credentials used by the AWS provider first:
+
+```bash
+terraform apply -target module.object_storage_bucket.stackit_objectstorage_credential.terraform_credentials
+```
+
+> 💡 If this happens in the `stackit-state-bucket` module, target
+`module.backend_bucket.module.object_storage.stackit_objectstorage_credential.terraform_credentials` instead.
+
+### Reason
+
+This happens because the AWS provider needs credentials to manage the bucket policies, but the credentials are created
+by the module. By running a targeted apply, you create the credentials first, which allows the AWS provider to
+authenticate and manage the bucket policies in the next apply. Terraform always runs the provider initialization before
+applying any changes, so the credentials need to exist before the provider can be initialized successfully.
+
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -164,7 +207,7 @@ module "object_storage_bucket" {
 | <a name="input_object_expiration_days"></a> [object\_expiration\_days](#input\_object\_expiration\_days) | Lifespan of stored data. Data will be deleted after specified value in days. Default value is null (no automatic deletion) | `number` | `null` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_credentials is true. | `string` | `null` | no |
-| <a name="input_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#input\_terraform\_credentials\_group\_id) | ID of the credentials group that is used by Terraform to manage the bucket. A credential of this credential group must be used in the AWS provider config. If not provided, a new credentials group will be created. | `string` | `null` | no |
+| <a name="input_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#input\_terraform\_credentials\_group\_id) | ID of the credentials group that is used by Terraform to manage the bucket. A credential of this credential group must be used in the AWS provider config. Set to `null` if you want to create a new credential group. | `string` | n/a | yes |
 
 ## Outputs
 

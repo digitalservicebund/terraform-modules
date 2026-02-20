@@ -34,9 +34,8 @@ variable "credentials" {
 }
 
 variable "terraform_credentials_group_id" {
-  description = "ID of the credentials group that is used by Terraform to manage the bucket. A credential of this credential group must be used in the AWS provider config. If not provided, a new credentials group will be created."
+  description = "ID of the credentials group that is used by Terraform to manage the bucket. A credential of this credential group must be used in the AWS provider config. Set to `null` if you want to create a new credential group."
   type        = string
-  default     = null
 }
 
 variable "enable_policy_creation" {
