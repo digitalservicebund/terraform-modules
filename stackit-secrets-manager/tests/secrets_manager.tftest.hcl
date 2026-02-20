@@ -76,12 +76,12 @@ EOT
     condition     = nonsensitive(output.external_secrets_secret_manifest) == <<EOT
 # DO NOT COMMIT THIS! USE KUBESEAL TO CREATE A SEALED SECRET INSTEAD
 "apiVersion": "v1"
+"data":
+  "password": "cGFzc3dvcmQ="
 "kind": "Secret"
 "metadata":
   "name": "secrets-manager-password"
   "namespace": "platform"
-"stringData":
-  "password": "password"
 "type": "Opaque"
 EOT
     error_message = "External Secrets Secret manifest is incorrect"

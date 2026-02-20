@@ -67,8 +67,8 @@ output "external_secrets_secret_manifest" {
         namespace = var.kubernetes_namespace
       }
       type = "Opaque"
-      stringData = {
-        password = stackit_secretsmanager_user.external_secrets.password
+      data = {
+        password = base64encode(stackit_secretsmanager_user.external_secrets.password)
       }
     })
   )
