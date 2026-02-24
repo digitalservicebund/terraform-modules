@@ -27,7 +27,7 @@ To minimize configuration for simple use cases, this module uses "Convention ove
 
   database_names = ["list-of-names", "to-create-databases"] # optional, will fallback to `var.name` if not present
   admin_user = { name = "root" } # optional, will fallback to `var.name` if not present
-  additional_users = { lorem = { name = "lorem" }, ipsum = { name = "ipsum" } } # optional
+  additional_users = [{ name = "lorem" }, { name = "ipsum" }] # optional
 
   secret_manager_instance_id = "[your secrets manager instance id]"
   # available as output from stackit-secrets-manager module
