@@ -53,7 +53,7 @@ module "object_storage_bucket" {
   source                         = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
   project_id                     = "[stackit project id]"
   bucket_name                    = "ds-[project name]-[my-bucket-name]"
-  terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (can be referenced from the stackit-state-bucket module)]"
+  terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (should be referenced from the stackit-state-bucket module)]"
 
   manage_credentials         = true
   secret_manager_instance_id = "[instance id of your secrets manager (should be referenced from the stackit-secrets-manager module)]"
@@ -85,7 +85,7 @@ module "object_storage_bucket" {
   source                         = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
   project_id                     = "[stackit project id]"
   bucket_name                    = "ds-[project name]-[my-bucket-name]"
-  terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (can be referenced from the stackit-state-bucket module)]"
+  terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (should be referenced from the stackit-state-bucket module)]"
 }
 ```
 
@@ -101,7 +101,7 @@ module "object_storage_bucket" {
   source                         = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
   project_id                     = "[stackit project id]"
   bucket_name                    = "ds-[project name]-[my-bucket-name]"
-  terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (can be referenced from the stackit-state-bucket module)]"
+  terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (should be referenced from the stackit-state-bucket module)]"
 
 
   credentials = {
