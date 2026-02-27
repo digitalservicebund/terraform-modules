@@ -149,3 +149,23 @@ run "exsting_terraform_credential_group" {
     error_message = "Policy to restrict access for other credentials groups is incorrect"
   }
 }
+
+run "public_bucket_enabled" {
+  command = apply
+
+  variables {
+    bucket_name            = "test-bucket-public"
+    enable_policy_creation = true
+    public_bucket          = true
+  }
+
+  assert {
+    condition     = strcontains(aws_s3_bucket_policy.bucket_policy[0].policy, "AllowPublicRead")
+    error_message = "A public bucket must contain the 'AllowPublicRead' statement."
+  }
+
+  assert {
+    condition     = strcontains(aws_s3_bucket_policy.bucket_policy[0].policy, "\"NotAction\": \"s3:GetObject\"")
+    error_message = "The deny statement on a public bucket must use 'NotAction' for 's3:GetObject' to avoid conflicts."
+  }
+}
