@@ -45,6 +45,12 @@ variable "enable_policy_creation" {
   default     = true
 }
 
+variable "additional_policy_jsons" {
+  description = "A list of additional IAM policy documents (in JSON format) to merge with the module's default bucket policy."
+  type        = list(string)
+  default     = []
+}
+
 variable "manage_credentials" {
   description = "Set true to add the credentials into the STACKIT Secrets Manager. The credentials will be at `object-storage/[bucket name]/[credential name]`"
   type        = bool

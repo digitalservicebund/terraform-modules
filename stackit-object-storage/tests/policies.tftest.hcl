@@ -122,7 +122,7 @@ run "policy_generation" {
 }
 
 
-run "exsting_terraform_credential_group" {
+run "existing_terraform_credential_group" {
   command = apply
 
   variables {
@@ -147,5 +147,40 @@ run "exsting_terraform_credential_group" {
       jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[0].NotPrincipal.AWS == ["urn:stackit:objectstorage:credentialsgroup:ro", "urn:stackit:objectstorage:credentialsgroup:existing_tf_group"]
     )
     error_message = "Policy to restrict access for other credentials groups is incorrect"
+  }
+}
+
+run "merged_policy_with_public_read" {
+  command = apply
+
+  variables {
+    bucket_name                    = "test-bucket-public"
+    terraform_credentials_group_id = "12168432-2b8f-44de-8514-11bd9f9ad8b6"
+    additional_policy_jsons = [
+      jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+          {
+            Sid       = "TestPublicRead"
+            Effect    = "Allow"
+            Principal = "*"
+            Action    = ["s3:GetObject"]
+            Resource  = ["arn:aws:s3:::test-bucket-public/*"]
+          }
+        ]
+      })
+    ]
+  }
+
+  # Assert that the policy now has 2 statements (Default + Public Read)
+  assert {
+    condition     = length(jsondecode(aws_s3_bucket_policy.bucket_policy[0].policy).Statement) == 2
+    error_message = "Expected exactly 2 statements after merging, but found a different amount."
+  }
+
+  # Assert that the specific Public Read rule actually made it into the final JSON string
+  assert {
+    condition     = strcontains(aws_s3_bucket_policy.bucket_policy[0].policy, "TestPublicRead")
+    error_message = "The merged policy did not contain the expected 'TestPublicRead' Sid."
   }
 }

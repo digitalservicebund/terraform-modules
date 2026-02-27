@@ -15,6 +15,7 @@ data "aws_iam_policy_document" "combined_policy" {
     contains(local.roles_used, "read-only") ? data.aws_iam_policy_document.read_only[0].json : "",
     contains(local.roles_used, "read-write") ? data.aws_iam_policy_document.read_write[0].json : "",
   ]
+  override_policy_documents = var.additional_policy_jsons
 }
 
 data "aws_iam_policy_document" "disable_access_for_other_credentials_groups" {
