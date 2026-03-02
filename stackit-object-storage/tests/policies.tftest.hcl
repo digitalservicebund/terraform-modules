@@ -154,9 +154,10 @@ run "public_bucket_enabled" {
   command = apply
 
   variables {
-    bucket_name            = "test-bucket-public"
-    enable_policy_creation = true
-    public_bucket          = true
+    bucket_name                    = "test-bucket-public"
+    terraform_credentials_group_id = "12168432-2b8f-44de-8514-11bd9f9ad8b6"
+    enable_policy_creation         = true
+    public_bucket                  = true
   }
 
   assert {
