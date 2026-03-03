@@ -14,8 +14,24 @@ data "aws_iam_policy_document" "combined_policy" {
     data.aws_iam_policy_document.disable_access_for_other_credentials_groups.json,
     contains(local.roles_used, "read-only") ? data.aws_iam_policy_document.read_only[0].json : "",
     contains(local.roles_used, "read-write") ? data.aws_iam_policy_document.read_write[0].json : "",
+    var.enable_public_read ? data.aws_iam_policy_document.public_read[0].json : "",
   ]
 }
+
+data "aws_iam_policy_document" "public_read" {
+  count = var.enable_public_read ? 1 : 0
+  statement {
+    sid    = "AllowPublicRead"
+    effect = "Allow"
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    actions   = ["s3:GetObject"]
+    resources = ["arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}/*"]
+  }
+}
+
 
 data "aws_iam_policy_document" "disable_access_for_other_credentials_groups" {
   statement {
@@ -24,9 +40,10 @@ data "aws_iam_policy_document" "disable_access_for_other_credentials_groups" {
       identifiers = concat([local.terraform_credentials_group_urn], [for cg in stackit_objectstorage_credentials_group.user_credentials_group : cg.urn])
       type        = "AWS"
     }
-    actions = [
-      "s3:*"
-    ]
+    # If public, omit `actions` and use `not_actions` to allow GetObject.
+    # If private, deny ALL `actions` (s3:*) and omit `not_actions`.
+    actions     = var.enable_public_read ? null : ["s3:*"]
+    not_actions = var.enable_public_read ? ["s3:GetObject"] : null
     resources = [
       "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}",
       "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}/*"

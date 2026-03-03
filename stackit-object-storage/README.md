@@ -17,7 +17,7 @@ there are two types of credentials:
 
 The module is also creating polices that restrict access to the bucket only to the created credentials (and the
 credentials group identified by `terraform_credentials_group_id` to manage the bucket). If you want to create your own
-policies (e.g. in case you need public access), you can disable this behavior by setting the `enable_policy_creation`
+policies, you can disable this behavior by setting the `enable_policy_creation`
 input variable to `false`. Please note that in this case all credentials in the same STACKIT project will have access to
 your bucket.
 
@@ -189,6 +189,7 @@ applying any changes, so the credentials need to exist before the provider can b
 | [vault_kv_secret_v2.bucket_credentials](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/resources/kv_secret_v2) | resource |
 | [aws_iam_policy_document.combined_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.disable_access_for_other_credentials_groups](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.public_read](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.read_only](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.read_write](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [stackit_objectstorage_credentials_group.existing_terraform_credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/data-sources/objectstorage_credentials_group) | data source |
@@ -201,6 +202,7 @@ applying any changes, so the credentials need to exist before the provider can b
 | <a name="input_credentials"></a> [credentials](#input\_credentials) | Bucket credentials to create. Map of credential name to an object with the credential's role and (optionally) a custom Secret Manager path. Example: { admin = { role = "superuser", secret\_manager\_path = "object-storage/bucket-name/admin" } }. If secret\_manager\_path is omitted, a default path is used. | <pre>map(object({<br/>    role                = string<br/>    secret_manager_path = optional(string)<br/>  }))</pre> | <pre>{<br/>  "default": {<br/>    "role": "superuser"<br/>  }<br/>}</pre> | no |
 | <a name="input_enable_manifest_creation"></a> [enable\_manifest\_creation](#input\_enable\_manifest\_creation) | Set to true to create an External Secret manifest for Kubernetes to access the created credentials. | `bool` | `true` | no |
 | <a name="input_enable_policy_creation"></a> [enable\_policy\_creation](#input\_enable\_policy\_creation) | Set to false in case you want to create your own policy. WARNING: If you disable this, all credentials in the same STACKIT project have access to your bucket. | `bool` | `true` | no |
+| <a name="input_enable_public_read"></a> [enable\_public\_read](#input\_enable\_public\_read) | Set to true to grant public read access (s3:GetObject) to all objects in the bucket. Only works if enable\_policy\_creation is enabled. WARNING: This exposes all data in the bucket to the public internet! | `bool` | `false` | no |
 | <a name="input_external_secret_manifest"></a> [external\_secret\_manifest](#input\_external\_secret\_manifest) | Path where the external secret manifest will be stored at | `string` | `null` | no |
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_manage_credentials"></a> [manage\_credentials](#input\_manage\_credentials) | Set true to add the credentials into the STACKIT Secrets Manager. The credentials will be at `object-storage/[bucket name]/[credential name]` | `bool` | `false` | no |
