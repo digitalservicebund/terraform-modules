@@ -44,7 +44,7 @@ variable "enable_policy_creation" {
   default     = true
 }
 
-variable "public_bucket" {
+variable "enable_public_read" {
   description = "Set to true to grant public read access (s3:GetObject) to all objects in the bucket. Only works if enable_policy_creation is enabled."
   type        = bool
   default     = false

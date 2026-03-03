@@ -14,12 +14,12 @@ data "aws_iam_policy_document" "combined_policy" {
     data.aws_iam_policy_document.disable_access_for_other_credentials_groups.json,
     contains(local.roles_used, "read-only") ? data.aws_iam_policy_document.read_only[0].json : "",
     contains(local.roles_used, "read-write") ? data.aws_iam_policy_document.read_write[0].json : "",
-    var.public_bucket ? data.aws_iam_policy_document.public_read[0].json : "",
+    var.enable_public_read ? data.aws_iam_policy_document.public_read[0].json : "",
   ]
 }
 
 data "aws_iam_policy_document" "public_read" {
-  count = var.public_bucket ? 1 : 0
+  count = var.enable_public_read ? 1 : 0
   statement {
     sid    = "AllowPublicRead"
     effect = "Allow"
@@ -42,8 +42,8 @@ data "aws_iam_policy_document" "disable_access_for_other_credentials_groups" {
     }
     # If public, omit `actions` and use `not_actions` to allow GetObject.
     # If private, deny ALL `actions` (s3:*) and omit `not_actions`.
-    actions     = var.public_bucket ? null : ["s3:*"]
-    not_actions = var.public_bucket ? ["s3:GetObject"] : null
+    actions     = var.enable_public_read ? null : ["s3:*"]
+    not_actions = var.enable_public_read ? ["s3:GetObject"] : null
     resources = [
       "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}",
       "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}/*"
