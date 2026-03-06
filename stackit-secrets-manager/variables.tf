@@ -6,6 +6,11 @@ variable "project_id" {
 variable "name" {
   type        = string
   description = "Name of the secrets manager instance"
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]{1,60}$", var.name))
+    error_message = "The name must not be empty. Use up to 60 lowercase letters, numbers, or hyphens."
+  }
 }
 
 variable "max_versions" {

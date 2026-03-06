@@ -22,6 +22,54 @@ variables {
   project_id = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
 }
 
+run "name_must_not_be_empty" {
+  command = plan
+
+  variables {
+    name = ""
+  }
+
+  expect_failures = [
+    var.name,
+  ]
+}
+
+run "name_must_not_contain_uppercase" {
+  command = plan
+
+  variables {
+    name = "My-Secret"
+  }
+
+  expect_failures = [
+    var.name,
+  ]
+}
+
+run "name_must_not_contain_special_characters" {
+  command = plan
+
+  variables {
+    name = "my_secret!"
+  }
+
+  expect_failures = [
+    var.name,
+  ]
+}
+
+run "name_must_not_exceed_60_characters" {
+  command = plan
+
+  variables {
+    name = "abcdefghij-abcdefghij-abcdefghij-abcdefghij-abcdefghij-abcdef" # 61 characters
+  }
+
+  expect_failures = [
+    var.name,
+  ]
+}
+
 run "basic_config" {
   command = apply
 
