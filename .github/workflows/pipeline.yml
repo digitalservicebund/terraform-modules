@@ -12,7 +12,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - name: Install terraform
         uses: digitalservicebund/setup-terraform@adfabd79951446bc3078797c9cce4511328a8573 # v1.1.2
       - name: Check format
@@ -31,7 +31,7 @@ jobs:
             "stackit-postgres-db",
           ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - name: "Install Terraform CLI"
         # Third-party action, pin to commit SHA!
         # See https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
@@ -61,12 +61,12 @@ jobs:
             "stackit-postgres-db",
           ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Check and update terraform docs
-        uses: terraform-docs/gh-actions@v1.4.1
+        uses: terraform-docs/gh-actions@6de6da0cefcc6b4b7a5cbea4d79d97060733093c # v1.4.1
         with:
           working-dir: ${{ matrix.terraform_module }}
           output-file: README.md
