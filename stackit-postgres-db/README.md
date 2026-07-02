@@ -87,7 +87,7 @@ When the variable is not set, the manifest will not be created.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_local"></a> [local](#provider\_local) | 2.6.1 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.9.0 |
 | <a name="provider_stackit"></a> [stackit](#provider\_stackit) | 0.100.0 |
 | <a name="provider_vault"></a> [vault](#provider\_vault) | 5.10.1 |
 
