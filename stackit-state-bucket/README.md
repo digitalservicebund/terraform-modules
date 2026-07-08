@@ -55,13 +55,14 @@ You can disable all the magic with inputs.
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >1.10.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >=6.28.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >=3.0.0 |
 | <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.65.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_null"></a> [null](#provider\_null) | 3.2.4 |
+| <a name="provider_null"></a> [null](#provider\_null) | >=3.0.0 |
 
 ## Modules
 

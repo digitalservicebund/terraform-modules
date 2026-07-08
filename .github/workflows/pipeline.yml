@@ -71,5 +71,5 @@ jobs:
           working-dir: ${{ matrix.terraform_module }}
           output-file: README.md
           output-method: inject
-          args: "--hide-empty=true"
+          args: "--hide-empty=true --lockfile=false"
           fail-on-diff: true

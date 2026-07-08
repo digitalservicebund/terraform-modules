@@ -169,10 +169,10 @@ applying any changes, so the credentials need to exist before the provider can b
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.53.0 |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.9.0 |
-| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | 0.100.0 |
-| <a name="provider_vault"></a> [vault](#provider\_vault) | 5.10.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >=6.28.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | >=2.6.1 |
+| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | >=0.65.0 |
+| <a name="provider_vault"></a> [vault](#provider\_vault) | >=5.3.0 |
 
 ## Resources
 
