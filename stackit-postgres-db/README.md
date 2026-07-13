@@ -98,6 +98,7 @@ When the variable is not set, the manifest will not be created.
 |------|------|
 | [local_file.config_map_manifest](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.external_secret_manifest](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [stackit_authorization_project_role_assignment.postgres_flex_metrics_access](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/authorization_project_role_assignment) | resource |
 | [stackit_postgresflex_database.database](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_database) | resource |
 | [stackit_postgresflex_instance.this](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_instance) | resource |
 | [stackit_postgresflex_user.admin](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_user) | resource |
@@ -123,6 +124,8 @@ When the variable is not set, the manifest will not be created.
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_manage_user_password"></a> [manage\_user\_password](#input\_manage\_user\_password) | Set true to add the user password into the STACKIT Secrets Manager. | `bool` | `true` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Specifies the memory (RAM) specs of the instance in GB. Available Options: 4, 8, 16, 32 & 128 | `number` | n/a | yes |
+| <a name="input_metrics_role_id"></a> [metrics\_role\_id](#input\_metrics\_role\_id) | Organization-wide Role ID for Postgres Flex Prometheus Metrics Reader | `string` | `null` | no |
+| <a name="input_metrics_sa_email"></a> [metrics\_sa\_email](#input\_metrics\_sa\_email) | Service account email for Postgres Flex Metrics Service Account from STACKIT Platform Project | `string` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | Specifies the name of the Postgres instance. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the STACKIT project where the database will be created. | `string` | n/a | yes |
 | <a name="input_replicas"></a> [replicas](#input\_replicas) | Number of read replicas for the instance. | `number` | `1` | no |
