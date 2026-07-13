@@ -109,3 +109,15 @@ variable "config_map_manifest" {
   type        = string
   default     = null
 }
+
+variable "metrics_role_id" {
+  description = "Organization-wide Role ID for Postgres Flex Prometheus Metrics Reader"
+  type        = string
+  default     = null
+}
+
+variable "metrics_sa_email" {
+  description = "Service account email for Postgres Flex Metrics Service Account from STACKIT Platform Project"
+  type        = string
+  default     = null
+}

@@ -29,13 +29,14 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   admin_user = { name = "root" } # optional, will fallback to `var.name` if not present
   additional_users = [{ name = "lorem" }, { name = "ipsum" }] # optional
 
-  secret_manager_instance_id = "[your secrets manager instance id]"
-  # available as output from stackit-secrets-manager module
+  secret_manager_instance_id = "[your secrets manager instance id]" # available as output from stackit-secrets-manager module
   kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
-  external_secret_manifest = "[path-to-the-manifest-file-to-be-created]"
-  # The path in your system the external secret manifest will be stored at
-  config_map_manifest = "[path-to-the-manifestt-file-to-be-created]"
-  # The path in your system the config map manifest will be stored at
+  external_secret_manifest = "[path-to-the-manifest-file-to-be-created]" # The path in your system the external secret manifest will be stored at
+  config_map_manifest = "[path-to-the-manifestt-file-to-be-created]" # The path in your system the config map manifest will be stored at
+   
+  # Set the following two variables to enable Postgres Flex metrics scraping in Prometheus. The values for non-rpdo and prod are available in the Platform Team Docs > How-To Guides > Scraping Postgres Flex Metrics in Prometheus.
+  metrics_role_id  = "[postgres_flex_metrics_role_id]"  # Optional, organization-wide role ID for Postgres Flex Prometheus Metrics Reader. Required if `metrics_sa_email` is set.
+  metrics_sa_email = "[postgres_flex_metrics_sa_email]" # Optional, Service Account email for Postgres Flex Metrics Service Account from STACKIT Platform Project. Required if `metrics_role_id` is set.
 }
 ```
 
@@ -46,7 +47,7 @@ If `manage_user_password` is set to `true` (default):
 1. **Vault Storage:** The module generates strong passwords and stores them in your STACKIT Secrets Manager instance.
 2. **Manifest Generation:** It generates a local YAML file containing an `ExternalSecret` resource.
 3. **Kubernetes Sync:** You can apply this manifest to your cluster. The External Secrets Operator will then fetch the
-   credentials from Secrets Manager
+   credentials from Secrets Manager.
 
 Add the vault provider config to your `provider.tf` file for this feature to work:
 
