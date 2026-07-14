@@ -34,7 +34,7 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   external_secret_manifest = "[path-to-the-manifest-file-to-be-created]" # The path in your system the external secret manifest will be stored at
   config_map_manifest = "[path-to-the-manifestt-file-to-be-created]" # The path in your system the config map manifest will be stored at
    
-  # Set the following two variables to enable Postgres Flex metrics scraping in Prometheus. The values for non-rpdo and prod are available in the Platform Team Docs > How-To Guides > Scraping Postgres Flex Metrics in Prometheus.
+  # Set the following two variables to enable Postgres Flex metrics scraping in Prometheus. The values for non-prod and prod are available in the Platform Team Docs > How-To Guides > Scraping Postgres Flex Metrics in Prometheus.
   metrics_role_id  = "[postgres_flex_metrics_role_id]"  # Optional, organization-wide role ID for Postgres Flex Prometheus Metrics Reader. Required if `metrics_sa_email` is set.
   metrics_sa_email = "[postgres_flex_metrics_sa_email]" # Optional, Service Account email for Postgres Flex Metrics Service Account from STACKIT Platform Project. Required if `metrics_role_id` is set.
 }
