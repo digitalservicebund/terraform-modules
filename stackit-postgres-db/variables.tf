@@ -114,20 +114,18 @@ variable "metrics_role_id" {
   description = "Organization-wide Role ID for Postgres Flex Prometheus Metrics Reader"
   type        = string
   default     = null
-
-  validation {
-    condition     = var.metrics_role_id == null || var.metrics_sa_email != null
-    error_message = "If metrics_role_id is set, metrics_sa_email must also be set."
-  }
 }
 
 variable "metrics_sa_email" {
   description = "Service account email for Postgres Flex Metrics Service Account from STACKIT Platform Project"
   type        = string
   default     = null
+}
 
-  validation {
-    condition     = var.metrics_sa_email == null || var.metrics_role_id != null
-    error_message = "If metrics_sa_email is set, metrics_role_id must also be set."
+check "metrics_vars_consistency" {
+  assert {
+    condition     = (var.metrics_role_id == null) == (var.metrics_sa_email == null)
+    error_message = "metrics_role_id and metrics_sa_email must be either both set or both null. If you want to enable metrics access, please provide both values."
   }
 }
+
