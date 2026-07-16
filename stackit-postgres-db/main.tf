@@ -24,6 +24,8 @@ locals {
     # THIS FILE IS MANAGED BY TERRAFORM
     ###
   EOT
+
+  metrics_access_enabled = var.metrics_role_id != null && var.metrics_sa_email != null
 }
 
 resource "stackit_postgresflex_instance" "this" {
@@ -177,4 +179,12 @@ resource "local_file" "config_map_manifest" {
       }
     })
   ]))
+}
+
+resource "stackit_authorization_project_role_assignment" "postgres_flex_metrics_access" {
+  count = local.metrics_access_enabled ? 1 : 0
+
+  resource_id = var.project_id
+  role        = var.metrics_role_id
+  subject     = var.metrics_sa_email
 }

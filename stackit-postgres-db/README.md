@@ -29,13 +29,14 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   admin_user = { name = "root" } # optional, will fallback to `var.name` if not present
   additional_users = [{ name = "lorem" }, { name = "ipsum" }] # optional
 
-  secret_manager_instance_id = "[your secrets manager instance id]"
-  # available as output from stackit-secrets-manager module
+  secret_manager_instance_id = "[your secrets manager instance id]" # available as output from stackit-secrets-manager module
   kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
-  external_secret_manifest = "[path-to-the-manifest-file-to-be-created]"
-  # The path in your system the external secret manifest will be stored at
-  config_map_manifest = "[path-to-the-manifestt-file-to-be-created]"
-  # The path in your system the config map manifest will be stored at
+  external_secret_manifest = "[path-to-the-manifest-file-to-be-created]" # The path in your system the external secret manifest will be stored at
+  config_map_manifest = "[path-to-the-manifestt-file-to-be-created]" # The path in your system the config map manifest will be stored at
+   
+  # Set the following two variables to enable Postgres Flex metrics scraping in Prometheus. The values for non-prod and prod are available in the Platform Team Docs > How-To Guides > Scraping Postgres Flex Metrics in Prometheus.
+  metrics_role_id  = "[postgres_flex_metrics_role_id]"  # Optional, organization-wide role ID for Postgres Flex Prometheus Metrics Reader. Required if `metrics_sa_email` is set.
+  metrics_sa_email = "[postgres_flex_metrics_sa_email]" # Optional, Service Account email for Postgres Flex Metrics Service Account from STACKIT Platform Project. Required if `metrics_role_id` is set.
 }
 ```
 
@@ -46,7 +47,7 @@ If `manage_user_password` is set to `true` (default):
 1. **Vault Storage:** The module generates strong passwords and stores them in your STACKIT Secrets Manager instance.
 2. **Manifest Generation:** It generates a local YAML file containing an `ExternalSecret` resource.
 3. **Kubernetes Sync:** You can apply this manifest to your cluster. The External Secrets Operator will then fetch the
-   credentials from Secrets Manager
+   credentials from Secrets Manager.
 
 Add the vault provider config to your `provider.tf` file for this feature to work:
 
@@ -97,6 +98,7 @@ When the variable is not set, the manifest will not be created.
 |------|------|
 | [local_file.config_map_manifest](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.external_secret_manifest](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [stackit_authorization_project_role_assignment.postgres_flex_metrics_access](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/authorization_project_role_assignment) | resource |
 | [stackit_postgresflex_database.database](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_database) | resource |
 | [stackit_postgresflex_instance.this](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_instance) | resource |
 | [stackit_postgresflex_user.admin](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/resources/postgresflex_user) | resource |
@@ -122,6 +124,8 @@ When the variable is not set, the manifest will not be created.
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_manage_user_password"></a> [manage\_user\_password](#input\_manage\_user\_password) | Set true to add the user password into the STACKIT Secrets Manager. | `bool` | `true` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Specifies the memory (RAM) specs of the instance in GB. Available Options: 4, 8, 16, 32 & 128 | `number` | n/a | yes |
+| <a name="input_metrics_role_id"></a> [metrics\_role\_id](#input\_metrics\_role\_id) | Organization-wide Role ID for Postgres Flex Prometheus Metrics Reader | `string` | `null` | no |
+| <a name="input_metrics_sa_email"></a> [metrics\_sa\_email](#input\_metrics\_sa\_email) | Service account email for Postgres Flex Metrics Service Account from STACKIT Platform Project | `string` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | Specifies the name of the Postgres instance. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the STACKIT project where the database will be created. | `string` | n/a | yes |
 | <a name="input_replicas"></a> [replicas](#input\_replicas) | Number of read replicas for the instance. | `number` | `1` | no |
