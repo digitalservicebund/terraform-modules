@@ -1,6 +1,6 @@
 # STACKIT Identity Federation Module
 
-This module creates a STACKIT service account and sets up [workload identity federation](https://docs.stackit.cloud)
+This module creates a STACKIT service account and sets up [workload identity federation](https://docs.stackit.cloud/platform/access-and-identity/service-accounts/how-tos/manage-service-account-federations/)
 for it, so pipelines can authenticate without a long-lived service account key. It assigns the roles needed to
 manage your infrastructure. It currently targets GitHub Actions as the OIDC identity provider: a dedicated federated
 identity provider is created per entry in `github_subjects`, scoping access to a single branch, tag, environment or
