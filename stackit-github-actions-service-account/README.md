@@ -97,7 +97,7 @@ module "github_actions_service_account" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | 0.104.0 |
+| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | >=0.101.0 |
 
 ## Resources
 
