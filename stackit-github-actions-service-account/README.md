@@ -1,13 +1,21 @@
 # STACKIT GitHub Actions Service Account Module
 
-This module creates a STACKIT service account intended to be used by a GitHub Actions pipeline to execute Terraform.
+This module creates a STACKIT service account for a GitHub Actions pipeline to execute Terraform. It assigns the
+roles needed to manage your infrastructure and sets up [workload identity federation](https://docs.stackit.cloud)
+with GitHub's OIDC provider, so the pipeline authenticates without a long-lived service account key. A dedicated
+federated identity provider is created per entry in `github_subjects`, scoping access to a single branch, tag,
+environment or pull request; the `aud` assertion is always enforced alongside `sub`, as required by STACKIT.
 
-It assigns the roles needed to manage your infrastructure and sets up
-[workload identity federation](https://docs.stackit.cloud) with GitHub Actions' OIDC provider, so the pipeline can
-authenticate **without a long-lived service account key**. For every entry in `github_subjects` a dedicated federated
-identity provider is created, scoping access to a single branch, tag, environment or pull request. The audience
-(`aud`) assertion is always enforced in addition to the subject (`sub`) assertion, as required by STACKIT for security
-reasons.
+> **Note:** the resources used by this module (`stackit_authorization_project_role_assignment`,
+> `stackit_service_account_federated_identity_provider`) are part of the STACKIT provider's experimental `iam`
+> feature. Enable it in the **calling** configuration's provider block, or `plan`/`apply` will fail:
+>
+> ```hcl
+> provider "stackit" {
+>   default_region = "eu01"
+>   experiments    = ["iam"]
+> }
+> ```
 
 ## Example
 
@@ -26,7 +34,12 @@ module "github_actions_service_account" {
 }
 ```
 
-Configure the GitHub Actions workflow to request an OIDC token and use it via the [STACKIT OIDC action](https://github.com/stackitcloud/terraform-provider-stackit) (or the STACKIT CLI/provider's native OIDC support) instead of a service account key:
+## Using the service account
+
+With our [`stackit-terraform-execution`](https://github.com/digitalservicebund/stackit-terraform-execution) action
+(supports OIDC since [`93654d8`](https://github.com/digitalservicebund/stackit-terraform-execution/commit/93654d8fcae0a35c5556ac48a700ccedec975ac9)),
+pass the module's `service_account_email` output as `STACKIT_SERVICE_ACCOUNT_EMAIL` instead of
+`STACKIT_SERVICE_ACCOUNT_KEY`:
 
 ```yaml
 permissions:
@@ -38,8 +51,13 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v6
-      # ... configure the STACKIT provider to use OIDC federation with
-      # module.github_actions_service_account.service_account_email
+      - name: Terraform Plan & Apply
+        uses: digitalservicebund/stackit-terraform-execution@v1
+        with:
+          terraform_module: "terraform"
+          STACKIT_SERVICE_ACCOUNT_EMAIL: "[output: service_account_email]"
+          BACKEND_ACCESS_KEY_ID: ${{ secrets.BACKEND_ACCESS_KEY_ID }}
+          BACKEND_SECRET_ACCESS_KEY: ${{ secrets.BACKEND_SECRET_ACCESS_KEY }}
 ```
 
 ## Restricting access further
