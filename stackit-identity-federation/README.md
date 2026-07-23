@@ -1,10 +1,10 @@
-# STACKIT GitHub Actions Service Account Module
+# STACKIT Identity Federation Module
 
-This module creates a STACKIT service account for a GitHub Actions pipeline to execute Terraform. It assigns the
-roles needed to manage your infrastructure and sets up [workload identity federation](https://docs.stackit.cloud)
-with GitHub's OIDC provider, so the pipeline authenticates without a long-lived service account key. A dedicated
-federated identity provider is created per entry in `github_subjects`, scoping access to a single branch, tag,
-environment or pull request; the `aud` assertion is always enforced alongside `sub`, as required by STACKIT.
+This module creates a STACKIT service account and sets up [workload identity federation](https://docs.stackit.cloud)
+for it, so pipelines can authenticate without a long-lived service account key. It assigns the roles needed to
+manage your infrastructure. It currently targets GitHub Actions as the OIDC identity provider: a dedicated federated
+identity provider is created per entry in `github_subjects`, scoping access to a single branch, tag, environment or
+pull request; the `aud` assertion is always enforced alongside `sub`, as required by STACKIT.
 
 > **Note:** the resources used by this module (`stackit_authorization_project_role_assignment`,
 > `stackit_service_account_federated_identity_provider`) are part of the STACKIT provider's experimental `iam`
@@ -21,7 +21,7 @@ environment or pull request; the `aud` assertion is always enforced alongside `s
 
 ```hcl
 module "github_actions_service_account" {
-  source     = "github.com/digitalservicebund/terraform-modules//stackit-github-actions-service-account?ref=[sha of the commit you want to use]"
+  source     = "github.com/digitalservicebund/terraform-modules//stackit-identity-federation?ref=[sha of the commit you want to use]"
   project_id = "[your stackit project id]"
   name       = "gh-actions-terraform"
   roles      = ["editor"]
@@ -67,7 +67,7 @@ exact workflow file:
 
 ```hcl
 module "github_actions_service_account" {
-  source     = "github.com/digitalservicebund/terraform-modules//stackit-github-actions-service-account?ref=[sha of the commit you want to use]"
+  source     = "github.com/digitalservicebund/terraform-modules//stackit-identity-federation?ref=[sha of the commit you want to use]"
   project_id = "[your stackit project id]"
   name       = "gh-actions-terraform"
   roles      = ["editor"]

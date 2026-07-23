@@ -21,7 +21,7 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "terraform"
-    directory: "/stackit-github-actions-service-account"
+    directory: "/stackit-identity-federation"
     schedule:
       interval: "weekly"
 
