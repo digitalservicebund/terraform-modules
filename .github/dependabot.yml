@@ -21,6 +21,11 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "terraform"
+    directory: "/stackit-github-actions-service-account"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "terraform"
     directory: "/stackit-object-storage"
     schedule:
       interval: "weekly"
