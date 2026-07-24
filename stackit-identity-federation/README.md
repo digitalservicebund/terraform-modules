@@ -120,14 +120,11 @@ module "github_actions_service_account" {
 | <a name="input_name"></a> [name](#input\_name) | Name of the service account | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | ID of the STACKIT project that the service account is created in | `string` | n/a | yes |
 | <a name="input_resource_id"></a> [resource\_id](#input\_resource\_id) | The resource (project, folder or organization) ID the roles are assigned on. Defaults to var.project\_id. | `string` | `null` | no |
-| <a name="input_roles"></a> [roles](#input\_roles) | Roles to assign to the service account, e.g. ["editor"]. Available roles can be queried using stackit-cli: `stackit curl https://authorization.api.stackit.cloud/v2/permissions`. | `list(string)` | n/a | yes |
+| <a name="input_roles"></a> [roles](#input\_roles) | Roles to assign to the service account, e.g. ["editor"]. Custom roles are supported as well. Available roles (including custom ones) for a resource can be queried using stackit-cli: `stackit curl https://authorization.api.stackit.cloud/v2/<resourceType>/<resourceId>/roles`, e.g. `stackit curl https://authorization.api.stackit.cloud/v2/project/<project_id>/roles`. | `list(string)` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_github_actions_federations"></a> [github\_actions\_federations](#output\_github\_actions\_federations) | Map of the configured github\_subjects entries to their federation ID and the resulting full GitHub Actions OIDC subject claim |
-| <a name="output_role_assignments"></a> [role\_assignments](#output\_role\_assignments) | Map of role to the ID of the role assignment resource |
 | <a name="output_service_account_email"></a> [service\_account\_email](#output\_service\_account\_email) | Email of the created service account |
-| <a name="output_service_account_id"></a> [service\_account\_id](#output\_service\_account\_id) | Internal UUID of the created service account |
 <!-- END_TF_DOCS -->
