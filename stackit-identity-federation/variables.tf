@@ -8,14 +8,14 @@ variable "name" {
   description = "Name of the service account"
 
   validation {
-    condition     = can(regex("^[a-z0-9-]{1,60}$", var.name))
-    error_message = "The name must not be empty. Use up to 60 lowercase letters, numbers, or hyphens."
+    condition     = can(regex("^[a-z0-9-]{1,20}$", var.name))
+    error_message = "The name must not be empty. Use up to 20 lowercase letters, numbers, or hyphens."
   }
 }
 
 variable "roles" {
   type        = list(string)
-  description = "Roles to assign to the service account, e.g. [\"editor\"]. Available roles can be queried using stackit-cli: `stackit curl https://authorization.api.stackit.cloud/v2/permissions`."
+  description = "Roles to assign to the service account, e.g. [\"editor\"]. Custom roles are supported as well. Available roles (including custom ones) for a resource can be queried using stackit-cli: `stackit curl https://authorization.api.stackit.cloud/v2/<resourceType>/<resourceId>/roles`, e.g. `stackit curl https://authorization.api.stackit.cloud/v2/project/<project_id>/roles`."
 
   validation {
     condition     = length(var.roles) > 0
