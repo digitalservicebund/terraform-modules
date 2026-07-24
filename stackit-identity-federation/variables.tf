@@ -53,12 +53,6 @@ variable "github_subjects" {
   }
 }
 
-variable "audience" {
-  type        = string
-  default     = "sts.accounts.stackit.cloud"
-  description = "The audience (\"aud\" claim) that the GitHub Actions OIDC token must present. Checking the audience is mandatory for security reasons and is always enforced by this module."
-}
-
 variable "issuer" {
   type        = string
   default     = "https://token.actions.githubusercontent.com"

@@ -41,7 +41,7 @@ resource "stackit_service_account_federated_identity_provider" "github_actions" 
       {
         item     = "aud"
         operator = "equals"
-        value    = var.audience
+        value    = "sts.accounts.stackit.cloud"
       },
       {
         item     = "sub"
