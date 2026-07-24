@@ -2,9 +2,9 @@ name: Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
   # Allow to run this workflow manually
   workflow_dispatch:
 
@@ -50,6 +50,8 @@ jobs:
   terraform-docs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -72,4 +74,40 @@ jobs:
           output-file: README.md
           output-method: inject
           args: "--hide-empty=true --lockfile=false"
-          fail-on-diff: true
+
+      # This step is needed because the previous step runs in docker and breaks the permissions of the workspace
+      - name: "Fix workspace permissions"
+        run: |
+          sudo chown -R $USER:$USER .
+
+      - name: Commit and push terraform docs changes
+        if: github.event.pull_request.head.repo.full_name == github.repository # Don't commit changes from forks
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+          MODULE_PATH: ${{ matrix.terraform_module }}
+        run: |
+          set -euo pipefail
+
+          FILE_PATH="${MODULE_PATH}/README.md"
+
+          git add "${FILE_PATH}"
+          if git diff-index --cached --quiet HEAD -- "${FILE_PATH}"; then
+            echo "No terraform-docs changes to commit for ${FILE_PATH}."
+            exit 0
+          fi
+
+          FILE_CONTENT=$(base64 -i "${FILE_PATH}" | tr -d '\n')
+          FILE_SHA=$(gh api "repos/${REPO}/contents/${FILE_PATH}?ref=${PR_BRANCH}" --jq .sha)
+
+          COMMIT_MESSAGE="docs(terraform): update ${MODULE_PATH} README [skip ci]"
+
+          gh api "repos/${REPO}/contents/${FILE_PATH}" \
+            -X PUT \
+            -f message="${COMMIT_MESSAGE}" \
+            -f content="${FILE_CONTENT}" \
+            -f sha="${FILE_SHA}" \
+            -f branch="${PR_BRANCH}"
+
