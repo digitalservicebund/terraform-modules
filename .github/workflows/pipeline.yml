@@ -8,6 +8,9 @@ on:
   # Allow to run this workflow manually
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-latest
