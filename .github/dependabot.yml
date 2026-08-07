@@ -1,46 +1,17 @@
 version: 2
 updates:
   - package-ecosystem: "terraform"
-    directory: "/cloudflare-record"
+    directories:
+      - "/*"
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "terraform"
-    directory: "/deploy-key"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "terraform"
-    directory: "/hetzner-instance"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "terraform"
-    directory: "/repo-environment"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "terraform"
-    directory: "/stackit-identity-federation"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "terraform"
-    directory: "/stackit-object-storage"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "terraform"
-    directory: "/stackit-postgres-db"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "terraform"
-    directory: "/stackit-secrets-manager"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "terraform"
-    directory: "/stackit-state-bucket"
-    schedule:
-      interval: "weekly"
+    cooldown:
+      default-days: 7
+    groups:
+      terraform-modules:
+        group-by: "dependency-name"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
