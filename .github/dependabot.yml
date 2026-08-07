@@ -5,6 +5,8 @@ updates:
       - "/*"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
     groups:
       terraform-modules:
         group-by: "dependency-name"
