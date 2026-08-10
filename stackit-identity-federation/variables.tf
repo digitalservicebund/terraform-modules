@@ -31,11 +31,11 @@ variable "resource_id" {
 
 variable "github_repository" {
   type        = string
-  description = "The GitHub repository the service account should be usable from, in the form \"org/repo\", e.g. \"digitalservicebund/terraform-modules\"."
+  description = "The GitHub repository the service account should be usable from, in the form \"org/repo\", e.g. \"digitalservicebund/terraform-modules\". Also accepts the immutable subject format \"org@org-id/repo@repo-id\" used by repositories created after July 15, 2026 (or opted in to immutable subject claims), e.g. \"digitalservicebund@123456/terraform-modules@456789\"."
 
   validation {
-    condition     = can(regex("^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", var.github_repository))
-    error_message = "The github_repository must be in the form \"org/repo\"."
+    condition     = can(regex("^[A-Za-z0-9_.-]+(@[0-9]+)?/[A-Za-z0-9_.-]+(@[0-9]+)?$", var.github_repository))
+    error_message = "The github_repository must be in the form \"org/repo\" or the immutable subject format \"org@org-id/repo@repo-id\"."
   }
 }
 
