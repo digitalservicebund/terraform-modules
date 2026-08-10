@@ -34,6 +34,26 @@ module "github_actions_service_account" {
 }
 ```
 
+## GitHub repository format and immutable subject claims
+
+`github_repository` normally takes the plain `"org/repo"` form, e.g. `"digitalservicebund/terraform-modules"`.
+
+GitHub is rolling out an **immutable default subject format** for the OIDC `sub` claim: repositories created after
+July 15, 2026 (or opted in to immutable subject claims) include the owner and repository IDs, e.g.
+`repo:octo-org@123456/octo-repo@456789:ref:refs/heads/main` instead of `repo:octo-org/octo-repo:ref:refs/heads/main`.
+See [GitHub's OIDC reference](https://docs.github.com/en/actions/reference/security/oidc#immutable-subject-claims)
+for details.
+
+To support this, `github_repository` also accepts the `"org@org-id/repo@repo-id"` form (and an optional leading
+`"repo:"` prefix, which is not duplicated), e.g.:
+
+```hcl
+github_repository = "digitalservicebund@123456/[your repo]@456789"
+```
+
+You can check whether a repository uses immutable subject claims, and find the exact `sub` format it issues,
+under **Settings → Actions → General → OIDC** in the GitHub UI (organization or repository level).
+
 ## Using the service account
 
 With our [`stackit-terraform-execution`](https://github.com/digitalservicebund/stackit-terraform-execution) action
@@ -97,7 +117,7 @@ module "github_actions_service_account" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | >=0.101.0 |
+| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | 0.104.0 |
 
 ## Resources
 
@@ -113,7 +133,7 @@ module "github_actions_service_account" {
 |------|-------------|------|---------|:--------:|
 | <a name="input_additional_assertions"></a> [additional\_assertions](#input\_additional\_assertions) | Additional assertions that are appended (combined with AND) to the "aud" and "sub" assertions of every federated identity provider, e.g. to further restrict access by "repository\_owner" or "workflow\_ref". | <pre>list(object({<br/>    item     = string<br/>    operator = string<br/>    value    = string<br/>  }))</pre> | `[]` | no |
 | <a name="input_federation_name_prefix"></a> [federation\_name\_prefix](#input\_federation\_name\_prefix) | Prefix used to build the name of the federated identity providers created for each entry in github\_subjects. | `string` | `"github-actions"` | no |
-| <a name="input_github_repository"></a> [github\_repository](#input\_github\_repository) | The GitHub repository the service account should be usable from, in the form "org/repo", e.g. "digitalservicebund/terraform-modules". | `string` | n/a | yes |
+| <a name="input_github_repository"></a> [github\_repository](#input\_github\_repository) | The GitHub repository the service account should be usable from, in the form "org/repo", e.g. "digitalservicebund/terraform-modules". Also accepts the immutable subject format "org@org-id/repo@repo-id" used by repositories created after July 15, 2026 (or opted in to immutable subject claims), e.g. "digitalservicebund@123456/terraform-modules@456789". An optional leading "repo:" prefix is also accepted and won't be duplicated. | `string` | n/a | yes |
 | <a name="input_github_subjects"></a> [github\_subjects](#input\_github\_subjects) | List of GitHub Actions OIDC token subject claim suffixes that are allowed to use the service account. Supported formats: "ref:refs/heads/<branch>", "ref:refs/tags/<tag>", "environment:<environment>" and "pull\_request". A separate, narrowly scoped federated identity provider is created for each entry. | `list(string)` | <pre>[<br/>  "ref:refs/heads/main"<br/>]</pre> | no |
 | <a name="input_issuer"></a> [issuer](#input\_issuer) | The OIDC issuer URL of the identity provider. Defaults to GitHub's public OIDC issuer, override for GitHub Enterprise Server. | `string` | `"https://token.actions.githubusercontent.com"` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the service account | `string` | n/a | yes |

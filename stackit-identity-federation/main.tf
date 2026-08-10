@@ -7,7 +7,7 @@ locals {
     for subject_claim in var.github_subjects :
     subject_claim => {
       name    = substr(replace(lower("${var.federation_name_prefix}-${subject_claim}"), "/[^a-z0-9-]+/", "-"), 0, 63)
-      subject = "repo:${var.github_repository}:${subject_claim}"
+      subject = "${startswith(var.github_repository, "repo:") ? "" : "repo:"}${var.github_repository}:${subject_claim}"
     }
   }
 }
