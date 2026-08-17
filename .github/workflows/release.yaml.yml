@@ -1,0 +1,20 @@
+name: Terraform Module Releaser
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed] # Closed required
+    branches:
+      - main
+
+permissions:
+  contents: write # Required for to push tags, create release, and push changes to the wiki
+  pull-requests: write # Required to comment on pull request
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Terraform Module Releaser
+        uses: techpivot/terraform-module-releaser@5f3fc036202008b9a2d3ab5dbb1e4a734cd90e4d #v2
