@@ -23,6 +23,7 @@ variable "additional_users" {
   type = list(object({
     name                = string
     secret_manager_path = optional(string)
+    owner_of            = optional(string)
   }))
   default = []
 }

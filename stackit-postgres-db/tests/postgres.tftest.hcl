@@ -135,6 +135,30 @@ run "multiple_users" {
   }
 }
 
+run "database_owner_override" {
+  variables {
+    database_names = ["foo", "bar"]
+    admin_user = {
+      name = "admin"
+    }
+    additional_users = [
+      { name = "lorem", owner_of = "foo" },
+      { name = "ipsum" }
+    ]
+    manage_user_password = false
+  }
+
+  assert {
+    condition     = stackit_postgresflex_database.database["foo"].owner == "lorem"
+    error_message = "Database 'foo' should be owned by 'lorem' via owner_of"
+  }
+
+  assert {
+    condition     = stackit_postgresflex_database.database["bar"].owner == "admin"
+    error_message = "Database 'bar' should still be owned by the admin user"
+  }
+}
+
 run "secrets_and_manifest" {
   command = apply
 
