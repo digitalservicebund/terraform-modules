@@ -61,6 +61,12 @@ resource "stackit_postgresflex_user" "admin" {
 resource "stackit_postgresflex_database" "database" {
   for_each = local.databases # Simple set iteration
 
+  # Explicitly declare dependencies to ensure users are created before databases
+  depends_on = [
+    stackit_postgresflex_user.admin,
+    stackit_postgresflex_user.user
+  ]
+
   project_id  = var.project_id
   instance_id = stackit_postgresflex_instance.this.instance_id
   name        = each.key
