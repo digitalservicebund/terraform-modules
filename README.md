@@ -2,6 +2,19 @@
 
 This repository contains a collection of Terraform modules we use in our infrastructure.
 
+# Commit Messages
+
+Please use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles — our versioning is derived from them.
+
+```
+fix(stackit-object-storage): correct bucket policy attachment   -> patch
+feat(stackit-postgres-db): add configurable backup schedule     -> minor
+feat(stackit-state-bucket)!: rename bucket_name variable        -> major
+```
+
+Use the module directory as scope. 
+
+It's recommended to squash and merge. Therefore, the PR title must follow the convention as well.
 
 # terraform-docs
 
