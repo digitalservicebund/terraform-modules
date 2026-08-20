@@ -171,7 +171,6 @@ module "github_actions_service_account" {
 
 | Name | Description |
 |------|-------------|
-| <a name="output_custom_role_id"></a> [custom\_role\_id](#output\_custom\_role\_id) | ID of the custom role created from var.permissions, null if no permissions were supplied |
 | <a name="output_custom_role_name"></a> [custom\_role\_name](#output\_custom\_role\_name) | Name of the custom role created from var.permissions, null if no permissions were supplied |
 | <a name="output_service_account_email"></a> [service\_account\_email](#output\_service\_account\_email) | Email of the created service account |
 <!-- END_TF_DOCS -->
