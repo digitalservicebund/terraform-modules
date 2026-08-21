@@ -13,6 +13,32 @@ mock_provider "stackit" {
     }
   }
 
+  mock_resource "stackit_authorization_folder_role_assignment" {
+    defaults = {
+      id = "resource_id,role,subject"
+    }
+  }
+
+  mock_resource "stackit_authorization_organization_role_assignment" {
+    defaults = {
+      id = "resource_id,role,subject"
+    }
+  }
+
+  mock_resource "stackit_authorization_project_custom_role" {
+    defaults = {
+      role_id = "99999999-8888-7777-6666-555555555555"
+      id      = "resource_id,99999999-8888-7777-6666-555555555555"
+    }
+  }
+
+  mock_resource "stackit_authorization_folder_custom_role" {
+    defaults = {
+      role_id = "99999999-8888-7777-6666-555555555555"
+      id      = "resource_id,99999999-8888-7777-6666-555555555555"
+    }
+  }
+
   mock_resource "stackit_authorization_organization_custom_role" {
     defaults = {
       role_id = "99999999-8888-7777-6666-555555555555"
@@ -81,23 +107,23 @@ run "permissions_only_is_valid" {
   }
 
   assert {
-    condition     = length(stackit_authorization_organization_custom_role.this) == 1
+    condition     = length(stackit_authorization_project_custom_role.this) == 1
     error_message = "A custom role should be created when permissions are supplied"
   }
 
   assert {
-    condition     = stackit_authorization_organization_custom_role.this[0].name == "service-account.gh-actions-terraform"
+    condition     = stackit_authorization_project_custom_role.this[0].name == "service-account.gh-actions-terraform"
     error_message = "Custom role name should be derived from the service account name"
   }
 
   assert {
-    condition     = stackit_authorization_organization_custom_role.this[0].permissions == tolist(["iam.subject.get"])
+    condition     = stackit_authorization_project_custom_role.this[0].permissions == tolist(["iam.subject.get"])
     error_message = "Custom role should contain the supplied permissions"
   }
 
   assert {
-    condition     = stackit_authorization_organization_custom_role.this[0].resource_id == "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
-    error_message = "Custom role should default to the project_id as resource_id"
+    condition     = stackit_authorization_project_custom_role.this[0].resource_id == "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+    error_message = "Custom role should be created on the project by default"
   }
 
   assert {
@@ -110,7 +136,7 @@ run "roles_only_creates_no_custom_role" {
   command = apply
 
   assert {
-    condition     = length(stackit_authorization_organization_custom_role.this) == 0
+    condition     = length(stackit_authorization_project_custom_role.this) == 0
     error_message = "No custom role should be created when no permissions are supplied"
   }
 
@@ -126,7 +152,6 @@ run "roles_and_permissions_are_combined" {
   variables {
     roles                   = ["editor"]
     permissions             = ["iam.subject.get"]
-    resource_id             = "22222222-3333-4444-5555-666666666666"
     custom_role_description = "Least privilege role"
   }
 
@@ -139,12 +164,7 @@ run "roles_and_permissions_are_combined" {
   }
 
   assert {
-    condition     = stackit_authorization_organization_custom_role.this[0].resource_id == "22222222-3333-4444-5555-666666666666"
-    error_message = "Custom role should use the overridden resource_id"
-  }
-
-  assert {
-    condition     = stackit_authorization_organization_custom_role.this[0].description == "Least privilege role"
+    condition     = stackit_authorization_project_custom_role.this[0].description == "Least privilege role"
     error_message = "Custom role should use the supplied description"
   }
 }
@@ -271,15 +291,79 @@ run "additional_assertions_are_appended" {
   }
 }
 
-run "resource_id_can_be_overridden" {
+run "folder_id_creates_folder_level_role_and_assignment" {
   command = apply
 
   variables {
-    resource_id = "11111111-2222-3333-4444-555555555555"
+    folder_id   = "11111111-2222-3333-4444-555555555555"
+    permissions = ["iam.subject.get"]
   }
 
   assert {
-    condition     = stackit_authorization_project_role_assignment.this["editor"].resource_id == "11111111-2222-3333-4444-555555555555"
-    error_message = "Role assignment should use the overridden resource_id"
+    condition     = length(stackit_authorization_project_role_assignment.this) == 0
+    error_message = "No project level role assignment should be created when folder_id is set"
+  }
+
+  assert {
+    condition     = length(stackit_authorization_project_custom_role.this) == 0
+    error_message = "No project level custom role should be created when folder_id is set"
+  }
+
+  assert {
+    condition     = stackit_authorization_folder_custom_role.this[0].resource_id == "11111111-2222-3333-4444-555555555555"
+    error_message = "Custom role should be created on the folder"
+  }
+
+  assert {
+    condition     = stackit_authorization_folder_role_assignment.this["editor"].resource_id == "11111111-2222-3333-4444-555555555555"
+    error_message = "Role assignment should be created on the folder"
+  }
+
+  assert {
+    condition     = output.role_scope == "folder"
+    error_message = "role_scope output should be folder"
   }
 }
+
+run "organization_id_creates_organization_level_role_and_assignment" {
+  command = apply
+
+  variables {
+    organization_id = "22222222-3333-4444-5555-666666666666"
+    permissions     = ["iam.subject.get"]
+  }
+
+  assert {
+    condition     = length(stackit_authorization_project_role_assignment.this) == 0
+    error_message = "No project level role assignment should be created when organization_id is set"
+  }
+
+  assert {
+    condition     = stackit_authorization_organization_custom_role.this[0].resource_id == "22222222-3333-4444-5555-666666666666"
+    error_message = "Custom role should be created on the organization"
+  }
+
+  assert {
+    condition     = stackit_authorization_organization_role_assignment.this["editor"].resource_id == "22222222-3333-4444-5555-666666666666"
+    error_message = "Role assignment should be created on the organization"
+  }
+
+  assert {
+    condition     = output.custom_role_name == "service-account.gh-actions-terraform"
+    error_message = "custom_role_name output should also work for organization level custom roles"
+  }
+}
+
+run "folder_id_and_organization_id_are_mutually_exclusive" {
+  command = plan
+
+  variables {
+    folder_id       = "11111111-2222-3333-4444-555555555555"
+    organization_id = "22222222-3333-4444-5555-666666666666"
+  }
+
+  expect_failures = [
+    var.folder_id,
+  ]
+}
+
