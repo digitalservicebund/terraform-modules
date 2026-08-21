@@ -36,6 +36,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "expiration" {
     }
   }
 
+  timeouts {
+    create = "10m"
+    update = "10m"
+  }
+
   lifecycle {
     ignore_changes = [transition_default_minimum_object_size]
   }

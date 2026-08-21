@@ -19,7 +19,7 @@ resource "stackit_logs_instance" "this" {
 resource "stackit_logs_access_token" "router" {
   project_id   = local.storage_project_id
   instance_id  = stackit_logs_instance.this.instance_id
-  display_name = "${var.name}-router-ingest"
+  display_name = "${var.name}-ingest"
   description  = "Write-only token for the Telemetry Router to push audit logs."
   permissions  = ["write"]
 }
