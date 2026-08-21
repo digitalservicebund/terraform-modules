@@ -15,12 +15,25 @@ variable "name" {
 
 variable "roles" {
   type        = list(string)
-  description = "Roles to assign to the service account, e.g. [\"editor\"]. Custom roles are supported as well. Available roles (including custom ones) for a resource can be queried using stackit-cli: `stackit curl https://authorization.api.stackit.cloud/v2/<resourceType>/<resourceId>/roles`, e.g. `stackit curl https://authorization.api.stackit.cloud/v2/project/<project_id>/roles`."
+  default     = []
+  description = "Existing roles to assign to the service account, e.g. [\"editor\"]. Custom roles are supported as well. Can be combined with var.permissions. Available roles (including custom ones) for a resource can be queried using stackit-cli: `stackit curl https://authorization.api.stackit.cloud/v2/<resourceType>/<resourceId>/roles`, e.g. `stackit curl https://authorization.api.stackit.cloud/v2/project/<project_id>/roles`."
+}
+
+variable "permissions" {
+  type        = list(string)
+  default     = []
+  description = "Permissions, e.g. [\"iam.subject.get\"], that are bundled into a custom role created by this module and assigned to the service account. Preferred over var.roles, because it allows granting least privilege. Can be combined with var.roles."
 
   validation {
-    condition     = length(var.roles) > 0
-    error_message = "At least one role must be provided."
+    condition     = length(var.permissions) > 0 || length(var.roles) > 0
+    error_message = "At least one entry in permissions or roles must be provided."
   }
+}
+
+variable "custom_role_description" {
+  type        = string
+  default     = null
+  description = "Description of the custom role created from var.permissions. Defaults to a generated description mentioning the service account name."
 }
 
 variable "resource_id" {

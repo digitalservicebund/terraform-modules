@@ -1,6 +1,18 @@
 locals {
   resource_id = coalesce(var.resource_id, var.project_id)
 
+  # A dedicated custom role bundling var.permissions, so the service account can be
+  # granted least privilege instead of a broad predefined role.
+  create_custom_role = length(var.permissions) > 0
+  custom_role_name   = "service-account.${var.name}"
+
+  # The name is derived from var.name instead of the resource attribute, so that it is
+  # known at plan time and can be used as a for_each key.
+  assigned_roles = concat(
+    var.roles,
+    local.create_custom_role ? [local.custom_role_name] : []
+  )
+
   # One narrowly scoped federated identity provider per allowed GitHub Actions subject,
   # so that access can be restricted per branch, tag, environment or pull_request.
   github_federations = {
@@ -17,12 +29,23 @@ resource "stackit_service_account" "this" {
   name       = var.name
 }
 
+resource "stackit_authorization_organization_custom_role" "this" {
+  count = local.create_custom_role ? 1 : 0
+
+  resource_id = local.resource_id
+  name        = local.custom_role_name
+  description = coalesce(var.custom_role_description, "Custom role for service account ${var.name}")
+  permissions = var.permissions
+}
+
 resource "stackit_authorization_project_role_assignment" "this" {
-  for_each = toset(var.roles)
+  for_each = toset(local.assigned_roles)
 
   resource_id = local.resource_id
   role        = each.value
   subject     = stackit_service_account.this.email
+
+  depends_on = [stackit_authorization_organization_custom_role.this]
 }
 
 resource "stackit_service_account_federated_identity_provider" "github_actions" {
