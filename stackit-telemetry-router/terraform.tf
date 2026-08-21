@@ -1,0 +1,14 @@
+terraform {
+  required_version = ">1.10.0"
+
+  required_providers {
+    stackit = {
+      source  = "stackitcloud/stackit"
+      version = ">=0.65.0"
+    }
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">=6.28.0"
+    }
+  }
+}
