@@ -14,8 +14,8 @@ variable "name" {
   type        = string
 
   validation {
-    condition     = length(var.name) <= 20 && can(regex("^[a-z0-9-]+$", var.name))
-    error_message = "The name must be lowercase alphanumeric with hyphens and at most 20 characters."
+    condition     = length(var.name) <= 30 && can(regex("^[a-z0-9-]+$", var.name))
+    error_message = "The name must be lowercase alphanumeric with hyphens and at most 30 characters."
   }
 }
 
