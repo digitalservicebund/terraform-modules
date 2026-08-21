@@ -60,7 +60,7 @@ variable "terraform_credentials_group_id" {
 variable "object_lock_days" {
   description = "Default WORM retention in days. Objects cannot be deleted or overwritten during this period. Minimum: 1."
   type        = number
-  default     = 730 # 2 years
+  default     = 365 # 1 year
 
   validation {
     condition     = var.object_lock_days >= 1
@@ -82,7 +82,7 @@ variable "object_lock_mode" {
 variable "lifecycle_expiration_days" {
   description = "After how many days objects are automatically deleted. Should be >= object_lock_days so WORM protection expires first. Set to null to disable automatic deletion."
   type        = number
-  default     = 740 # 2 years + 10 days; expires slightly after object_lock_days
+  default     = 365 # 1 year; expires slightly after object_lock_days
 
   validation {
     condition     = var.lifecycle_expiration_days == null || var.lifecycle_expiration_days >= 1
