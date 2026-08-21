@@ -34,7 +34,7 @@ data "stackit_objectstorage_credentials_group" "s3" {
 resource "stackit_objectstorage_credentials_group" "router" {
   depends_on = [stackit_objectstorage_bucket.audit_logs]
   project_id = local.storage_project_id
-  name       = "${var.name}-router"
+  name       = "${var.name}-cg"
 }
 
 resource "stackit_objectstorage_credential" "router" {
@@ -45,7 +45,7 @@ resource "stackit_objectstorage_credential" "router" {
 # Telemetry Router Instance
 resource "stackit_telemetryrouter_instance" "this" {
   project_id   = local.router_project_id
-  display_name = "${var.name}-router-instance"
+  display_name = "${var.name}-instance"
   description  = var.telemetry_router_description
 }
 
