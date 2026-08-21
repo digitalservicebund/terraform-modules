@@ -1,10 +1,6 @@
 locals {
   # Credentials group URN used by Terraform to manage the S3 bucket via the AWS provider.
-  terraform_credentials_group_urn = (
-    var.terraform_credentials_group_id != null
-    ? data.stackit_objectstorage_credentials_group.existing[0].urn
-    : stackit_objectstorage_credentials_group.terraform[0].urn
-  )
+  terraform_credentials_group_urn = data.stackit_objectstorage_credentials_group.s3.urn
 
   # Default project for router resources.
   router_project_id = var.project_id
@@ -29,29 +25,16 @@ resource "stackit_logs_access_token" "router" {
 }
 
 # S3 Credentials
-data "stackit_objectstorage_credentials_group" "existing" {
-  count                = var.terraform_credentials_group_id != null ? 1 : 0
+data "stackit_objectstorage_credentials_group" "s3" {
   project_id           = local.storage_project_id
   credentials_group_id = var.terraform_credentials_group_id
 }
 
-resource "stackit_objectstorage_credentials_group" "terraform" {
-  count      = var.terraform_credentials_group_id == null ? 1 : 0
-  depends_on = [stackit_objectstorage_bucket.audit_logs]
-  project_id = local.storage_project_id
-  name       = "${var.bucket_name}-cg"
-}
-
-resource "stackit_objectstorage_credential" "terraform" {
-  count                = var.terraform_credentials_group_id == null ? 1 : 0
-  project_id           = local.storage_project_id
-  credentials_group_id = stackit_objectstorage_credentials_group.terraform[0].credentials_group_id
-}
 
 resource "stackit_objectstorage_credentials_group" "router" {
   depends_on = [stackit_objectstorage_bucket.audit_logs]
   project_id = local.storage_project_id
-  name       = "${var.bucket_name}-router"
+  name       = "${var.name}-router"
 }
 
 resource "stackit_objectstorage_credential" "router" {

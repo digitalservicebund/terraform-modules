@@ -99,11 +99,11 @@ mock_provider "aws" {
 }
 
 variables {
-  project_id             = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
-  log_storage_project_id = "bbbbbbbb-97d6-4677-91eb-6ab5f8b0c202"
-  name                   = "platform-audit"
-  bucket_name            = "ds-platform-audit-logs"
-  organization_id        = "11111111-0000-0000-0000-000000000001"
+  project_id                     = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+  log_storage_project_id         = "bbbbbbbb-97d6-4677-91eb-6ab5f8b0c202"
+  terraform_credentials_group_id = "existing-cg-id"
+  name                           = "platform-audit"
+  organization_id                = "11111111-0000-0000-0000-000000000001"
 }
 
 run "default_configuration" {
@@ -118,6 +118,11 @@ run "default_configuration" {
   assert {
     condition     = stackit_logs_instance.this.retention_days == 180
     error_message = "Logs retention should default to 180 days."
+  }
+
+  assert {
+    condition     = stackit_objectstorage_bucket.audit_logs.name == "platform-audit-bucket"
+    error_message = "Bucket name should be derived from the module name."
   }
 
   # Lifecycle is now created by default (3660 days)
@@ -140,18 +145,6 @@ run "lifecycle_disabled" {
   }
 }
 
-run "existing_credentials_group" {
-  command = apply
-
-  variables {
-    terraform_credentials_group_id = "existing-cg-id"
-  }
-
-  assert {
-    condition     = output.terraform_credentials_group_id == "existing-cg-id"
-    error_message = "Should return the provided credentials group ID."
-  }
-}
 
 run "invalid_object_lock_mode" {
   command = plan
@@ -198,6 +191,11 @@ run "single_project_fallback" {
   assert {
     condition     = stackit_objectstorage_bucket.audit_logs.project_id == "cccc3333-97d6-4677-91eb-6ab5f8b0c202"
     error_message = "S3 bucket should fallback to project_id when log_storage_project_id is null."
+  }
+
+  assert {
+    condition     = stackit_objectstorage_bucket.audit_logs.name == "platform-audit-bucket"
+    error_message = "Derived bucket name should remain stable in fallback mode."
   }
 
   assert {

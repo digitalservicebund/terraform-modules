@@ -50,23 +50,13 @@ variable "telemetry_router_description" {
   default     = null
 }
 
-# S3 / Object-Storage
-variable "bucket_name" {
-  description = "Name of the S3 bucket for permanent audit-log storage. Must be DNS-compliant and globally unique within the STACKIT region. Recommended prefix: 'ds-<project>-audit-logs'. Max 29 chars."
-  type        = string
-
-  validation {
-    condition     = length(var.bucket_name) <= 29
-    error_message = "bucket_name must not exceed 29 characters (credentials-group name limit is 32)."
-  }
-}
 
 variable "terraform_credentials_group_id" {
-  description = "ID of an existing credentials group used by Terraform to manage the S3 bucket (AWS provider). Set to null to let the module create a new credentials group."
+  description = "ID of an existing credentials group used by Terraform to manage the S3 bucket (AWS provider). This must already exist outside the module."
   type        = string
-  default     = null
 }
 
+# S3 / Object-Storage
 variable "object_lock_days" {
   description = "Default WORM retention in days. Objects cannot be deleted or overwritten during this period. Minimum: 1."
   type        = number

@@ -5,7 +5,7 @@
 # object_lock at bucket creation time and a router-specific write-only IAM policy.
 resource "stackit_objectstorage_bucket" "audit_logs" {
   project_id  = local.storage_project_id
-  name        = var.bucket_name
+  name        = "${var.name}-bucket"
   object_lock = true # Enables S3 Object Lock (required for WORM)
 }
 
