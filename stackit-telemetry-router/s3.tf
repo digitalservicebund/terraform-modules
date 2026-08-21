@@ -15,7 +15,7 @@ resource "aws_s3_bucket_object_lock_configuration" "worm" {
 
   rule {
     default_retention {
-      mode = var.object_lock_mode
+      mode  = var.object_lock_mode
       years = var.object_lock_days
     }
   }
