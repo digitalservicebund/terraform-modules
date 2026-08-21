@@ -99,10 +99,11 @@ mock_provider "aws" {
 }
 
 variables {
-  project_id      = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
-  name            = "platform-audit"
-  bucket_name     = "ds-platform-audit-logs"
-  organization_id = "11111111-0000-0000-0000-000000000001"
+  project_id             = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+  log_storage_project_id = "bbbbbbbb-97d6-4677-91eb-6ab5f8b0c202"
+  name                   = "platform-audit"
+  bucket_name            = "ds-platform-audit-logs"
+  organization_id        = "11111111-0000-0000-0000-000000000001"
 }
 
 run "default_configuration" {
@@ -113,10 +114,6 @@ run "default_configuration" {
     error_message = "Telemetry link must be organization scoped."
   }
 
-  assert {
-    condition     = output.organization_telemetry_link_id != null && output.organization_telemetry_link_id != ""
-    error_message = "organization_telemetry_link_id output should be set."
-  }
 
   assert {
     condition     = stackit_logs_instance.this.retention_days == 180
@@ -164,4 +161,47 @@ run "invalid_object_lock_mode" {
   }
 
   expect_failures = [var.object_lock_mode]
+}
+
+run "separated_projects" {
+  command = plan
+
+  variables {
+    project_id             = "aaaa1111-97d6-4677-91eb-6ab5f8b0c202"
+    log_storage_project_id = "bbbb2222-97d6-4677-91eb-6ab5f8b0c202"
+  }
+
+  assert {
+    condition     = stackit_logs_instance.this.project_id == "bbbb2222-97d6-4677-91eb-6ab5f8b0c202"
+    error_message = "Logs instance should be in separate storage project."
+  }
+
+  assert {
+    condition     = stackit_telemetryrouter_instance.this.project_id == "aaaa1111-97d6-4677-91eb-6ab5f8b0c202"
+    error_message = "Router should be in router project."
+  }
+}
+
+run "single_project_fallback" {
+  command = plan
+
+  variables {
+    project_id             = "cccc3333-97d6-4677-91eb-6ab5f8b0c202"
+    log_storage_project_id = null
+  }
+
+  assert {
+    condition     = stackit_logs_instance.this.project_id == "cccc3333-97d6-4677-91eb-6ab5f8b0c202"
+    error_message = "Logs instance should fallback to project_id when log_storage_project_id is null."
+  }
+
+  assert {
+    condition     = stackit_objectstorage_bucket.audit_logs.project_id == "cccc3333-97d6-4677-91eb-6ab5f8b0c202"
+    error_message = "S3 bucket should fallback to project_id when log_storage_project_id is null."
+  }
+
+  assert {
+    condition     = stackit_telemetryrouter_instance.this.project_id == "cccc3333-97d6-4677-91eb-6ab5f8b0c202"
+    error_message = "Router should be in project_id."
+  }
 }

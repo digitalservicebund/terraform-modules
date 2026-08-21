@@ -4,7 +4,7 @@
 # `stackit-object-storage`, because Telemetry Router needs a combined setup:
 # object_lock at bucket creation time and a router-specific write-only IAM policy.
 resource "stackit_objectstorage_bucket" "audit_logs" {
-  project_id  = var.project_id
+  project_id  = local.storage_project_id
   name        = var.bucket_name
   object_lock = true # Enables S3 Object Lock (required for WORM)
 }

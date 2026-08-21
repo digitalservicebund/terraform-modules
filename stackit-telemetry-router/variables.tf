@@ -1,6 +1,12 @@
 variable "project_id" {
-  description = "The STACKIT project ID of the dedicated audit-log project where the Logs instance, Telemetry Router and S3 bucket will be created."
+  description = "Default STACKIT project ID for all resources. Used for Telemetry Router and as fallback for Logs/S3 if log_storage_project_id is not set."
   type        = string
+}
+
+variable "log_storage_project_id" {
+  description = "Optional STACKIT project ID override for STACKIT Logs and S3 resources. If null, project_id is used."
+  type        = string
+  default     = null
 }
 
 variable "name" {
