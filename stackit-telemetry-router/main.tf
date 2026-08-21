@@ -11,7 +11,7 @@ locals {
 # STACKIT Logs Instance
 resource "stackit_logs_instance" "this" {
   project_id     = local.storage_project_id
-  display_name   = "${var.name}-logs"
+  display_name   = "${var.name}-log-instance"
   description    = var.logs_description
   retention_days = var.logs_retention_days
 }
@@ -45,7 +45,7 @@ resource "stackit_objectstorage_credential" "router" {
 # Telemetry Router Instance
 resource "stackit_telemetryrouter_instance" "this" {
   project_id   = local.router_project_id
-  display_name = "${var.name}-router"
+  display_name = "${var.name}-router-instance"
   description  = var.telemetry_router_description
 }
 
