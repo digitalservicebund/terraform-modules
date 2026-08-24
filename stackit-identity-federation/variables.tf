@@ -36,10 +36,21 @@ variable "custom_role_description" {
   description = "Description of the custom role created from var.permissions. Defaults to a generated description mentioning the service account name."
 }
 
-variable "resource_id" {
+variable "folder_id" {
   type        = string
   default     = null
-  description = "The resource (project, folder or organization) ID the roles are assigned on. Defaults to var.project_id."
+  description = "ID of the STACKIT folder the custom role is created on and the roles are assigned on. Mutually exclusive with var.organization_id. If neither is set, roles are created and assigned on var.project_id."
+
+  validation {
+    condition     = var.folder_id == null || var.organization_id == null
+    error_message = "Only one of folder_id or organization_id may be set."
+  }
+}
+
+variable "organization_id" {
+  type        = string
+  default     = null
+  description = "ID of the STACKIT organization the custom role is created on and the roles are assigned on. Mutually exclusive with var.folder_id. If neither is set, roles are created and assigned on var.project_id."
 }
 
 variable "github_repository" {
