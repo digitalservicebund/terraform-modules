@@ -67,7 +67,7 @@ resource "stackit_telemetryrouter_destination" "logs" {
   config = {
     config_type = "OpenTelemetry"
     opentelemetry = {
-      uri          = stackit_logs_instance.this.ingest_otlp_url
+      uri          = "https://${stackit_logs_instance.this.ingest_otlp_url}"
       bearer_token = stackit_logs_access_token.router.access_token
     }
   }
