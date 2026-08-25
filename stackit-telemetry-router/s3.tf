@@ -24,8 +24,9 @@ resource "aws_s3_bucket_object_lock_configuration" "worm" {
 # Lifecycle rule: automatically delete objects after the configured number of days.
 # Should be set to a value >= object_lock_days so that objects can actually be deleted after the WORM retention expires.
 resource "aws_s3_bucket_lifecycle_configuration" "expiration" {
-  count  = var.lifecycle_expiration_days != null ? 1 : 0
-  bucket = stackit_objectstorage_bucket.audit_logs.name
+  count      = var.lifecycle_expiration_days != null ? 1 : 0
+  bucket     = stackit_objectstorage_bucket.audit_logs.name
+  depends_on = [aws_s3_bucket_object_lock_configuration.worm]
 
   rule {
     id     = "audit-log-expiration"
@@ -47,6 +48,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "expiration" {
 }
 
 resource "aws_s3_bucket_policy" "audit_logs" {
+  depends_on = [
+    aws_s3_bucket_object_lock_configuration.worm,
+    aws_s3_bucket_lifecycle_configuration.expiration,
+  ]
   bucket = stackit_objectstorage_bucket.audit_logs.name
   policy = data.aws_iam_policy_document.audit_logs.json
 }
