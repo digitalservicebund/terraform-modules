@@ -107,7 +107,7 @@ jobs:
           FILE_CONTENT=$(base64 -i "${FILE_PATH}" | tr -d '\n')
           FILE_SHA=$(gh api "repos/${REPO}/contents/${FILE_PATH}?ref=${PR_BRANCH}" --jq .sha)
 
-          COMMIT_MESSAGE="docs(terraform): update ${MODULE_PATH} README [skip ci]"
+          COMMIT_MESSAGE="docs(terraform): update ${MODULE_PATH} README"
 
           gh api "repos/${REPO}/contents/${FILE_PATH}" \
             -X PUT \
