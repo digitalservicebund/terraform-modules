@@ -68,7 +68,7 @@ You can disable all the magic with inputs.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_object_storage"></a> [object\_storage](#module\_object\_storage) | ../stackit-object-storage | n/a |
+| <a name="module_object_storage"></a> [object\_storage](#module\_object\_storage) | github.com/digitalservicebund/terraform-modules | stackit-object-storage/v1.0.3 |
 
 ## Resources
 
