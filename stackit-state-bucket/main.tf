@@ -1,5 +1,5 @@
 module "object_storage" {
-  source            = "github.com/digitalservicebund/terraform-modules?ref=stackit-object-storage/v1.0.3"
+  source                         = "github.com/digitalservicebund/terraform-modules?ref=stackit-object-storage/v1.0.3"
   project_id                     = var.project_id
   bucket_name                    = var.state_bucket_name
   credentials                    = {}   # No additional credentials needed
