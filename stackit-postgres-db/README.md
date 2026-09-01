@@ -19,7 +19,7 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   source         = "github.com/digitalservicebund/terraform-modules//stackit-postgres-db?ref=[sha of the commit you want to use]"
   project_id     = "[your stackit project id]"
   name           = "[database instance name]"
-  flavor_id      = "2.4" # format: <cpu>.<ram in GB>, e.g. "2.4", "4.16"
+  flavor_id      = "2.4" # format: <cpu>.<ram in GB> for single-replica, <cpu>.<ram>-replica for 3 replicas, e.g. "2.4" (1 replica) or "2.4-replica" (3 replicas)
   engine_version = "17"
   disk_size      = 5
   retention_days = 32 # optional, defaults to 32
@@ -119,15 +119,15 @@ When the variable is not set, the manifest will not be created.
 | <a name="input_disk_size"></a> [disk\_size](#input\_disk\_size) | Size of the instance disk volume. Its value range is from 5 GB to 4000 GB. | `number` | n/a | yes |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | Specifies the storage performance class. e.g. premium-perf6-stackit | `string` | `"premium-perf6-stackit"` | no |
 | <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | Specifies the postgres version. | `string` | `"17"` | no |
+| <a name="input_flavor_id"></a> [flavor\_id](#input\_flavor\_id) | Postgres Flex flavor ID. Format: `<cpu>.<ram>` for 1 replica, `<cpu>.<ram>-replica` for 3 replicas. Examples: `"2.4"`, `"2.4-replica"`, `"4.16"`, `"4.16-replica"`. | `string` | n/a | yes |
 | <a name="input_external_secret_manifest"></a> [external\_secret\_manifest](#input\_external\_secret\_manifest) | Path where the external secret manifest will be stored at | `string` | `null` | no |
-| <a name="input_flavor_id"></a> [flavor\_id](#input\_flavor\_id) | Postgres Flex flavor ID to use for the instance. The schema is <cpu>.<ram> where <cpu> is the number of CPU cores and <ram> is the amount of RAM in GB. Example: 2.4 | `string` | n/a | yes |
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_manage_user_password"></a> [manage\_user\_password](#input\_manage\_user\_password) | Set true to add the user password into the STACKIT Secrets Manager. | `bool` | `true` | no |
 | <a name="input_metrics_role_id"></a> [metrics\_role\_id](#input\_metrics\_role\_id) | Organization-wide Role ID for Postgres Flex Prometheus Metrics Reader | `string` | `null` | no |
 | <a name="input_metrics_sa_email"></a> [metrics\_sa\_email](#input\_metrics\_sa\_email) | Service account email for Postgres Flex Metrics Service Account from STACKIT Platform Project | `string` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | Specifies the name of the Postgres instance. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the STACKIT project where the database will be created. | `string` | n/a | yes |
-| <a name="input_retention_days"></a> [retention\_days](#input\_retention\_days) | Backup retention in days. Must be between 32 and 90. | `number` | `32` | no |
+| <a name="input_retention_days"></a> [retention\_days](#input\_retention\_days) | Backup retention in days. Must be between 32 and 90. Defaults to 32 to match provider fallback during deprecation period. | `number` | `32` | no |
 | <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_user\_password is true. | `string` | `""` | no |
 
 ## Outputs

@@ -40,7 +40,7 @@ variable "engine_version" {
 }
 
 variable "flavor_id" {
-  description = "Postgres Flex flavor ID to use for the instance. The schema is <cpu>.<ram> where <cpu> is the number of CPU cores and <ram> is the amount of RAM in GB. Example: 2.4"
+  description = "Postgres Flex flavor ID. Format: '<cpu>.<ram>' for 1 replica, '<cpu>.<ram>-replica' for 3 replicas. Examples: \"2.4\", \"2.4-replica\", \"4.16\", \"4.16-replica\"."
   type        = string
 }
 
@@ -63,17 +63,6 @@ variable "backup_schedule" {
   description = "Backup schedule in cron format. Defaults to daily at 3am UTC."
   type        = string
   default     = "0 3 * * *"
-}
-
-variable "retention_days" {
-  description = "Backup retention in days. Must be between 32 and 90."
-  type        = number
-  default     = 32
-
-  validation {
-    condition     = var.retention_days >= 32 && var.retention_days <= 90
-    error_message = "retention_days must be between 32 and 90, inclusive."
-  }
 }
 
 variable "acls" {
