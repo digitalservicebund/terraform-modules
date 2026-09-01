@@ -1,6 +1,6 @@
 output "address" {
   description = "Database host address"
-  value       = stackit_postgresflex_user.admin.host
+  value       = stackit_postgresflex_instance.this.connection_info.write.host
 }
 
 output "credentials" {

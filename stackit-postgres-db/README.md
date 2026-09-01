@@ -19,10 +19,10 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   source         = "github.com/digitalservicebund/terraform-modules//stackit-postgres-db?ref=[sha of the commit you want to use]"
   project_id     = "[your stackit project id]"
   name           = "[database instance name]"
-  cpu            = 2
-  memory         = 4
+  flavor_id      = "2.4" # format: <cpu>.<ram in GB>, e.g. "2.4", "4.16"
   engine_version = "17"
   disk_size      = 5
+  retention_days = 32 # optional, defaults to 32
   acls = ["cluster", "egress", "range"] # Ask the platform team for the correct egress range
 
   database_names = ["list-of-names", "to-create-databases"] # optional, will fallback to `var.name` if not present
@@ -115,20 +115,19 @@ When the variable is not set, the manifest will not be created.
 | <a name="input_admin_user"></a> [admin\_user](#input\_admin\_user) | Specified the name of the Postgres Database Owner and (optionally) a custom Secret Manager path. Example: { name = "admin", secret\_manager\_path = "custom/path/admin" }. If secret\_manager\_path is omitted, a default path is used. If admin\_user is not specified, a user with the same name as the instance will be created. | <pre>object({<br/>    name                = string<br/>    secret_manager_path = optional(string)<br/>  })</pre> | <pre>{<br/>  "name": null<br/>}</pre> | no |
 | <a name="input_backup_schedule"></a> [backup\_schedule](#input\_backup\_schedule) | Backup schedule in cron format. Defaults to daily at 3am UTC. | `string` | `"0 3 * * *"` | no |
 | <a name="input_config_map_manifest"></a> [config\_map\_manifest](#input\_config\_map\_manifest) | Path where the config map manifest will be stored at | `string` | `null` | no |
-| <a name="input_cpu"></a> [cpu](#input\_cpu) | Specifies the CPU specs of the instance. Available Options: 2, 4, 8 & 16 | `number` | n/a | yes |
 | <a name="input_database_names"></a> [database\_names](#input\_database\_names) | List of database names to create. If empty, defaults to a single database named after the instance. | `set(string)` | `[]` | no |
 | <a name="input_disk_size"></a> [disk\_size](#input\_disk\_size) | Size of the instance disk volume. Its value range is from 5 GB to 4000 GB. | `number` | n/a | yes |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | Specifies the storage performance class. e.g. premium-perf6-stackit | `string` | `"premium-perf6-stackit"` | no |
 | <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | Specifies the postgres version. | `string` | `"17"` | no |
+| <a name="input_flavor_id"></a> [flavor\_id](#input\_flavor\_id) | Postgres Flex flavor ID to use for the instance. | `string` | n/a | yes |
 | <a name="input_external_secret_manifest"></a> [external\_secret\_manifest](#input\_external\_secret\_manifest) | Path where the external secret manifest will be stored at | `string` | `null` | no |
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_manage_user_password"></a> [manage\_user\_password](#input\_manage\_user\_password) | Set true to add the user password into the STACKIT Secrets Manager. | `bool` | `true` | no |
-| <a name="input_memory"></a> [memory](#input\_memory) | Specifies the memory (RAM) specs of the instance in GB. Available Options: 4, 8, 16, 32 & 128 | `number` | n/a | yes |
 | <a name="input_metrics_role_id"></a> [metrics\_role\_id](#input\_metrics\_role\_id) | Organization-wide Role ID for Postgres Flex Prometheus Metrics Reader | `string` | `null` | no |
 | <a name="input_metrics_sa_email"></a> [metrics\_sa\_email](#input\_metrics\_sa\_email) | Service account email for Postgres Flex Metrics Service Account from STACKIT Platform Project | `string` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | Specifies the name of the Postgres instance. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the STACKIT project where the database will be created. | `string` | n/a | yes |
-| <a name="input_replicas"></a> [replicas](#input\_replicas) | Number of read replicas for the instance. | `number` | `1` | no |
+| <a name="input_retention_days"></a> [retention\_days](#input\_retention\_days) | Backup retention in days. Must be between 32 and 90. Defaults to 32 to match provider fallback during deprecation period. | `number` | `32` | no |
 | <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_user\_password is true. | `string` | `""` | no |
 
 ## Outputs

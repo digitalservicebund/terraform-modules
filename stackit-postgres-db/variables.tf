@@ -33,26 +33,15 @@ variable "project_id" {
   type        = string
 }
 
-variable "cpu" {
-  description = "Specifies the CPU specs of the instance. Available Options: 2, 4, 8 & 16"
-  type        = number
-}
-
-variable "memory" {
-  description = "Specifies the memory (RAM) specs of the instance in GB. Available Options: 4, 8, 16, 32 & 128"
-  type        = number
-}
-
-variable "replicas" {
-  description = "Number of read replicas for the instance."
-  type        = number
-  default     = 1
-}
-
 variable "engine_version" {
   description = "Specifies the postgres version."
   type        = string
   default     = "17"
+}
+
+variable "flavor_id" {
+  description = "Postgres Flex flavor ID to use for the instance. The schema is <cpu>.<ram> where <cpu> is the number of CPU cores and <ram> is the amount of RAM in GB. Example: 2.4"
+  type        = string
 }
 
 variable "disk_size" {
@@ -74,6 +63,17 @@ variable "backup_schedule" {
   description = "Backup schedule in cron format. Defaults to daily at 3am UTC."
   type        = string
   default     = "0 3 * * *"
+}
+
+variable "retention_days" {
+  description = "Backup retention in days. Must be between 32 and 90."
+  type        = number
+  default     = 32
+
+  validation {
+    condition     = var.retention_days >= 32 && var.retention_days <= 90
+    error_message = "retention_days must be between 32 and 90, inclusive."
+  }
 }
 
 variable "acls" {
