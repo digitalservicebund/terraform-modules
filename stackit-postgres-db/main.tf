@@ -37,13 +37,12 @@ locals {
 resource "stackit_postgresflex_instance" "this" {
   project_id      = var.project_id
   name            = var.name
-  acl             = var.acls
+  retention_days  = var.retention_days
   backup_schedule = var.backup_schedule
-  flavor = {
-    cpu = var.cpu
-    ram = var.memory
+  network = {
+    acl = var.acls
   }
-  replicas = var.replicas
+  flavor_id = var.flavor_id
   storage = {
     class = var.disk_type
     size  = var.disk_size
@@ -92,7 +91,7 @@ resource "vault_kv_secret_v2" "postgres_admin_credentials" {
   data_json = jsonencode({
     username = stackit_postgresflex_user.admin.username
     password = stackit_postgresflex_user.admin.password
-    host     = stackit_postgresflex_user.admin.host
+    host     = stackit_postgresflex_instance.this.connection_info.write.host
   })
 }
 
@@ -105,7 +104,7 @@ resource "vault_kv_secret_v2" "postgres_user_credentials" {
   data_json = jsonencode({
     username = stackit_postgresflex_user.user[each.key].username
     password = stackit_postgresflex_user.user[each.key].password
-    host     = stackit_postgresflex_user.user[each.key].host
+    host     = stackit_postgresflex_instance.this.connection_info.write.host
   })
 }
 
@@ -186,8 +185,8 @@ resource "local_file" "config_map_manifest" {
       }
       data = {
         "database.name" = db_name
-        "database.host" = stackit_postgresflex_user.admin.host
-        "database.port" = tostring(stackit_postgresflex_user.admin.port)
+        "database.host" = stackit_postgresflex_instance.this.connection_info.write.host
+        "database.port" = tostring(stackit_postgresflex_instance.this.connection_info.write.port)
       }
     })
   ]))

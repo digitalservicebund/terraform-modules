@@ -2,12 +2,17 @@ mock_provider "stackit" {
   mock_resource "stackit_postgresflex_instance" {
     defaults = {
       instance_id = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+      connection_info = {
+        write = {
+          host = "postgres.stackit.internal"
+          port = 5432
+        }
+      }
     }
   }
   mock_resource "stackit_postgresflex_user" {
     defaults = {
       password = "password"
-      host     = "postgres.stackit.internal"
     }
   }
   mock_resource "stackit_postgresflex_database" {}
@@ -20,9 +25,8 @@ mock_provider "vault" {
 variables {
   project_id     = "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
   name           = "test-postgres"
-  cpu            = 2
-  memory         = 4
   engine_version = "17"
+  flavor_id      = "2.4"
   disk_size      = 10
   acls           = ["10.0.0.0/16"]
 }
@@ -41,13 +45,8 @@ run "basic_creation" {
   }
 
   assert {
-    condition     = stackit_postgresflex_instance.this.flavor.cpu == 2
-    error_message = "flavor CPU should match input"
-  }
-
-  assert {
-    condition     = stackit_postgresflex_instance.this.flavor.ram == 4
-    error_message = "flavor RAM should match input"
+    condition     = stackit_postgresflex_instance.this.flavor_id == "2.4"
+    error_message = "Flavor ID should match input"
   }
 
   assert {
@@ -61,11 +60,11 @@ run "basic_creation" {
   }
 
   assert {
-    condition     = length(stackit_postgresflex_instance.this.acl) == 1
+    condition     = length(stackit_postgresflex_instance.this.network.acl) == 1
     error_message = "ACL length should match input"
   }
   assert {
-    condition     = stackit_postgresflex_instance.this.acl[0] == "10.0.0.0/16"
+    condition     = stackit_postgresflex_instance.this.network.acl[0] == "10.0.0.0/16"
     error_message = "ACLs should match input"
   }
 
