@@ -81,7 +81,7 @@ When the variable is not set, the manifest will not be created.
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >1.10.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >=2.6.1 |
-| <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.65.0 |
+| <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.105.0 |
 | <a name="requirement_vault"></a> [vault](#requirement\_vault) | >=5.3.0 |
 
 ## Providers
@@ -89,7 +89,7 @@ When the variable is not set, the manifest will not be created.
 | Name | Version |
 |------|---------|
 | <a name="provider_local"></a> [local](#provider\_local) | >=2.6.1 |
-| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | >=0.65.0 |
+| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | >=0.105.0 |
 | <a name="provider_vault"></a> [vault](#provider\_vault) | >=5.3.0 |
 
 ## Resources

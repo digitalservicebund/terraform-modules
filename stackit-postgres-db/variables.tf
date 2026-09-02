@@ -65,6 +65,17 @@ variable "backup_schedule" {
   default     = "0 3 * * *"
 }
 
+variable "retention_days" {
+  description = "Backup retention in days. Must be between 32 and 90."
+  type        = number
+  default     = 32
+
+  validation {
+    condition     = var.retention_days >= 32 && var.retention_days <= 90
+    error_message = "retention_days must be between 32 and 90, inclusive."
+  }
+}
+
 variable "acls" {
   description = "List of ACL IDs to associate with the database instance. This should be the cluster Egress IP Range only!"
   type        = list(string)

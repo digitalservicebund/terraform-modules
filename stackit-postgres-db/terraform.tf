@@ -8,7 +8,7 @@ terraform {
     }
     stackit = {
       source  = "stackitcloud/stackit"
-      version = ">=0.65.0"
+      version = ">=0.105.0"
     }
     vault = {
       source  = "hashicorp/vault"
