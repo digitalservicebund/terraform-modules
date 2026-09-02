@@ -10,7 +10,7 @@ Secrets Operator to fetch secrets from the created Secrets Manager.
 
 ```hcl
 module "secrets_manager" {
-  source     = "github.com/digitalservicebund/terraform-modules//stackit-secrets-manager?ref=[sha of the commit you want to use]"
+  source     = "github.com/digitalservicebund/terraform-modules?ref=stackit-secrets-manager/vX.Y.Z"
   project_id = "[your stackit project id]"
   name       = "[project name]-secrets"
 }

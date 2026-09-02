@@ -50,7 +50,7 @@ provider "aws" {
 
 ```hcl
 module "object_storage_bucket" {
-  source                         = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
+  source                         = "github.com/digitalservicebund/terraform-modules?ref=stackit-object-storage/vX.Y.Z"
   project_id                     = "[stackit project id]"
   bucket_name                    = "ds-[project name]-[my-bucket-name]"
   terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (should be referenced from the stackit-state-bucket module)]"
@@ -82,7 +82,7 @@ provider "vault" {
 
 ```hcl
 module "object_storage_bucket" {
-  source                         = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
+  source                         = "github.com/digitalservicebund/terraform-modules?ref=stackit-object-storage/vX.Y.Z"
   project_id                     = "[stackit project id]"
   bucket_name                    = "ds-[project name]-[my-bucket-name]"
   terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (should be referenced from the stackit-state-bucket module)]"
@@ -98,7 +98,7 @@ For example, to create two read-only credentials in addition to the default supe
 
 ```hcl
 module "object_storage_bucket" {
-  source                         = "github.com/digitalservicebund/terraform-modules//stackit-object-storage?ref=[sha of the commit you want to use]"
+  source                         = "github.com/digitalservicebund/terraform-modules?ref=stackit-object-storage/vX.Y.Z"
   project_id                     = "[stackit project id]"
   bucket_name                    = "ds-[project name]-[my-bucket-name]"
   terraform_credentials_group_id = "[credentials group id used by terraform to manage the bucket (should be referenced from the stackit-state-bucket module)]"

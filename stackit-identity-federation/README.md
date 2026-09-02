@@ -24,7 +24,7 @@ pull request; the `aud` assertion is always enforced alongside `sub`, as require
 
 ```hcl
 module "github_actions_service_account" {
-  source     = "github.com/digitalservicebund/terraform-modules//stackit-identity-federation?ref=[sha of the commit you want to use]"
+  source     = "github.com/digitalservicebund/terraform-modules?ref=stackit-identity-federation/vX.Y.Z"
   project_id = "[your stackit project id]"
   name       = "gh-actions-terraform"
 
@@ -112,7 +112,7 @@ exact workflow file:
 
 ```hcl
 module "github_actions_service_account" {
-  source     = "github.com/digitalservicebund/terraform-modules//stackit-identity-federation?ref=[sha of the commit you want to use]"
+  source     = "github.com/digitalservicebund/terraform-modules?ref=stackit-identity-federation/vX.Y.Z"
   project_id = "[your stackit project id]"
   name       = "gh-actions-terraform"
 
