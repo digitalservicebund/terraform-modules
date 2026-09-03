@@ -16,7 +16,7 @@ To minimize configuration for simple use cases, this module uses "Convention ove
 
 ```hcl
  module "database" {
-  source         = "github.com/digitalservicebund/terraform-modules//stackit-postgres-db?ref=[sha of the commit you want to use]"
+  source         = "github.com/digitalservicebund/terraform-modules?ref=stackit-postgres-db/vX.Y.Z"
   project_id     = "[your stackit project id]"
   name           = "[database instance name]"
   flavor_id      = "2.4" # format: <cpu>.<ram in GB> for single-replica, <cpu>.<ram>-replica for 3 replicas, e.g. "2.4" (1 replica) or "2.4-replica" (3 replicas)
