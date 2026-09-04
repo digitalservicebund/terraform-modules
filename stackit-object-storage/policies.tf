@@ -4,10 +4,6 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
   policy = data.aws_iam_policy_document.combined_policy.json
 }
 
-moved {
-  from = aws_s3_bucket_policy.bucket_policy
-  to   = aws_s3_bucket_policy.bucket_policy[0]
-}
 
 data "aws_iam_policy_document" "combined_policy" {
   source_policy_documents = [
