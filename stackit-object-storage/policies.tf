@@ -95,4 +95,21 @@ data "aws_iam_policy_document" "read_write" {
       "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}/*"
     ]
   }
-}
+
+  data "aws_iam_policy_document" "write_only" {
+    count = contains(local.roles_used, "write-only") ? 1 : 0
+    statement {
+      effect = "Allow"
+      principals {
+        identifiers = [stackit_objectstorage_credentials_group.user_credentials_group["write-only"].urn]
+        type        = "AWS"
+      }
+      actions = [
+        "s3:PutObject"
+      ]
+      resources = [
+        "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}",
+        "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}/*"
+      ]
+    }
+  }
