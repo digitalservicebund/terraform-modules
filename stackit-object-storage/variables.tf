@@ -26,9 +26,9 @@ variable "credentials" {
   }
   validation {
     condition = alltrue([
-      for c in values(var.credentials) : contains(["superuser", "read-only", "read-write"], c.role)
+      for c in values(var.credentials) : contains(["superuser", "read-only", "read-write", "write-only"], c.role)
     ])
-    error_message = "Each credential role must be one of: superuser, read-only, read-write."
+    error_message = "Each credential role must be one of: superuser, read-only, read-write, write-only."
 
   }
 }

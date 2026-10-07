@@ -7,6 +7,7 @@ locals {
   EOT
   access_codes = {
     "read-only"  = "ro"
+    "write-only" = "wo"
     "read-write" = "rw"
     "superuser"  = "su"
   }
