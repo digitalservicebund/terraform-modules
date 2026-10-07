@@ -1,4 +1,4 @@
-# StackIT Object Storage Module
+# STACKIT Object Storage Module
 
 This module creates a STACKIT object storage bucket and credentials to access it. It is recommended to use it together
 with the

@@ -1,4 +1,4 @@
-# StackIT Secrets Manager Module
+# STACKIT Secrets Manager Module
 
 This module creates a STACKIT Secrets Manager in your project with credentials for terraform and external secrets
 operator.
