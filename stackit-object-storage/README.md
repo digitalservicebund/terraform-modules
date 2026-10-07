@@ -192,6 +192,7 @@ applying any changes, so the credentials need to exist before the provider can b
 | [aws_iam_policy_document.public_read](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.read_only](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.read_write](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.write_only](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [stackit_objectstorage_credentials_group.existing_terraform_credentials_group](https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs/data-sources/objectstorage_credentials_group) | data source |
 
 ## Inputs
