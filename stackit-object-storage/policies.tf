@@ -106,9 +106,6 @@ data "aws_iam_policy_document" "write_only" {
       identifiers = [stackit_objectstorage_credentials_group.user_credentials_group["write-only"].urn]
       type        = "AWS"
     }
-    actions = [
-      "s3:*"
-    ]
     not_actions = [
       "s3:PutObject"
     ]
