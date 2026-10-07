@@ -68,6 +68,13 @@ override_resource {
     urn                  = "urn:stackit:objectstorage:credentialsgroup:ro"
   }
 }
+override_resource {
+  target = stackit_objectstorage_credentials_group.user_credentials_group["write-only"]
+  values = {
+    credentials_group_id = "dd5334fa-5b68-45b0-a5f3-50402f6d908b"
+    urn                  = "urn:stackit:objectstorage:credentialsgroup:wo"
+  }
+}
 
 
 variables {
@@ -85,21 +92,22 @@ run "policy_generation" {
       "credential-2" = { role = "read-write" }
       "credential-3" = { role = "read-only" }
       "credential-4" = { role = "read-only" }
+      "credential-5" = { role = "write-only" }
     }
   }
 
   assert {
-    condition     = length(keys(stackit_objectstorage_credentials_group.user_credentials_group)) == 3
-    error_message = "Should create exactly three credential groups"
+    condition     = length(keys(stackit_objectstorage_credentials_group.user_credentials_group)) == 4
+    error_message = "Should create exactly four credential groups"
   }
   assert {
-    condition     = length(keys(stackit_objectstorage_credential.credential)) == 4
-    error_message = "Should create exactly four credentials"
+    condition     = length(keys(stackit_objectstorage_credential.credential)) == 5
+    error_message = "Should create exactly five credentials"
   }
   assert {
     condition = (
       jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[0].Action == "s3:*" &&
-      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[0].NotPrincipal.AWS == ["urn:stackit:objectstorage:credentialsgroup:terraform", "urn:stackit:objectstorage:credentialsgroup:su", "urn:stackit:objectstorage:credentialsgroup:rw", "urn:stackit:objectstorage:credentialsgroup:ro"]
+      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[0].NotPrincipal.AWS == ["urn:stackit:objectstorage:credentialsgroup:wo", "urn:stackit:objectstorage:credentialsgroup:terraform", "urn:stackit:objectstorage:credentialsgroup:su", "urn:stackit:objectstorage:credentialsgroup:rw", "urn:stackit:objectstorage:credentialsgroup:ro"]
     )
     error_message = "Policy to restrict access for other credentials groups is incorrect"
   }
@@ -114,8 +122,17 @@ run "policy_generation" {
 
   assert {
     condition = (
-      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].Action == ["s3:PutReplicationConfiguration", "s3:PutLifecycleConfiguration", "s3:PutEncryptionConfiguration", "s3:PutBucketTagging", "s3:PutBucketPolicy", "s3:DeleteBucketPolicy", "s3:DeleteBucket"] &&
-      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].Principal.AWS == "urn:stackit:objectstorage:credentialsgroup:rw"
+      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].Action == "s3:*" &&
+      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].NotAction == "s3:PutObject" &&
+      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].Principal.AWS == "urn:stackit:objectstorage:credentialsgroup:wo"
+    )
+    error_message = "Write-only policy is incorrect"
+  }
+
+  assert {
+    condition = (
+      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[3].Action == ["s3:PutReplicationConfiguration", "s3:PutLifecycleConfiguration", "s3:PutEncryptionConfiguration", "s3:PutBucketTagging", "s3:PutBucketPolicy", "s3:DeleteBucketPolicy", "s3:DeleteBucket"] &&
+      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[3].Principal.AWS == "urn:stackit:objectstorage:credentialsgroup:rw"
     )
     error_message = "Read-write policy is incorrect"
   }
