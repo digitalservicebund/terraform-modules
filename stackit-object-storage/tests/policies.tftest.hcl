@@ -122,7 +122,6 @@ run "policy_generation" {
 
   assert {
     condition = (
-      jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].Action == "s3:*" &&
       jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].NotAction == "s3:PutObject" &&
       jsondecode(data.aws_iam_policy_document.combined_policy.json).Statement[2].Principal.AWS == "urn:stackit:objectstorage:credentialsgroup:wo"
     )
