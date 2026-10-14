@@ -26,8 +26,8 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   acls = ["cluster", "egress", "range"] # Ask the platform team for the correct egress range
 
   database_names = ["list-of-names", "to-create-databases"] # optional, will fallback to `var.name` if not present
-  admin_user = { name = "root" } # optional, will fallback to `var.name` if not present
-  additional_users = [{ name = "lorem" }, { name = "ipsum" }] # optional
+  admin_user = { name = "root", password_version = 1 } # optional, will fallback to `var.name` if not present
+  additional_users = [{ name = "lorem", password_version = 1 }, { name = "ipsum", password_version = 1 }] # optional
 
   secret_manager_instance_id = "[your secrets manager instance id]" # available as output from stackit-secrets-manager module
   kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied

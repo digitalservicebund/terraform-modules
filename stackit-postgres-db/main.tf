@@ -55,6 +55,10 @@ resource "stackit_postgresflex_user" "admin" {
   instance_id = stackit_postgresflex_instance.this.instance_id
   roles       = ["login", "createdb"]
   username    = local.admin_username
+
+  rotate_when_changed = {
+    password_version = var.admin_user.password_version
+  }
 }
 
 resource "stackit_postgresflex_database" "database" {
@@ -79,6 +83,10 @@ resource "stackit_postgresflex_user" "user" {
   instance_id = stackit_postgresflex_instance.this.instance_id
   roles       = ["login"]
   username    = each.value.name
+
+  rotate_when_changed = {
+    password_version = each.value.password_version
+  }
 }
 
 resource "vault_kv_secret_v2" "postgres_admin_credentials" {

@@ -110,10 +110,11 @@ run "multiple_users" {
   variables {
     admin_user = {
       name = "admin"
+      password_version = 1
     }
     additional_users = [
-      { name = "lorem" },
-      { name = "ipsum" }
+      { name = "lorem", password_version = 2 },
+      { name = "ipsum", password_version = 3 }
     ]
     manage_user_password = false
   }
@@ -132,6 +133,20 @@ run "multiple_users" {
     condition     = stackit_postgresflex_user.user["ipsum"].username == "ipsum"
     error_message = "User username should be 'ipsum'"
   }
+
+  assert {
+    condition     = stackit_postgresflex_user.admin.rotate_when_changed.password_version == "1"
+    error_message = "Admin password_version should be 1"
+  }
+  assert {
+    condition     = stackit_postgresflex_user.user["lorem"].rotate_when_changed.password_version == "2"
+    error_message = "User 'lorem' password_version should be 2"
+  }
+  assert {
+    condition     = stackit_postgresflex_user.user["ipsum"].rotate_when_changed.password_version == "3"
+    error_message = "User 'ipsum' password_version should be 3"
+  }
+
 }
 
 run "database_owner_override" {
@@ -139,10 +154,11 @@ run "database_owner_override" {
     database_names = ["foo", "bar"]
     admin_user = {
       name = "admin"
+      password_version = 1
     }
     additional_users = [
-      { name = "lorem", owner_of = "foo" },
-      { name = "ipsum" }
+      { name = "lorem",password_version = 1,  owner_of = "foo" },
+      { name = "ipsum", password_version = 1 }
     ]
     manage_user_password = false
   }
@@ -165,9 +181,10 @@ run "secrets_and_manifest" {
     name = "test-secrets"
     admin_user = {
       name = "root"
+      password_version = 1
     }
     additional_users = [
-      { name = "lorem" }
+      { name = "lorem", password_version = 1 }
     ]
     manage_user_password       = true
     secret_manager_instance_id = "mock-vault"
@@ -283,8 +300,8 @@ run "config_map_manifest" {
   variables {
     database_names = ["foo", "bar"]
     additional_users = [
-      { name = "lorem" },
-      { name = "ipsum" }
+      { name = "lorem", password_version = 1 },
+      { name = "ipsum", password_version = 1 }
     ]
 
     manage_user_password = false
@@ -335,11 +352,13 @@ run "custom_secret_manager_paths" {
 
     admin_user = {
       name                = "root"
+      password_version = 1
       secret_manager_path = "custom/root-admin"
     }
     additional_users = [
       {
         name                = "lorem"
+        password_version = 1
         secret_manager_path = "custom/lorem-user"
       }
     ]
