@@ -107,7 +107,8 @@ data "aws_iam_policy_document" "write_only" {
       type        = "AWS"
     }
     not_actions = [
-      "s3:PutObject"
+      "s3:PutObject",
+      "s3:AbortMultipartUpload"
     ]
     resources = [
       "arn:aws:s3:::${stackit_objectstorage_bucket.bucket.name}/*"
