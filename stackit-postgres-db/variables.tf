@@ -105,6 +105,12 @@ variable "external_secret_manifest" {
   default     = null
 }
 
+variable "external_secret_store_name" {
+  description = "Name of the Kubernetes SecretStore referenced by the generated ExternalSecret."
+  type        = string
+  default     = "secret-store"
+}
+
 variable "config_map_manifest" {
   description = "Path where the config map manifest will be stored at"
   type        = string

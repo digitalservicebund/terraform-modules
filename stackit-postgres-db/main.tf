@@ -132,7 +132,7 @@ resource "local_file" "external_secret_manifest" {
     spec = {
       refreshInterval = "15m"
       secretStoreRef = {
-        name = "secret-store"
+        name = var.external_secret_store_name
         kind = "SecretStore"
       }
       data = concat(

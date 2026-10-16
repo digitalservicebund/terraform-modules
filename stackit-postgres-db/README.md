@@ -31,6 +31,7 @@ To minimize configuration for simple use cases, this module uses "Convention ove
 
   secret_manager_instance_id = "[your secrets manager instance id]" # available as output from stackit-secrets-manager module
   kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
+  external_secret_store_name = "[your-secret-store-name]" # optional, defaults to "secret-store"
   external_secret_manifest = "[path-to-the-manifest-file-to-be-created]" # The path in your system the external secret manifest will be stored at
   config_map_manifest = "[path-to-the-manifestt-file-to-be-created]" # The path in your system the config map manifest will be stored at
    
@@ -120,6 +121,7 @@ When the variable is not set, the manifest will not be created.
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | Specifies the storage performance class. e.g. premium-perf6-stackit | `string` | `"premium-perf6-stackit"` | no |
 | <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | Specifies the postgres version. | `string` | `"17"` | no |
 | <a name="input_external_secret_manifest"></a> [external\_secret\_manifest](#input\_external\_secret\_manifest) | Path where the external secret manifest will be stored at | `string` | `null` | no |
+| <a name="input_external_secret_store_name"></a> [external\_secret\_store\_name](#input\_external\_secret\_store\_name) | Name of the Kubernetes SecretStore referenced by the generated ExternalSecret. | `string` | `"secret-store"` | no |
 | <a name="input_flavor_id"></a> [flavor\_id](#input\_flavor\_id) | Postgres Flex flavor ID. Format: '<cpu>.<ram>' for 1 replica, '<cpu>.<ram>-replica' for 3 replicas. Examples: "2.4", "2.4-replica", "4.16", "4.16-replica". | `string` | n/a | yes |
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_manage_user_password"></a> [manage\_user\_password](#input\_manage\_user\_password) | Set true to add the user password into the STACKIT Secrets Manager. | `bool` | `true` | no |
