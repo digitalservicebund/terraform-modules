@@ -213,6 +213,36 @@ run "secrets_and_manifest" {
     condition     = contains(yamldecode(local_file.external_secret_manifest[0].content).spec.data.*.secretKey, "lorem_user")
     error_message = "Manifest missing lorem_user"
   }
+
+  assert {
+    condition     = yamldecode(local_file.external_secret_manifest[0].content).spec.secretStoreRef.name == "secret-store"
+    error_message = "Default secret store name should remain 'secret-store'"
+  }
+}
+
+run "custom_external_secret_store" {
+  command = apply
+
+  variables {
+    name = "test-custom-secret-store"
+
+    admin_user = {
+      name             = "root"
+      password_version = 1
+    }
+
+    manage_user_password      = true
+    secret_manager_instance_id = "mock-vault"
+
+    external_secret_manifest   = "custom-secret-store.yaml"
+    external_secret_store_name = "custom-secret-store"
+    kubernetes_namespace       = "namespace"
+  }
+
+  assert {
+    condition     = yamldecode(local_file.external_secret_manifest[0].content).spec.secretStoreRef.name == "custom-secret-store"
+    error_message = "Manifest should use the configured secret store name"
+  }
 }
 
 run "external_secret_manifest_missing" {
@@ -308,3 +338,4 @@ run "custom_secret_manager_paths" {
     error_message = "Secret names list should contain the custom user secret_manager_path"
   }
 }
+
