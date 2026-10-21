@@ -116,7 +116,7 @@ resource "local_file" "external_secret_manifest" {
       # Only create the file if manage_user_password is set (otherwise the resource would not be created at all)
       # and error out if the filename was not provided.
       condition     = var.external_secret_manifest != null && var.kubernetes_namespace != null
-      error_message = "You enabled 'manage_user_password' but did not provide 'manifest_filename' and 'kubernetes_namespace'."
+      error_message = "You enabled 'manage_user_password' but did not provide 'external_secret_manifest' and 'kubernetes_namespace'."
     }
   }
 
