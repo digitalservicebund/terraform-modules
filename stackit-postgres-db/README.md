@@ -1,79 +1,123 @@
 # STACKIT Postgres Database Module
 
-This module provisions a managed PostgreSQL database instance on STACKIT. It handles the creation of the instance,
-databases, and users, while optionally integrating with STACKIT Secrets Manager for secure credential storage.
+This module provisions a managed PostgreSQL (Postgres Flex) instance on STACKIT. It creates the instance, databases and users, stores the generated passwords in STACKIT Secrets Manager, and optionally writes Kubernetes manifests (`ExternalSecret` and `ConfigMap`) that let workloads consume the credentials via the [External Secrets Operator](https://external-secrets.io).
+
+## Prerequisites
+
+- A **STACKIT Secrets Manager instance** (only if `manage_user_password = true`, the default). The database passwords are written into it, so it must exist first. The [`stackit-secrets-manager`](../stackit-secrets-manager) module creates one, and its `instance_id` output feeds `secret_manager_instance_id`.
 
 ## Configuration Logic
 
-To minimize configuration for simple use cases, this module uses "Convention over Configuration" with fallback logic:
+To minimize configuration for simple use cases, this module uses "[Convention over Configuration](https://en.wikipedia.org/wiki/Convention_over_configuration)" with fallback logic:
 
-| Resource       | Logic                                                                                                                                                 |
-| :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Databases**  | Creates databases listed in `database_names`. <br> _Fallback:_ If the list is empty, creates a single database named after the instance (`var.name`). |
-| **Admin User** | Creates an admin user named `admin_user.name`. <br> _Fallback:_ If not set, creates a user named after the instance (`var.name`).                     |
+| Resource           | Logic                                                                                                                                                       |
+| :----------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Databases**      | Creates databases listed in `database_names`. <br> _Fallback:_ If the list is empty, creates a single database named after the instance (`var.name`).        |
+| **Admin User**     | Creates an admin user named `admin_user.name` with the roles `login` and `createdb`. <br> _Fallback:_ If not set, creates a user named after the instance (`var.name`). <br> See [Admin vs. application users](#admin-vs-application-users). |
+| **Database Owner** | Each database is owned by the admin user. <br> _Override:_ Set `owner_of = "<database name>"` on an entry in `additional_users` to make that user the owner instead. <br> See [Admin vs. application users](#admin-vs-application-users). |
+| **Secret paths**   | Credentials are stored at `postgres/<username>` in Secrets Manager. <br> _Override:_ Set `secret_manager_path` on the user.                                   |
+
+Additional users are created with the `login` role only. They cannot create databases.
+
+## Admin vs. application users
+
+The admin user is privileged: it has the `createdb` role and, by default, owns every database the module creates. Treat it accordingly.
+
+- **Use the admin user for schema migrations and manual work only.** This is the account your migration tool (Flyway, Prisma Migrate, Hibernate/Rails/Django DDL) should authenticate with, plus the occasional break-glass session.
+- **Use an additional user for application access.** Create one `additional_users` entry per application and let the running application connect with it.
+- **Do not expose the admin credentials to the application.** The generated Kubernetes Secret contains the credentials of *all* users, so only mount the keys of the app user into the application container.
+- **Run migrations as a separate step**, for example in an init container or a Job that mounts the admin credentials while the application itself never sees them.
+
+### A note on `owner_of`
+
+Setting `owner_of = "<database name>"` on an entry in `additional_users` makes that user the owner of that database instead of the admin user. The owner has full control over the database and its objects, so such a user is no longer limited to plain application access, it can also perform DDL on the database it owns. Whether that is desirable depends on how you split migrations and runtime access.
 
 ## Usage Example
 
 ```hcl
- module "database" {
+module "database" {
   source         = "github.com/digitalservicebund/terraform-modules?ref=stackit-postgres-db/vX.Y.Z"
   project_id     = "[your stackit project id]"
   name           = "[database instance name]"
-  flavor_id      = "2.4" # format: <cpu>.<ram in GB> for single-replica, <cpu>.<ram>-replica for 3 replicas, e.g. "2.4" (1 replica) or "2.4-replica" (3 replicas)
+  flavor_id      = "2.4"            # see "Choosing a flavor" below
   engine_version = "17"
-  disk_size      = 5
-  retention_days = 32 # optional, defaults to 32
-  acls = ["cluster", "egress", "range"] # Ask the platform team for the correct egress range
+  disk_size      = 5                # GB, between 5 and 4000
+  retention_days = 32               # optional, defaults to 32, must be between 32 and 90
+  acls           = ["X.X.X.X/32"]   # CIDR ranges allowed to connect, see "Network access" below
 
-  database_names = ["list-of-names", "to-create-databases"] # optional, will fallback to `var.name` if not present
-  admin_user = { name = "root" } # optional, will fallback to `var.name` if not present
-  additional_users = [{ name = "lorem" }, { name = "ipsum" }] # optional
+  database_names   = ["databaseA", "databaseB"]  # optional, falls back to `var.name`
+  admin_user       = { name = "migrator" }       # optional, falls back to `var.name`. Migrations and DDL only.
+  additional_users = [{ name = "app" }]          # optional, runtime application access
 
-  secret_manager_instance_id = "[your secrets manager instance id]" # available as output from stackit-secrets-manager module
-  kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
+  secret_manager_instance_id = "[secrets manager instance id]"
+  kubernetes_namespace       = "[your-namespace]"         # namespace of the generated ExternalSecret and ConfigMap
   external_secret_store_name = "[your-secret-store-name]" # optional, defaults to "secret-store"
-  external_secret_manifest = "[path-to-the-manifest-file-to-be-created]" # The path in your system the external secret manifest will be stored at
-  config_map_manifest = "[path-to-the-manifestt-file-to-be-created]" # The path in your system the config map manifest will be stored at
-   
-  # Set the following two variables to enable Postgres Flex metrics scraping in Prometheus. The values for non-prod and prod are available in the Platform Team Docs > How-To Guides > Scraping Postgres Flex Metrics in Prometheus.
-  metrics_role_id  = "[postgres_flex_metrics_role_id]"  # Optional, organization-wide role ID for Postgres Flex Prometheus Metrics Reader. Required if `metrics_sa_email` is set.
-  metrics_sa_email = "[postgres_flex_metrics_sa_email]" # Optional, Service Account email for Postgres Flex Metrics Service Account from STACKIT Platform Project. Required if `metrics_role_id` is set.
+  external_secret_manifest   = "./db-external-secret.yaml" # where the ExternalSecret manifest is written
+  config_map_manifest        = "./db-config-map.yaml"      # optional, where the ConfigMap manifest is written
+
+  # Optional: grant a service account a role on the project, e.g. to scrape Postgres Flex metrics.
+  # Both variables are required together.
+  metrics_role_id  = "[role id]"
+  metrics_sa_email = "[service account email]"
 }
 ```
 
-## Secrets Manager & Kubernetes Integration
+### Choosing a flavor
 
-If `manage_user_password` is set to `true` (default):
+`flavor_id` is the STACKIT machine size of the instance. It encodes both the hardware and the number of nodes:
 
-1. **Vault Storage:** The module generates strong passwords and stores them in your STACKIT Secrets Manager instance.
-2. **Manifest Generation:** It generates a local YAML file containing an `ExternalSecret` resource.
-3. **Kubernetes Sync:** You can apply this manifest to your cluster. The External Secrets Operator will then fetch the
-   credentials from Secrets Manager.
+| Value            | vCPU | RAM   | Nodes                    |
+| :--------------- | :--- | :---- | :----------------------- |
+| `"2.4"`          | 2    | 4 GB  | 1                        |
+| `"2.4-replica"`  | 2    | 4 GB  | 3 (primary + 2 replicas) |
+| `"4.16"`         | 4    | 16 GB | 1                        |
+| `"4.16-replica"` | 4    | 16 GB | 3 (primary + 2 replicas) |
 
-Add the vault provider config to your `provider.tf` file for this feature to work:
+The number before the dot is CPU cores, the number after it is RAM in GB, and the `-replica` suffix is what decides high availability. This is the only way to set the node count, the module has no separate `replicas` variable.
 
-```hcl
-provider "vault" {
-  address          = "https://prod.sm.eu01.stackit.cloud"
-  skip_child_token = true
+Two things to keep in mind:
 
-  auth_login_userpass {
-    username = module.secrets_manager.terraform_username
-    password = module.secrets_manager.terraform_password
-  }
-}
-```
+- The valid `cpu.ram` combinations are defined by STACKIT, you cannot pick arbitrary pairs. Check the Postgres Flex flavor list in the STACKIT portal (or `stackit postgresflex flavor list`) for what your project can use.
+- Switching an existing instance between a non-replica and a `-replica` flavor changes the node count and is a disruptive operation. Plan it like a migration, not like a routine change.
 
-## Kubernetes Config Maps
+### Network access
 
-If `config_map_manifest` is set, then the module will also create a manifest file with the following contents per
-defined databases:
+A Postgres Flex instance only accepts connections from the CIDR ranges listed in `acls`. Keep this list as narrow as possible, typically the egress address of the cluster or network your clients connect from.
 
-- database: <name of database>
-- host: <host of database instance>
-- port: <port of database instance>
+## Secrets Manager and Kubernetes Integration
 
-When the variable is not set, the manifest will not be created.
+If `manage_user_password` is set to `true` (the default):
+
+1. **Secrets Manager:** The module generates strong passwords and stores them in your STACKIT Secrets Manager instance.
+2. **Manifest Generation:** It writes a local YAML file containing an `ExternalSecret` resource (and optionally a `ConfigMap`).
+3. **Kubernetes Sync:** Once the manifest is applied to your cluster, the External Secrets Operator fetches the credentials from Secrets Manager and materializes them as a Kubernetes Secret.
+
+With `manage_user_password = true` you **must** also set `external_secret_manifest` and `kubernetes_namespace`, otherwise the apply fails with a precondition error.
+
+Because the module writes local files, run it where those files can be committed (typically locally, not in CI).
+
+### Generated Manifests
+
+Both files carry a `DO NOT EDIT MANUALLY` header, are owned by Terraform, and contain references to secrets, never secret values.
+
+#### ExternalSecret
+
+Written to `external_secret_manifest`. The resulting Kubernetes Secret is named **`database-credentials`** and contains two keys per user:
+
+| Key                   | Value                  |
+| :-------------------- | :--------------------- |
+| `<username>_user`     | the Postgres username  |
+| `<username>_password` | the generated password |
+
+#### ConfigMap
+
+Written to `config_map_manifest`. If the variable is not set, no ConfigMap is generated. One ConfigMap per database is created, named **`database-config-<database name>`**, with these keys:
+
+| Key             | Value                         |
+| :-------------- | :---------------------------- |
+| `database.host` | host of the database instance |
+| `database.name` | name of the database          |
+| `database.port` | port of the database instance |
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
