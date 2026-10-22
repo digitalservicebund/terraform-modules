@@ -16,11 +16,24 @@ To minimize configuration for simple use cases, this module uses "[Convention ov
 | Resource           | Logic                                                                                                                                                       |
 | :----------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Databases**      | Creates databases listed in `database_names`. <br> _Fallback:_ If the list is empty, creates a single database named after the instance (`var.name`).        |
-| **Admin User**     | Creates an admin user named `admin_user.name` with the roles `login` and `createdb`. <br> _Fallback:_ If not set, creates a user named after the instance (`var.name`). |
-| **Database Owner** | Each database is owned by the admin user. <br> _Override:_ Set `owner_of = "<database name>"` on an entry in `additional_users` to make that user the owner instead. |
+| **Admin User**     | Creates an admin user named `admin_user.name` with the roles `login` and `createdb`. <br> _Fallback:_ If not set, creates a user named after the instance (`var.name`). <br> See [Admin vs. application users](#admin-vs-application-users). |
+| **Database Owner** | Each database is owned by the admin user. <br> _Override:_ Set `owner_of = "<database name>"` on an entry in `additional_users` to make that user the owner instead. <br> See [Admin vs. application users](#admin-vs-application-users). |
 | **Secret paths**   | Credentials are stored at `postgres/<username>` in Secrets Manager. <br> _Override:_ Set `secret_manager_path` on the user.                                   |
 
 Additional users are created with the `login` role only. They cannot create databases.
+
+## Admin vs. application users
+
+The admin user is privileged: it has the `createdb` role and, by default, owns every database the module creates. Treat it accordingly.
+
+- **Use the admin user for schema migrations and manual work only.** This is the account your migration tool (Flyway, Prisma Migrate, Hibernate/Rails/Django DDL) should authenticate with, plus the occasional break-glass session.
+- **Use an additional user for application access.** Create one `additional_users` entry per application and let the running application connect with it. Additional users only get the `login` role, so they cannot create databases.
+- **Do not expose the admin credentials to the application container.** The generated Kubernetes Secret contains the credentials of *all* users, so restrict the volume `items` in your Deployment to the two keys of the app user (see [Wiring it up with Kubernetes](#wiring-it-up-with-kubernetes)).
+- **Run migrations as a separate step.** An init container can mount the admin credentials while the application Pod itself never sees them. Your mileage may vary.
+
+### A note on `owner_of`
+
+Setting `owner_of = "<database name>"` on an entry in `additional_users` makes that user the owner of that database instead of the admin user. The owner has full control over the database and its objects, so such a user is no longer limited to plain application access, it can also perform DDL on the database it owns. Whether that is desirable depends on how you split migrations and runtime access.
 
 ## Usage Example
 
@@ -37,9 +50,9 @@ module "database" {
   retention_days = 32                   # optional, defaults to 32, must be between 32 and 90
   acls           = ["X.X.X.X/32"]       # cluster egress CIDR, see "Network access" below
 
-  database_names   = ["databaseA", "databaseB"]                  # optional, falls back to `var.name`
-  admin_user       = { name = "root" }                           # optional, falls back to `var.name`
-  additional_users = [{ name = "app", owner_of = "databaseA" }]  # optional
+  database_names   = ["databaseA", "databaseB"]  # optional, falls back to `var.name`
+  admin_user       = { name = "migrator" }       # optional, falls back to `var.name`. Migrations and DDL only.
+  additional_users = [{ name = "app" }]          # optional, runtime application access
 
   secret_manager_instance_id = module.secrets_manager.instance_id             # output of the stackit-secrets-manager module
   kubernetes_namespace       = "[your-namespace]"                             # namespace of the generated ExternalSecret and ConfigMap
@@ -189,15 +202,15 @@ volumes:
   - name: database-credentials
     secret:
       secretName: database-credentials
-      # Only expose the app user, not the admin credentials
+      # Only expose the app user, not the admin (migrator) credentials
       items:
-        - key: <username>_user
-          path: <username>_user
-        - key: <username>_password
-          path: <username>_password
+        - key: app_user
+          path: app_user
+        - key: app_password
+          path: app_password
 ```
 
-The container then reads `/etc/secrets/database/<username>_user` and `/etc/secrets/database/<username>_password`.
+The container then reads `/etc/secrets/database/app_user` and `/etc/secrets/database/app_password`.
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
