@@ -30,7 +30,7 @@ locals {
   # Admin user is owner by default, additional users can be owners of specific databases if specified in the additional_users list.
   database_owners = merge(
     { for db_name in local.databases : db_name => local.admin_username },
-    { for k, u in local.additional_users_map : u.owner_of => u.name if try(u.owner_of, null) != null && contains(local.databases, try(u.owner_of, "")) }
+    { for k, u in local.additional_users_map : u.owner_of => u.name if try(contains(local.databases, u.owner_of), false) }
   )
 }
 
