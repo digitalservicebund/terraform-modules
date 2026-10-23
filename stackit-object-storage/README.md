@@ -113,6 +113,23 @@ module "object_storage_bucket" {
 }
 ```
 
+### Manual credential rotation
+
+To rotate the Terraform access credentials for the bucket, increase `password_version`.
+This triggers the underlying `stackit_objectstorage_credential` rotation mechanism and creates a fresh credential in the same credentials group.
+
+```hcl
+module "object_storage_bucket" {
+  source                         = "github.com/digitalservicebund/terraform-modules?ref=stackit-object-storage/vX.Y.Z"
+  project_id                     = "[stackit project id]"
+  bucket_name                    = "ds-[project name]-[my-bucket-name]"
+  terraform_credentials_group_id = null
+  password_version               = 2
+}
+```
+
+Increase the value again later to rotate the credentials again.
+
 # Troubleshooting
 
 ## Error: No valid credential sources found

@@ -22,7 +22,7 @@ mock_provider "stackit" {
   }
 }
 
-mock_provider "aws"{
+mock_provider "aws" {
   mock_data "aws_iam_policy_document" {
     defaults = {
       json = "{\"Statement\":[],\"Version\":\"2012-10-17\"}"
@@ -69,8 +69,8 @@ run "state_outputs" {
   }
 
   assert {
-    condition     = nonsensitive(output.onepassword_command) == "op item create --vault \"Employee\" --category 'Secure Note' --title \"test-bucket-default credentials\" 'ACCESS_KEY_ID[text]=mock-access-key' 'SECRET_ACCESS_KEY[text]=mock-secret-key'"
-    error_message = "The command to create the 1Password item is incorrect"
+    condition     = nonsensitive(output.onepassword_command) == "if op item get --vault \"Employee\" \"test-bucket-default credentials\" >/dev/null 2>&1; then\n  op item edit --vault \"Employee\" \"test-bucket-default credentials\" \\\n    \"ACCESS_KEY_ID[text]=mock-access-key\" \\\n    \"SECRET_ACCESS_KEY[text]=mock-secret-key\"\nelse\n  op item create --vault \"Employee\" --category 'Secure Note' --title \"test-bucket-default credentials\" \\\n    \"ACCESS_KEY_ID[text]=mock-access-key\" \\\n    \"SECRET_ACCESS_KEY[text]=mock-secret-key\"\nfi\n"
+    error_message = "The command to create or update the 1Password item is incorrect"
   }
 }
 
@@ -114,7 +114,7 @@ run "allow_spaces_in_team_vault" {
   }
 
   assert {
-    condition     = nonsensitive(output.onepassword_command) == "op item create --vault \"Team Foo\" --category 'Secure Note' --title \"test-bucket-default credentials\" 'ACCESS_KEY_ID[text]=mock-access-key' 'SECRET_ACCESS_KEY[text]=mock-secret-key'"
-    error_message = "The command to create the 1Password item is incorrect"
+    condition     = nonsensitive(output.onepassword_command) == "if op item get --vault \"Team Foo\" \"test-bucket-default credentials\" >/dev/null 2>&1; then\n  op item edit --vault \"Team Foo\" \"test-bucket-default credentials\" \\\n    \"ACCESS_KEY_ID[text]=mock-access-key\" \\\n    \"SECRET_ACCESS_KEY[text]=mock-secret-key\"\nelse\n  op item create --vault \"Team Foo\" --category 'Secure Note' --title \"test-bucket-default credentials\" \\\n    \"ACCESS_KEY_ID[text]=mock-access-key\" \\\n    \"SECRET_ACCESS_KEY[text]=mock-secret-key\"\nfi\n"
+    error_message = "The command to create or update the 1Password item is incorrect"
   }
 }
