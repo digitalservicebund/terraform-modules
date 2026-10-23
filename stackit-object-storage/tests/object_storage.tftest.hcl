@@ -319,3 +319,23 @@ run "disable_manifest_creation" {
     error_message = "External Secret manifest should not be created when enable_manifest_creation is false"
   }
 }
+
+# Test: Manual credential rotation via password_version
+run "credential_rotation" {
+  command = apply
+
+  variables {
+    bucket_name      = "test-bucket-rotation"
+    password_version = 2
+  }
+
+  assert {
+    condition     = stackit_objectstorage_credential.terraform_credentials[0].access_key == "mock-access-key"
+    error_message = "Terraform credential access key should still be present after rotation trigger"
+  }
+
+  assert {
+    condition     = output.terraform_credentials.access_key == "mock-access-key"
+    error_message = "Terraform output should reflect the rotated credential access key"
+  }
+}

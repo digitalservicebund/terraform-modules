@@ -44,6 +44,11 @@ resource "stackit_objectstorage_credential" "terraform_credentials" {
   count                = var.terraform_credentials_group_id == null ? 1 : 0
   project_id           = var.project_id
   credentials_group_id = stackit_objectstorage_credentials_group.terraform_credentials_group[0].credentials_group_id
+
+  # When a manual rotation is triggered via password_version, Terraform creates a fresh credential.
+  rotate_when_changed = {
+    password_version = var.password_version
+  }
 }
 
 # Credentials requested by user with specific roles

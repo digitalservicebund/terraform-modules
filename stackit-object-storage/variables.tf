@@ -89,3 +89,9 @@ variable "object_expiration_days" {
     error_message = "The value for lifecycle in days must be a positive number."
   }
 }
+
+variable "password_version" {
+  type        = number
+  default     = 1
+  description = "Bump this value to rotate the Terraform access credentials for the bucket."
+}

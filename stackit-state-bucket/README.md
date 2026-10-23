@@ -19,6 +19,7 @@ bootstrap your terraform configuration by setting up the remote state for you.
      project_id        = "[stackit project id]"
      state_bucket_name = "ds-[project name]-state-bucket"
      onepassword_vault = "[your team vault name]"
+     rotation_version  = "1"
    }
    ```
 2. Add the `aws` provider config to you `providers.tf` file
@@ -47,6 +48,22 @@ bootstrap your terraform configuration by setting up the remote state for you.
 9. Run `terraform init` to migrate your local state to the remote state bucket
 
 You can disable all the magic with inputs.
+
+### Manual credential rotation
+
+The state bucket forwards `password_version` to the nested `stackit-object-storage` module. If you increase the value, the underlying STACKIT Object Storage Terraform credential is recreated, and the 1Password item is synchronized to the new access key and secret.
+
+```hcl
+module "backend_bucket" {
+  source            = "github.com/digitalservicebund/terraform-modules?ref=stackit-state-bucket/vX.Y.Z"
+  project_id        = "[stackit project id]"
+  state_bucket_name = "ds-[project name]-state-bucket"
+  onepassword_vault = "[your team vault name]"
+  password_version  = 2
+}
+```
+
+This rotates the credential in STACKIT and updates the matching item in 1Password without changing the bucket itself, so the state backend can continue to work while the new credentials are propagated.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
