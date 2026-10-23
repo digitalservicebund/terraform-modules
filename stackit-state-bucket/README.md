@@ -85,7 +85,7 @@ This rotates the credential in STACKIT and updates the matching item in 1Passwor
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_object_storage"></a> [object\_storage](#module\_object\_storage) | github.com/digitalservicebund/terraform-modules | stackit-object-storage/v1.0.6 |
+| <a name="module_object_storage"></a> [object\_storage](#module\_object\_storage) | github.com/digitalservicebund/terraform-modules | stackit-object-storage/v2.0.0 |
 
 ## Resources
 
@@ -101,6 +101,7 @@ This rotates the credential in STACKIT and updates the matching item in 1Passwor
 |------|-------------|------|---------|:--------:|
 | <a name="input_create_onepassword_item"></a> [create\_onepassword\_item](#input\_create\_onepassword\_item) | Create a 1Password item containing the credentials for the state bucket. Needs the 1Password CLI. | `bool` | `true` | no |
 | <a name="input_onepassword_vault"></a> [onepassword\_vault](#input\_onepassword\_vault) | The 1Password vault where the state bucket credentials item will be created in. | `string` | `"Employee"` | no |
+| <a name="input_password_version"></a> [password\_version](#input\_password\_version) | Bump this value to rotate the STACKIT Object Storage credentials used by the state bucket. | `number` | `1` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_state_bucket_name"></a> [state\_bucket\_name](#input\_state\_bucket\_name) | The name of the state bucket. | `string` | n/a | yes |
 | <a name="input_write_backend_config_file"></a> [write\_backend\_config\_file](#input\_write\_backend\_config\_file) | Write the backend.tf file containing the configuration to connect to the state bucket. | `bool` | `true` | no |
