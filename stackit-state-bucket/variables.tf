@@ -36,3 +36,9 @@ variable "write_envrc_file" {
   default     = true
   description = "Write a .envrc file containing the environment variables to read the state bucket credentials from 1Password."
 }
+
+variable "password_version" {
+  type        = number
+  default     = 1
+  description = "Bump this value to rotate the STACKIT Object Storage credentials used by the state bucket."
+}
