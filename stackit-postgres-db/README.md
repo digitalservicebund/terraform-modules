@@ -26,8 +26,8 @@ To minimize configuration for simple use cases, this module uses "Convention ove
   acls = ["cluster", "egress", "range"] # Ask the platform team for the correct egress range
 
   database_names = ["list-of-names", "to-create-databases"] # optional, will fallback to `var.name` if not present
-  admin_user = { name = "root" } # optional, will fallback to `var.name` if not present
-  additional_users = [{ name = "lorem" }, { name = "ipsum" }] # optional
+  admin_user = { name = "root", password_version = 1 } # optional, will fallback to `var.name` if not present
+  additional_users = [{ name = "lorem", password_version = 1 }, { name = "ipsum", password_version = 1 }] # optional
 
   secret_manager_instance_id = "[your secrets manager instance id]" # available as output from stackit-secrets-manager module
   kubernetes_namespace = "[your-namespace]" # Namespace where the External Secret manifest will be applied
@@ -112,8 +112,8 @@ When the variable is not set, the manifest will not be created.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_acls"></a> [acls](#input\_acls) | List of ACL IDs to associate with the database instance. This should be the cluster Egress IP Range only! | `list(string)` | n/a | yes |
-| <a name="input_additional_users"></a> [additional\_users](#input\_additional\_users) | List of additional database users to create. Names must be unique. Example: [{ name = "user1", secret\_manager\_path = "custom/path/user1" }, { name = "user2" }]. If secret\_manager\_path is omitted for a user, a default path is used. | <pre>list(object({<br/>    name                = string<br/>    secret_manager_path = optional(string)<br/>    owner_of            = optional(string)<br/>  }))</pre> | `[]` | no |
-| <a name="input_admin_user"></a> [admin\_user](#input\_admin\_user) | Specified the name of the Postgres Database Owner and (optionally) a custom Secret Manager path. Example: { name = "admin", secret\_manager\_path = "custom/path/admin" }. If secret\_manager\_path is omitted, a default path is used. If admin\_user is not specified, a user with the same name as the instance will be created. | <pre>object({<br/>    name                = string<br/>    secret_manager_path = optional(string)<br/>  })</pre> | <pre>{<br/>  "name": null<br/>}</pre> | no |
+| <a name="input_additional_users"></a> [additional\_users](#input\_additional\_users) | List of additional database users to create. Names must be unique. Example: [{ name = "user1", secret\_manager\_path = "custom/path/user1" }, { name = "user2" }]. If secret\_manager\_path is omitted for a user, a default path is used. | <pre>list(object({<br/>    name                = string<br/>    password_version = number<br/>    secret_manager_path = optional(string)<br/>    owner_of            = optional(string)<br/>  }))</pre> | `[]` | no |
+| <a name="input_admin_user"></a> [admin\_user](#input\_admin\_user) | Specified the name of the Postgres Database Owner and (optionally) a custom Secret Manager path. Example: { name = "admin", secret\_manager\_path = "custom/path/admin" }. If secret\_manager\_path is omitted, a default path is used. If admin\_user is not specified, a user with the same name as the instance will be created. | <pre>object({<br/>    name                = string<br/>    password_version = number<br/>    secret_manager_path = optional(string)<br/>  })</pre> | <pre>{<br/>  "name": null,<br/>  "password_version": 1<br/>}</pre> | no |
 | <a name="input_backup_schedule"></a> [backup\_schedule](#input\_backup\_schedule) | Backup schedule in cron format. Defaults to daily at 3am UTC. | `string` | `"0 3 * * *"` | no |
 | <a name="input_config_map_manifest"></a> [config\_map\_manifest](#input\_config\_map\_manifest) | Path where the config map manifest will be stored at | `string` | `null` | no |
 | <a name="input_database_names"></a> [database\_names](#input\_database\_names) | List of database names to create. If empty, defaults to a single database named after the instance. | `set(string)` | `[]` | no |
