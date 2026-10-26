@@ -115,6 +115,10 @@ module "object_storage_bucket" {
 
 ### Manual credential rotation
 
+> ⚠️ Warning: Rotating the Terraform access credentials is a breaking change. Increasing the value of `password_version` creates a new credential and invalidates the previously issued access key/secret pair. Any application, workload, or Kubernetes pod still using the old credentials will fail until it is restarted or refreshed with the new secret.
+>
+> This can temporarily break connectivity between workloads and the bucket (for example, Kubernetes pods that still reference the previous credentials). Plan a short maintenance window if needed.
+
 To rotate the Terraform access credentials for the bucket, increase `password_version`.
 This triggers the underlying `stackit_objectstorage_credential` rotation mechanism and creates a fresh credential in the same credentials group.
 
