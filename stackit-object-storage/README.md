@@ -113,6 +113,27 @@ module "object_storage_bucket" {
 }
 ```
 
+### Manual credential rotation
+
+> ⚠️ Warning: Rotating the Terraform access credentials is a breaking change. Increasing the value of `password_version` creates a new credential and invalidates the previously issued access key/secret pair. Any application, workload, or Kubernetes pod still using the old credentials will fail until it is restarted or refreshed with the new secret.
+>
+> This can temporarily break connectivity between workloads and the bucket (for example, Kubernetes pods that still reference the previous credentials). Plan a short maintenance window if needed.
+
+To rotate the Terraform access credentials for the bucket, increase `password_version`.
+This triggers the underlying `stackit_objectstorage_credential` rotation mechanism and creates a fresh credential in the same credentials group.
+
+```hcl
+module "object_storage_bucket" {
+  source                         = "github.com/digitalservicebund/terraform-modules?ref=stackit-object-storage/vX.Y.Z"
+  project_id                     = "[stackit project id]"
+  bucket_name                    = "ds-[project name]-[my-bucket-name]"
+  terraform_credentials_group_id = null
+  password_version               = 2
+}
+```
+
+Increase the value again later to rotate the credentials again.
+
 # Troubleshooting
 
 ## Error: No valid credential sources found
@@ -208,6 +229,7 @@ applying any changes, so the credentials need to exist before the provider can b
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace where the External Secret manifest will be applied. | `string` | `null` | no |
 | <a name="input_manage_credentials"></a> [manage\_credentials](#input\_manage\_credentials) | Set true to add the credentials into the STACKIT Secrets Manager. The credentials will be at `object-storage/[bucket name]/[credential name]` | `bool` | `false` | no |
 | <a name="input_object_expiration_days"></a> [object\_expiration\_days](#input\_object\_expiration\_days) | Lifespan of stored data. Data will be deleted after specified value in days. Default value is null (no automatic deletion) | `number` | `null` | no |
+| <a name="input_password_version"></a> [password\_version](#input\_password\_version) | Bump this value to rotate the Terraform access credentials for the bucket. | `number` | `1` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_secret_manager_instance_id"></a> [secret\_manager\_instance\_id](#input\_secret\_manager\_instance\_id) | Instance ID of the STACKIT Secret Manager, in which the database user password will be stored if manage\_credentials is true. | `string` | `null` | no |
 | <a name="input_terraform_credentials_group_id"></a> [terraform\_credentials\_group\_id](#input\_terraform\_credentials\_group\_id) | ID of the credentials group that is used by Terraform to manage the bucket. A credential of this credential group must be used in the AWS provider config. Set to `null` if you want to create a new credential group. | `string` | n/a | yes |

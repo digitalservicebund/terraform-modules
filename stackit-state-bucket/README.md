@@ -19,6 +19,7 @@ bootstrap your terraform configuration by setting up the remote state for you.
      project_id        = "[stackit project id]"
      state_bucket_name = "ds-[project name]-state-bucket"
      onepassword_vault = "[your team vault name]"
+     rotation_version  = "1"
    }
    ```
 2. Add the `aws` provider config to you `providers.tf` file
@@ -48,6 +49,22 @@ bootstrap your terraform configuration by setting up the remote state for you.
 
 You can disable all the magic with inputs.
 
+### Manual credential rotation
+
+The state bucket forwards `password_version` to the nested `stackit-object-storage` module. If you increase the value, the underlying STACKIT Object Storage Terraform credential is recreated, and the 1Password item is synchronized to the new access key and secret.
+
+```hcl
+module "backend_bucket" {
+  source            = "github.com/digitalservicebund/terraform-modules?ref=stackit-state-bucket/vX.Y.Z"
+  project_id        = "[stackit project id]"
+  state_bucket_name = "ds-[project name]-state-bucket"
+  onepassword_vault = "[your team vault name]"
+  password_version  = 2
+}
+```
+
+This rotates the credential in STACKIT and updates the matching item in 1Password without changing the bucket itself, so the state backend can continue to work while the new credentials are propagated.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -68,7 +85,7 @@ You can disable all the magic with inputs.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_object_storage"></a> [object\_storage](#module\_object\_storage) | github.com/digitalservicebund/terraform-modules | stackit-object-storage/v1.0.10 |
+| <a name="module_object_storage"></a> [object\_storage](#module\_object\_storage) | github.com/digitalservicebund/terraform-modules | stackit-object-storage/v2.0.0 |
 
 ## Resources
 
@@ -84,6 +101,7 @@ You can disable all the magic with inputs.
 |------|-------------|------|---------|:--------:|
 | <a name="input_create_onepassword_item"></a> [create\_onepassword\_item](#input\_create\_onepassword\_item) | Create a 1Password item containing the credentials for the state bucket. Needs the 1Password CLI. | `bool` | `true` | no |
 | <a name="input_onepassword_vault"></a> [onepassword\_vault](#input\_onepassword\_vault) | The 1Password vault where the state bucket credentials item will be created in. | `string` | `"Employee"` | no |
+| <a name="input_password_version"></a> [password\_version](#input\_password\_version) | Bump this value to rotate the STACKIT Object Storage credentials used by the state bucket. | `number` | `1` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project where the bucket will be created. | `string` | n/a | yes |
 | <a name="input_state_bucket_name"></a> [state\_bucket\_name](#input\_state\_bucket\_name) | The name of the state bucket. | `string` | n/a | yes |
 | <a name="input_write_backend_config_file"></a> [write\_backend\_config\_file](#input\_write\_backend\_config\_file) | Write the backend.tf file containing the configuration to connect to the state bucket. | `bool` | `true` | no |
