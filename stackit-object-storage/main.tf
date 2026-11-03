@@ -46,8 +46,12 @@ resource "stackit_objectstorage_credential" "terraform_credentials" {
   credentials_group_id = stackit_objectstorage_credentials_group.terraform_credentials_group[0].credentials_group_id
 
   # When a manual rotation is triggered via password_version, Terraform creates a fresh credential.
-  rotate_when_changed = {
+  rotate_when_changed = var.password_version > 1 ? {
     password_version = var.password_version
+  } : null
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -66,6 +70,15 @@ resource "stackit_objectstorage_credential" "credential" {
   for_each             = var.credentials
   project_id           = var.project_id
   credentials_group_id = stackit_objectstorage_credentials_group.user_credentials_group[each.value.role].credentials_group_id
+
+  # When a manual rotation is triggered via password_version, Terraform creates a fresh credential.
+  rotate_when_changed = var.password_version > 1 ? {
+    password_version = var.password_version
+  } : null
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {

@@ -338,4 +338,35 @@ run "credential_rotation" {
     condition     = output.terraform_credentials.access_key == "mock-access-key"
     error_message = "Terraform output should reflect the rotated credential access key"
   }
+
+  assert {
+    condition     = stackit_objectstorage_credential.credential["default"].rotate_when_changed.password_version == "2"
+    error_message = "User credentials should be rotated via password_version"
+  }
+}
+
+run "user_credentials_not_rotated_by_default" {
+  command = plan
+
+  variables {
+    bucket_name = "test-bucket-rotation"
+  }
+
+  assert {
+    condition     = stackit_objectstorage_credential.credential["default"].rotate_when_changed == null
+    error_message = "User credentials must not get rotate_when_changed for password_version = 1, to avoid replacing existing credentials on upgrade"
+  }
+}
+
+run "password_version_not_integer" {
+  command = plan
+
+  variables {
+    bucket_name      = "test-bucket-rotation"
+    password_version = 1.5
+  }
+
+  expect_failures = [
+    var.password_version
+  ]
 }

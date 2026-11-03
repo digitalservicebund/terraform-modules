@@ -51,7 +51,9 @@ You can disable all the magic with inputs.
 
 ### Manual credential rotation
 
-The state bucket forwards `password_version` to the nested `stackit-object-storage` module. If you increase the value, the underlying STACKIT Object Storage Terraform credential is recreated, and the 1Password item is synchronized to the new access key and secret.
+The state bucket forwards `password_version` to the nested `stackit-object-storage` module.
+
+Because `rotate_when_changed` is only set when `password_version > 1`, the new credential is created before the old one is removed. Setting `password_version`to 1 is the default and does not trigger a rotation.
 
 ```hcl
 module "backend_bucket" {
