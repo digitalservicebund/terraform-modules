@@ -252,9 +252,26 @@ run "external_secret_manifest_missing" {
     name                     = "fail-test"
     manage_user_password     = true
     external_secret_manifest = null
+    kubernetes_namespace     = "namespace"
   }
 
   # We want to manage the secrets externally but forgot to specify the K8s manifest file path to glue things together
+  expect_failures = [
+    local_file.external_secret_manifest
+  ]
+}
+
+run "external_secret_manifest_and_namespace_missing" {
+  command = plan
+
+  variables {
+    name                     = "fail-test"
+    manage_user_password     = true
+    external_secret_manifest = null
+    kubernetes_namespace     = null
+  }
+
+  # Both the manifest path and the namespace are missing
   expect_failures = [
     local_file.external_secret_manifest
   ]
@@ -282,7 +299,7 @@ run "config_map_manifest" {
 
   assert {
     condition     = yamldecode(split("\n---\n", local_file.config_map_manifest[0].content)[1]).metadata.name == "database-config-foo"
-    error_message = "First ConfigMap should be for 'foo'"
+    error_message = "Second ConfigMap should be for 'foo'"
   }
 }
 
@@ -297,7 +314,7 @@ run "kubernetes_namespace_missing" {
     kubernetes_namespace     = null
   }
 
-  # We want to manage the secrets externally but forgot to specify the K8s manifest file path to glue things together
+  # Manifests are requested but kubernetes_namespace is missing
   expect_failures = [
     local_file.external_secret_manifest,
     local_file.config_map_manifest
