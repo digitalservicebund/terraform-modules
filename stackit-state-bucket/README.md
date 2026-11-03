@@ -87,7 +87,7 @@ This rotates the credential in STACKIT and updates the matching item in 1Passwor
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_object_storage"></a> [object\_storage](#module\_object\_storage) | github.com/digitalservicebund/terraform-modules | stackit-object-storage/v2.0.0 |
+| <a name="module_object_storage"></a> [object\_storage](#module\_object\_storage) | github.com/digitalservicebund/terraform-modules | stackit-object-storage/v1.1.0 |
 
 ## Resources
 
