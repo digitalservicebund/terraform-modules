@@ -319,3 +319,54 @@ run "disable_manifest_creation" {
     error_message = "External Secret manifest should not be created when enable_manifest_creation is false"
   }
 }
+
+# Test: Manual credential rotation via password_version
+run "credential_rotation" {
+  command = apply
+
+  variables {
+    bucket_name      = "test-bucket-rotation"
+    password_version = 2
+  }
+
+  assert {
+    condition     = stackit_objectstorage_credential.terraform_credentials[0].access_key == "mock-access-key"
+    error_message = "Terraform credential access key should still be present after rotation trigger"
+  }
+
+  assert {
+    condition     = output.terraform_credentials.access_key == "mock-access-key"
+    error_message = "Terraform output should reflect the rotated credential access key"
+  }
+
+  assert {
+    condition     = stackit_objectstorage_credential.credential["default"].rotate_when_changed.password_version == "2"
+    error_message = "User credentials should be rotated via password_version"
+  }
+}
+
+run "user_credentials_not_rotated_by_default" {
+  command = plan
+
+  variables {
+    bucket_name = "test-bucket-rotation"
+  }
+
+  assert {
+    condition     = stackit_objectstorage_credential.credential["default"].rotate_when_changed == null
+    error_message = "User credentials must not get rotate_when_changed for password_version = 1, to avoid replacing existing credentials on upgrade"
+  }
+}
+
+run "password_version_not_integer" {
+  command = plan
+
+  variables {
+    bucket_name      = "test-bucket-rotation"
+    password_version = 1.5
+  }
+
+  expect_failures = [
+    var.password_version
+  ]
+}
