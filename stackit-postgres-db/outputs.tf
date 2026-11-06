@@ -22,3 +22,36 @@ output "secret_manager_secret_names" {
     values(vault_kv_secret_v2.postgres_user_credentials)[*].name
   ) : []
 }
+
+output "project_id" {
+  description = "STACKIT project ID of the Postgres Flex instance"
+  value       = stackit_postgresflex_instance.this.project_id
+}
+
+output "instance_id" {
+  description = "Postgres Flex instance ID"
+  value       = stackit_postgresflex_instance.this.instance_id
+}
+
+output "secret_manager_mount" {
+  description = "Secrets Manager mount holding the user credentials. Null if manage_user_password is false."
+  value       = var.manage_user_password ? var.secret_manager_instance_id : null
+}
+
+output "users" {
+  description = "Map of username to its Postgres Flex user_id and Secrets Manager secret_path (null if manage_user_password is false)."
+  value = merge(
+    {
+      (local.admin_username) = {
+        user_id     = stackit_postgresflex_user.admin.user_id
+        secret_path = var.manage_user_password ? local.admin_secret_path : null
+      }
+    },
+    {
+      for k, u in local.additional_users_map : u.name => {
+        user_id     = stackit_postgresflex_user.user[k].user_id
+        secret_path = var.manage_user_password ? local.user_secret_paths[k] : null
+      }
+    }
+  )
+}
