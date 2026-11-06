@@ -138,5 +138,9 @@ When the variable is not set, the manifest will not be created.
 |------|-------------|
 | <a name="output_address"></a> [address](#output\_address) | Database host address |
 | <a name="output_credentials"></a> [credentials](#output\_credentials) | Map of user keys to passwords. Empty if managed in Secrets Manager. |
+| <a name="output_instance_id"></a> [instance\_id](#output\_instance\_id) | Postgres Flex instance ID |
+| <a name="output_project_id"></a> [project\_id](#output\_project\_id) | STACKIT project ID of the Postgres Flex instance |
+| <a name="output_secret_manager_mount"></a> [secret\_manager\_mount](#output\_secret\_manager\_mount) | Secrets Manager mount holding the user credentials. Null if manage\_user\_password is false. |
 | <a name="output_secret_manager_secret_names"></a> [secret\_manager\_secret\_names](#output\_secret\_manager\_secret\_names) | List of secret paths created in STACKIT Secrets Manager |
+| <a name="output_users"></a> [users](#output\_users) | Map of username to its Postgres Flex user\_id and Secrets Manager secret\_path (null if manage\_user\_password is false). |
 <!-- END_TF_DOCS -->
