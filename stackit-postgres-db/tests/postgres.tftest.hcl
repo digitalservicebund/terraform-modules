@@ -132,6 +132,21 @@ run "multiple_users" {
     condition     = stackit_postgresflex_user.user["ipsum"].username == "ipsum"
     error_message = "User username should be 'ipsum'"
   }
+
+  assert {
+    condition     = toset(keys(output.users)) == toset(["admin", "lorem", "ipsum"])
+    error_message = "users output should contain the admin and all additional users"
+  }
+
+  assert {
+    condition     = output.users["lorem"].secret_path == null
+    error_message = "secret_path should be null if manage_user_password is false"
+  }
+
+  assert {
+    condition     = output.secret_manager_mount == null
+    error_message = "secret_manager_mount should be null if manage_user_password is false"
+  }
 }
 
 run "database_owner_override" {
@@ -202,6 +217,26 @@ run "secrets_and_manifest" {
   assert {
     condition     = contains(output.secret_manager_secret_names, "postgres/lorem")
     error_message = "Secret names list should contain lorem secret"
+  }
+
+  assert {
+    condition     = output.users["root"].secret_path == "postgres/root"
+    error_message = "users output should expose the default admin secret_path"
+  }
+
+  assert {
+    condition     = output.users["lorem"].secret_path == "postgres/lorem"
+    error_message = "users output should expose the default user secret_path"
+  }
+
+  assert {
+    condition     = output.users["root"].user_id == stackit_postgresflex_user.admin.user_id
+    error_message = "users output should expose the admin user_id"
+  }
+
+  assert {
+    condition     = output.users["lorem"].user_id == stackit_postgresflex_user.user["lorem"].user_id
+    error_message = "users output should expose the user_id of additional users"
   }
 
   assert {
@@ -391,6 +426,26 @@ run "custom_secret_manager_paths" {
   assert {
     condition     = contains(output.secret_manager_secret_names, "custom/lorem-user")
     error_message = "Secret names list should contain the custom user secret_manager_path"
+  }
+
+  assert {
+    condition     = output.users["root"].secret_path == "custom/root-admin"
+    error_message = "users output should expose the custom admin secret_manager_path"
+  }
+
+  assert {
+    condition     = output.users["lorem"].secret_path == "custom/lorem-user"
+    error_message = "users output should expose the custom user secret_manager_path"
+  }
+
+  assert {
+    condition     = output.secret_manager_mount == "mock-vault"
+    error_message = "secret_manager_mount should match secret_manager_instance_id"
+  }
+
+  assert {
+    condition     = output.instance_id == "aeac146a-97d6-4677-91eb-6ab5f8b0c202"
+    error_message = "instance_id output should match the instance"
   }
 }
 
