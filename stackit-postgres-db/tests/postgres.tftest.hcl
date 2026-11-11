@@ -253,6 +253,44 @@ run "secrets_and_manifest" {
     condition     = yamldecode(local_file.external_secret_manifest[0].content).spec.secretStoreRef.name == "secret-store"
     error_message = "Default secret store name should remain 'secret-store'"
   }
+
+  # The manifest must already be formatted the way prettier would format it.
+  assert {
+    condition     = local_file.external_secret_manifest[0].content == <<-EOT
+      ###
+      # DO NOT EDIT MANUALLY
+      # THIS FILE IS MANAGED BY TERRAFORM
+      ###
+      apiVersion: "external-secrets.io/v1"
+      kind: "ExternalSecret"
+      metadata:
+        name: "database-credentials"
+        namespace: "namespace"
+      spec:
+        data:
+          - remoteRef:
+              key: "postgres/root"
+              property: "username"
+            secretKey: "root_user"
+          - remoteRef:
+              key: "postgres/root"
+              property: "password"
+            secretKey: "root_password"
+          - remoteRef:
+              key: "postgres/lorem"
+              property: "username"
+            secretKey: "lorem_user"
+          - remoteRef:
+              key: "postgres/lorem"
+              property: "password"
+            secretKey: "lorem_password"
+        refreshInterval: "15m"
+        secretStoreRef:
+          kind: "SecretStore"
+          name: "secret-store"
+    EOT
+    error_message = "External secret manifest is not formatted as expected (prettier-compatible)"
+  }
 }
 
 run "custom_external_secret_store" {

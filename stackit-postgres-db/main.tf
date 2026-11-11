@@ -25,6 +25,27 @@ locals {
     ###
   EOT
 
+  external_secret_data = concat(
+    [
+      { secretKey = "${local.admin_username}_user", key = local.admin_secret_path, property = "username" },
+      { secretKey = "${local.admin_username}_password", key = local.admin_secret_path, property = "password" },
+    ],
+    flatten([
+      for k, u in local.additional_users_map : [
+        { secretKey = "${u.name}_user", key = local.user_secret_paths[k], property = "username" },
+        { secretKey = "${u.name}_password", key = local.user_secret_paths[k], property = "password" },
+      ]
+    ])
+  )
+
+  # Pre-rendered ExternalSecret data entries, indented for placement below "spec.data".
+  external_secret_data_yaml = join("\n", [
+    for entry in local.external_secret_data : format(
+      "    - remoteRef:\n        key: %s\n        property: %s\n      secretKey: %s",
+      jsonencode(entry.key), jsonencode(entry.property), jsonencode(entry.secretKey)
+    )
+  ])
+
   metrics_access_enabled = var.metrics_role_id != null && var.metrics_sa_email != null
 
   # Admin user is owner by default, additional users can be owners of specific databases if specified in the additional_users list.
@@ -122,45 +143,22 @@ resource "local_file" "external_secret_manifest" {
 
   filename = var.external_secret_manifest
 
-  content = format("%s%s", local.yaml_autocreate_warning, yamlencode({
-    apiVersion = "external-secrets.io/v1"
-    kind       = "ExternalSecret"
-    metadata = {
-      name      = "database-credentials"
-      namespace = var.kubernetes_namespace
-    }
-    spec = {
-      refreshInterval = "15m"
-      secretStoreRef = {
-        name = var.external_secret_store_name
-        kind = "SecretStore"
-      }
-      data = concat(
-        [
-          {
-            secretKey = "${local.admin_username}_user"
-            remoteRef = { key = local.admin_secret_path, property = "username" }
-          },
-          {
-            secretKey = "${local.admin_username}_password"
-            remoteRef = { key = local.admin_secret_path, property = "password" }
-          }
-        ],
-        flatten([
-          for k, u in local.additional_users_map : [
-            {
-              secretKey = "${u.name}_user"
-              remoteRef = { key = local.user_secret_paths[k], property = "username" }
-            },
-            {
-              secretKey = "${u.name}_password"
-              remoteRef = { key = local.user_secret_paths[k], property = "password" }
-            }
-          ]
-        ])
-      )
-    }
-  }))
+  # Rendered from a template instead of yamlencode(), because yamlencode() does not indent
+  # sequence items, which conflicts with prettier's formatting. Values are quoted via jsonencode().
+  content = <<-EOT
+    ${local.yaml_autocreate_warning}apiVersion: "external-secrets.io/v1"
+    kind: "ExternalSecret"
+    metadata:
+      name: "database-credentials"
+      namespace: ${jsonencode(var.kubernetes_namespace)}
+    spec:
+      data:
+    ${local.external_secret_data_yaml}
+      refreshInterval: "15m"
+      secretStoreRef:
+        kind: "SecretStore"
+        name: ${jsonencode(var.external_secret_store_name)}
+  EOT
 }
 
 resource "local_file" "config_map_manifest" {
