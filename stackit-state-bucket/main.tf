@@ -64,7 +64,6 @@ resource "null_resource" "onepassword" {
   count = var.create_onepassword_item ? 1 : 0
 
   triggers = {
-    password_version  = var.password_version
     access_key        = module.object_storage.terraform_credentials.access_key
     secret_access_key = module.object_storage.terraform_credentials.secret_access_key
   }
