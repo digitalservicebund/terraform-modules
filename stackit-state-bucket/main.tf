@@ -63,10 +63,9 @@ echo '${local.backend_file}' > backend.tf
 resource "null_resource" "onepassword" {
   count = var.create_onepassword_item ? 1 : 0
 
-  triggers = {
-    access_key        = module.object_storage.terraform_credentials.access_key
-    secret_access_key = module.object_storage.terraform_credentials.secret_access_key
-  }
+  triggers = var.password_version > 1 ? {
+    rotation = tostring(var.password_version)
+  } : null
 
   provisioner "local-exec" {
     command = local.onepassword_command
