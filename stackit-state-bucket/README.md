@@ -54,6 +54,7 @@ You can disable all the magic with inputs.
 The state bucket forwards `password_version` to the nested `stackit-object-storage` module.
 
 Because `rotate_when_changed` is only set when `password_version > 1`, the new credential is created before the old one is removed. Setting `password_version`to 1 is the default and does not trigger a rotation.
+To rotate the state bucket credentials, you must run `terraform apply` locally because the module code calls the 1Password CLI command using `local-exec`.
 
 ```hcl
 module "backend_bucket" {
