@@ -19,7 +19,7 @@ bootstrap your terraform configuration by setting up the remote state for you.
      project_id        = "[stackit project id]"
      state_bucket_name = "ds-[project name]-state-bucket"
      onepassword_vault = "[your team vault name]"
-     rotation_version  = "1"
+     password_version  = "1"
    }
    ```
 2. Add the `aws` provider config to you `providers.tf` file
