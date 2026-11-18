@@ -34,7 +34,6 @@ jobs:
         # "latest" to the newest stable Terraform release.
         terraform_version: ["min", "latest"]
         terraform_module:
-        terraform_module:
           [
             "stackit-object-storage",
             "stackit-state-bucket",
