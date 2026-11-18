@@ -16,16 +16,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6
-      - name: Install terraform
-        uses: digitalservicebund/setup-terraform@adfabd79951446bc3078797c9cce4511328a8573 # v1.1.2
+      - name: "Install Terraform CLI"
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: latest
       - name: Check format
         run: |
           terraform fmt -recursive -check
 
   test:
+    name: test (${{ matrix.terraform_module }}, terraform ${{ matrix.terraform_version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
+        # "min" resolves to the version in the module's `required_version` constraint,
+        # "latest" to the newest stable Terraform release.
+        terraform_version: ["min", "latest"]
+        terraform_module:
         terraform_module:
           [
             "stackit-object-storage",
@@ -36,12 +44,41 @@ jobs:
           ]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6
+
+      - name: "Resolve Terraform version"
+        id: terraform-version
+        working-directory: ${{ matrix.terraform_module }}
+        env:
+          REQUESTED_VERSION: ${{ matrix.terraform_version }}
+        run: |
+          set -euo pipefail
+
+          if [ "${REQUESTED_VERSION}" = "latest" ]; then
+            echo "version=latest" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Expects a single lower-bound constraint of the form `required_version = ">=X.Y.Z"`
+          constraint=$(grep -hE '^\s*required_version\s*=' ./*.tf | head -n1 || true)
+          version=$(echo "${constraint}" | sed -nE 's/^\s*required_version\s*=\s*"\s*>=\s*([0-9]+\.[0-9]+\.[0-9]+)\s*".*$/\1/p')
+
+          if [ -z "${version}" ]; then
+            echo "::error::Could not determine minimum Terraform version in ${{ matrix.terraform_module }}. Expected 'required_version = \">=X.Y.Z\"', got: '${constraint}'"
+            exit 1
+          fi
+
+          echo "Minimum required Terraform version: ${version}"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
       - name: "Install Terraform CLI"
         # Third-party action, pin to commit SHA!
         # See https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
-        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
         with:
-          terraform_version: v1.13.4
+          terraform_version: ${{ steps.terraform-version.outputs.version }}
+
+      - name: "Show Terraform version"
+        run: terraform version
 
       - name: "Terraform Init"
         run: terraform init
@@ -115,4 +152,3 @@ jobs:
             -f content="${FILE_CONTENT}" \
             -f sha="${FILE_SHA}" \
             -f branch="${PR_BRANCH}"
-
