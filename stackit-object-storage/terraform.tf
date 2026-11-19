@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">=1.10.1"
+  required_version = ">= 1.12.0"
 
   required_providers {
     local = {
@@ -20,4 +20,3 @@ terraform {
     }
   }
 }
-

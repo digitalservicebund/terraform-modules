@@ -136,7 +136,7 @@ module "github_actions_service_account" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.10.1 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12.0 |
 | <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.101.0 |
 
 ## Providers
