@@ -62,7 +62,7 @@ file afterward.
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.10.1 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12.0 |
 | <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.65.0 |
 | <a name="requirement_vault"></a> [vault](#requirement\_vault) | >=5.3.0 |
 
