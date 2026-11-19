@@ -182,7 +182,7 @@ applying any changes, so the credentials need to exist before the provider can b
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.10.1 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >=6.28.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >=2.6.1 |
 | <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | >=0.65.0 |
